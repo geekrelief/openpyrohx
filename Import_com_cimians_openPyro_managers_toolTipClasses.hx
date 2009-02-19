@@ -1,0 +1,1 @@
+typedef DefaultToolTipRenderer = com.cimians.openPyro.managers.toolTipClasses.DefaultToolTipRenderer
