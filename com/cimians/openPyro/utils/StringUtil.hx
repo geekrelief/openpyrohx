@@ -8,40 +8,43 @@ package com.cimians.openPyro.utils;
 		 * whitespace characters or null. 
 		 * Checks even for \n and \t values
 		 */
-		public function new() { }
-		
-		/** 
-		 * Check to see if the String is an empty string with one or more 
-		 * whitespace characters or null. 
-		 * Checks even for \n and \t values
-		 */
 		public static function isEmptyOrNull(str:String):Bool{
 			var pattern:EReg = ~/^\s+_S_/;
-	      	return pattern.test(str) == true ? true : str == "" || str == null;
-	      }
+	      	if( pattern.match(str))
+                return true;
+            else
+                return (str == "" || str == null);
+        }
 	      
 	 	public static function padLeading(s:String, n:Float, ?char:String = " "):String{
+            /*
 			var returnStr:String="";
-			var diff:Float = n-s.length;
+			var diff = Std.int(n)-s.length;
 			
 			for(i in 0...diff){
-				returnStr += char
+				returnStr += char;
 			} 
 			returnStr+=s;
 			return returnStr;
+            */
+            return StringTools.lpad(s, char, Std.int(n));
 		}
 	   
 	   public static function padTrailing(s:String, n:Float, ?char:String = " "):String{
+           /*
 			var diff:Float = n-s.length;
 			for(i in 0...diff){
 				s += char
 			} 
 			return s;
+            */
+            return StringTools.rpad(s, char, Std.int(n));
 		}
 		
 		public static function trim(p_string:String):String {
 			if (p_string == null) { return ''; }
-			return p_string.replace(~/^\s+|\s+_S_/g, '');
+			//return p_string.replace(~/^\s+|\s+_S_/g, '');
+            return StringTools.trim(p_string);
 		}
 		
 		
@@ -49,17 +52,22 @@ package com.cimians.openPyro.utils;
 			if(Std.is( val, String)){
 				return val;
 			}
-			if(Std.is( val, Number)){
-				return String(val);
+			if(Std.is( val, Float)){
+				return Std.string(val);
 			}
 			
-			var s:String
+			var s:String;
+            /*
 			try{
 				s = val["label"];
 			}
 			catch(e:Error){
 				s = "[Object]"
 			}
+            */
+            var s:String = Reflect.field(val, "label");
+            if(s == null)
+                s = "[Object]";
 			return s;
 		}
 		
@@ -77,11 +85,11 @@ package com.cimians.openPyro.utils;
 			
 			/* added in a check against wordWrap, will omit words until fitting width*/
 	        if(!tf.multiline && !tf.wordWrap){
-	        	s = originalText.slice(0, Math.floor((w / tf.textWidth ) * originalText.length));
+	        	s = originalText.substr(0, Math.floor((w / tf.textWidth ) * originalText.length));
 					
-	            while (s && s.length > 1 && tf.textWidth > w)
+	            while (s != null && s.length > 1 && tf.textWidth > w)
 	            {
-	                s = s.slice(0, s.lastIndexOf(" "));
+	                s = s.substr(0, s.lastIndexOf(" "));
 	                tf.text = s + indicator;
 	            }
 	        }
@@ -90,11 +98,11 @@ package com.cimians.openPyro.utils;
 	        if(tf.textHeight > h)
 	        {
 	            // get close
-	            s = originalText.slice(0, Math.floor((h / tf.textHeight ) * originalText.length));
+	            s = originalText.substr(0, Math.floor((h / tf.textHeight ) * originalText.length));
 					
-	            while (s && s.length > 1 && tf.textHeight > h)
+	            while (s != null && s.length > 1 && tf.textHeight > h)
 	            {
-	                s = s.slice(0, s.lastIndexOf(" "));
+	                s = s.substr(0, s.lastIndexOf(" "));
 	                tf.text = s + indicator;
 	            }
 	        }

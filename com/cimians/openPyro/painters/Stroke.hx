@@ -9,22 +9,17 @@ package com.cimians.openPyro.painters;
 		public var color:UInt ;
 		public var alpha:Float ;
 		public var pixelHinting:Bool ;
-		public var scaleMode:String ;
-		public var caps:String ;
-		public var joints:String ;
-		public var miterLimit:Int public function new(?thickness:Int=1, ?color:UInt=0x000000,?alpha:Int = 1, ?pixelHinting:Bool=false)
+		public var scaleMode:flash.display.LineScaleMode ;
+		public var caps:flash.display.CapsStyle ;
+		public var joints:flash.display.JointStyle ;
+		public var miterLimit:Int;
+
+        public function new(?thickness:Float=1, ?color:UInt=0x000000,?alpha:Float = 1, ?pixelHinting:Bool=false)
 		{
-			
-			thickness = NaN;
-			color = 0;
-			alpha = 1.0;
-			pixelHinting = false;
-			scaleMode = "normal";
-			caps = null;
-			joints = null;
-			miterLimit = 3
-		
-		;
+			scaleMode = flash.display.LineScaleMode.NORMAL;
+			caps = flash.display.CapsStyle.ROUND;
+			joints = flash.display.JointStyle.ROUND;
+			miterLimit = 3;
 			this.thickness = thickness;
 			this.color = color;
 			this.alpha = alpha;

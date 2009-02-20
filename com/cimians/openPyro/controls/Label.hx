@@ -9,8 +9,7 @@ package com.cimians.openPyro.controls;
 	class Label extends UIControl {
 		
 		public var text(getText, setText) : String;
-		public var textField(getTextField, null) : TextField
-		;
+		public var textField(getTextField, null) : TextField ;
 		public var textFormat(getTextFormat, setTextFormat) : TextFormat;
 		var _textField:TextField;
 		
@@ -21,14 +20,14 @@ package com.cimians.openPyro.controls;
 		
 		override function createChildren():Void{
 			_textField = new TextField();
-			setTextFieldProperties()
+			setTextFieldProperties();
 			addChild(_textField);
 			
-			if(_format){
+			if(_format != null){
 				_textField.defaultTextFormat = _format;
 			}
-			if(_text){
-				_textField.text = _text
+			if(_text != null ){
+				_textField.text = _text;
 			}
 		}
 		
@@ -56,17 +55,17 @@ package com.cimians.openPyro.controls;
 		 */  
 		public function setTextFormat(tf:TextFormat):TextFormat{
 			_format = tf;
-			if(!_textField)return;
+			if(_textField == null) return null;
 			
 			_textField.defaultTextFormat = tf;
-			if(_text){
+			if(_text != null){
 				this.text = _text;
 			}
 			return tf;
 		}
 		
 		public function getTextFormat():TextFormat{
-			return _format
+			return _format;
 		}
 		
 		
@@ -78,9 +77,9 @@ package com.cimians.openPyro.controls;
 		 */ 
 		public function setText(str:String):String{
 			this._text = str;
-			if(!_textField)return;
+			if(_textField == null) return "";
 			this.invalidateSize();
-			this.forceInvalidateDisplayList=true
+			this.forceInvalidateDisplayList = true;
 			this.invalidateDisplayList();
 			return str;
 		}
@@ -95,23 +94,23 @@ package com.cimians.openPyro.controls;
 			// Set the _textField's text so that we can measure based on
 			// the textWidths
 			//
-			if(!_textField) return;
+			if(_textField == null) return;
 			_textField.text = _text;
-			if(isNaN(this._explicitWidth) && isNaN(this._percentWidth) && isNaN(_percentUnusedWidth))
+			if(Math.isNaN(this._explicitWidth) && Math.isNaN(this._percentWidth) && Math.isNaN(_percentUnusedWidth))
 			{
-				var computedWidth:Int = this._textField.textWidth+5 + _padding.left + _padding.right;
-				if(!isNaN(_maximumWidth)){
+				var computedWidth:Float = this._textField.textWidth+5 + _padding.left + _padding.right;
+				if(!Math.isNaN(_maximumWidth)){
 					computedWidth = Math.min(computedWidth, _maximumWidth);
 				}
-				super.measuredWidth = computedWidth;
+				measuredWidth = computedWidth;
 			}
-			if(isNaN(this._explicitHeight) && isNaN(this._percentHeight) && isNaN(_percentUnusedHeight))
+			if(Math.isNaN(this._explicitHeight) && Math.isNaN(this._percentHeight) && Math.isNaN(_percentUnusedHeight))
 			{
-				var computedHeight:Int = this._textField.textHeight+5 + _padding.top + _padding.bottom;
-				if(!isNaN(_maximumHeight)){
-					computedHeight = Math.min(computedHeight, _maximumHeight)
+				var computedHeight:Float = this._textField.textHeight+5 + _padding.top + _padding.bottom;
+				if(!Math.isNaN(_maximumHeight)){
+					computedHeight = Math.min(computedHeight, _maximumHeight);
 				}
-				super.measuredHeight = computedHeight;
+				measuredHeight = computedHeight;
 			}
 			
 			//
@@ -119,7 +118,6 @@ package com.cimians.openPyro.controls;
 			// be called. So do the text truncation again (may be redundant though)
 			//
 			if(_textField.textWidth > _textField.width){
-				
 				StringUtil.omitWordsToFit(_textField);
 			}
 		}

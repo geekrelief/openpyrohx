@@ -19,59 +19,107 @@ package com.cimians.openPyro.core;
 	 */ 
 	class MeasurableControl extends Sprite {
 		
-		
-		
 		public var _S_height(get_S_height, set_S_height) : Float;
-		
 		public var _S_width(get_S_width, set_S_width) : Float;
-		
 		public var creationCompleteFired(getCreationCompleteFired, null) : Bool;
-		
 		public var explicitHeight(getExplicitHeight, setExplicitHeight) : Float;
-		
 		public var explicitWidth(getExplicitWidth, setExplicitWidth) : Float;
-		
-		public var height(getHeight, setHeight) : Float;
-		
+		public var mheight(getHeight, setHeight) : Float;
 		public var includeInLayout(getIncludeInLayout, setIncludeInLayout) : Bool;
-		
 		public var maximumHeight(getMaximumHeight, setMaximumHeight) : Float;
-		
 		public var maximumWidth(getMaximumWidth, setMaximumWidth) : Float;
-		
-		public var measuredHeight(getMeasuredHeight, setMeasuredHeight) : Float
-		;
-		
-		public var measuredWidth(getMeasuredWidth, setMeasuredWidth) : Float
-		;
-		
+		public var measuredHeight(getMeasuredHeight, setMeasuredHeight) : Float ;
+		public var measuredWidth(getMeasuredWidth, setMeasuredWidth) : Float ;
 		public var mouseActionsDisabled(getMouseActionsDisabled, null) : Bool;
-		
-		public var parentContainer(getParentContainer, setParentContainer) : UIControl
-		;
-		
-		public var percentHeight(getPercentHeight, setPercentHeight) : Float
-		;
-		
+		public var parentContainer(getParentContainer, setParentContainer) : UIControl ;
+		public var percentHeight(getPercentHeight, setPercentHeight) : Float ;
 		public var percentUnusedHeight(getPercentUnusedHeight, setPercentUnusedHeight) : Float;
-		
 		public var percentUnusedWidth(getPercentUnusedWidth, setPercentUnusedWidth) : Float;
-		
-		public var percentWidth(getPercentWidth, setPercentWidth) : Float
-		;
-		
+		public var percentWidth(getPercentWidth, setPercentWidth) : Float ;
 		public var usesMeasurementStrategy(getUsesMeasurementStrategy, null) : Bool;
+		public var mvisible(null, setVisible) : Bool;
+		public var mwidth(getWidth, setWidth) : Float;
+
+		public var initialized:Bool ;
+
+		var _explicitWidth:Float;
+		var _explicitHeight:Float;
+
+		var _maximumWidth:Float;
+		var _maximumHeight:Float;
+
+		var _percentUnusedWidth:Float;
+		var _percentUnusedHeight:Float;
 		
-		public var visible(null, setVisible) : Bool;
+		/** 
+		 * Only setting percent width/heights changes the 
+		 * needsMeasurement flag which makes its parent 
+		 * container call measure on it.
+		 * If width and height are set directly, measurement 
+		 * is never called (although size invalidation 
+		 * still does if size has changed)
+		 */ 
+		public var needsMeasurement:Bool;
+	
+		var _percentWidth:Float;
+		var _percentHeight:Float;
+
+		var _parentContainer:UIControl;
+
+		/**
+		 * The flag to mark that the control's size
+		 * has been invalidated. This means the control
+		 * is now waiting for a validateSize call.
+		 */ 
+		public var sizeInvalidated:Bool;
+
+	    var _measuredWidth:Float;
+		var _measuredHeight:Float;
 		
-		public var width(getWidth, setWidth) : Float;
+		var _dimensionsChanged:Bool;
+
+	    /**
+		 * Flag to mark a dirty displaylist. It basically means it is
+		 * waiting for a call to updateDisplayList at some point
+		 */ 
+		public var displayListInvalidated:Bool;
 		
+		public var forceInvalidateDisplayList:Bool;
+		
+		var _creationCompleteFired:Bool ;
+
+		var _isVisible:Bool ;
+		var _mouseActionsDisabled:Bool ;
+
+		var _includeInLayout:Bool;
+
 		public function new(){
+            super();
 			this.addEventListener(Event.ADDED, onAddedToParent);
-			super.visible = false;
+			visible = false;
+            initialized = false;
+            _explicitWidth = Math.NaN;
+            _explicitHeight = Math.NaN;
+            _maximumWidth = Math.NaN;
+            _maximumHeight = Math.NaN;
+    		_percentUnusedWidth = Math.NaN;
+		    _percentUnusedHeight = Math.NaN;
+	        needsMeasurement = true;
+            _percentWidth = Math.NaN;
+            _percentHeight = Math.NaN;
+		    _parentContainer = null;
+            sizeInvalidated = false;
+            _measuredWidth = Math.NaN;
+            _measuredHeight = Math.NaN;
+            _dimensionsChanged = true;
+            displayListInvalidated = true;
+            forceInvalidateDisplayList = false;
+            _creationCompleteFired = false;
+            _isVisible = true;
+            _mouseActionsDisabled = false;
+            _includeInLayout = true;
 		}
 		
-		public var initialized:Bool ;
 		
 		/**
 		 * This happens only once when a child is
@@ -85,8 +133,6 @@ package com.cimians.openPyro.core;
 			this.validateSize();
 		}
 		
-		var _explicitWidth:Float ;
-		var _explicitHeight:Float ;
 		
 		/**
 		 * The width set in terms of actual pixels.
@@ -100,7 +146,7 @@ package com.cimians.openPyro.core;
 		 * [TODO] This class should 
 		 * have namespace access control (pyro_internal)
 		 */ 
-		public function setExplicitWidth(w:Float):Float{
+		inline function setExplicitWidth(w:Float):Float{
 			_explicitWidth = w;	
 			return w;
 		}
@@ -108,7 +154,7 @@ package com.cimians.openPyro.core;
 		/**
 		 * @private
 		 */ 
-		public function getExplicitWidth():Float{
+		inline function getExplicitWidth():Float{
 			return _explicitWidth;	
 		}
 		
@@ -124,7 +170,7 @@ package com.cimians.openPyro.core;
 		 * [TODO] This class should 
 		 * have namespace access control (pyro_internal)
 		 */ 
-		public function setExplicitHeight(h:Float):Float{
+		inline function setExplicitHeight(h:Float):Float{
 			_explicitHeight = h;	
 			return h;
 		}
@@ -132,8 +178,8 @@ package com.cimians.openPyro.core;
 		/**
 		 * @private
 		 */ 
-		public function getExplicitHeight():Float{
-			return this._explicitHeight;	
+		inline function getExplicitHeight():Float{
+			return _explicitHeight;	
 		}
 		
 		/**
@@ -142,24 +188,22 @@ package com.cimians.openPyro.core;
 		 * control is already at, it triggers the size 
 		 * invalidation cycle
 		 */ 
-		public override function setWidth(n:Float):Float{
-			if(n == _explicitWidth) return
-			n = Math.floor(n)
-			this._explicitWidth = n
+		function setWidth(n:Float):Float{
+			if(n == _explicitWidth) return n;
+			n = Math.floor(n);
+			this._explicitWidth = n;
 			_dimensionsChanged = true;
 			displayListInvalidated = true;
-			if(!initialized) return;
+			if(!initialized) return Math.NaN;
 			invalidateSize();
-			
-			
 			return n;
 		}
 		
 		/**
 		 * @private 
 		 */ 
-		public override function getWidth():Float{
-			return this.getExplicitOrMeasuredWidth()
+		inline function getWidth():Float{
+			return this.getExplicitOrMeasuredWidth();
 		}
 		
 		/**
@@ -168,13 +212,13 @@ package com.cimians.openPyro.core;
 		 * control is already at, it triggers the size 
 		 * invalidation cycle
 		 */ 
-		public override function setHeight(n:Float):Float{
-			if (n == _explicitHeight) return;
-			n = Math.floor(n)
-			this._explicitHeight = n
+		function setHeight(n:Float):Float{
+			if (n == _explicitHeight) return n;
+			n = Math.floor(n);
+			this._explicitHeight = n;
 			displayListInvalidated = true;
 			_dimensionsChanged=true;	
-			if(!initialized) return;
+			if(!initialized) return Math.NaN;
 			invalidateSize();
 			//invalidateDisplayList();
 			return n;
@@ -183,63 +227,48 @@ package com.cimians.openPyro.core;
 		/**
 		 * @private
 		 */ 
-		public override function getHeight():Float{
+		inline function getHeight():Float{
 			return this.getExplicitOrMeasuredHeight();
 		}
 		
-		var _maximumWidth:Float ;
-		public function setMaximumWidth(n:Float):Float{
+		function setMaximumWidth(n:Float):Float{
 			_maximumWidth = n;
 			invalidateSize();
 			return n;
 		}
 		
-		public function getMaximumWidth():Float{
+		inline function getMaximumWidth():Float{
 			return _maximumWidth;
 		}
 		
-		var _maximumHeight:Float ;
 		public function setMaximumHeight(n:Float):Float{
 			_maximumHeight = n;
 			invalidateSize();
 			return n;
 		}
 		
-		public function getMaximumHeight():Float{
+		inline public function getMaximumHeight():Float{
 			return _maximumHeight;
 		}
 		
-		
-		var _percentUnusedWidth:Float;
-		var _percentUnusedHeight:Float;
-		
-		/** 
-		 * Only setting percent width/heights changes the 
-		 * needsMeasurement flag which makes its parent 
-		 * container call measure on it.
-		 * If width and height are set directly, measurement 
-		 * is never called (although size invalidation 
-		 * still does if size has changed)
-		 */ 
-		public var needsMeasurement:Bool;
 		
 		/**
 		 * Set/get the percent width. If the value is 
 		 * different from the earlier, it sets the measurement 
 		 * flag and calls invalidateSize
 		 */ 
-		public function setPercentUnusedWidth(w:Float):Float{
-			if(w == _percentUnusedWidth) return
+		function setPercentUnusedWidth(w:Float):Float{
+			if(w == _percentUnusedWidth) return w;
 			_percentUnusedWidth = w;
-			if(!initialized) return;
-			invalidateSize()
+			if(!initialized) return Math.NaN;
+			invalidateSize();
 			return w;
 		}
 		
 		/**
 		 * @private
 		 */ 
-		public function getPercentUnusedWidth():Float{
+		inline function getPercentUnusedWidth():Float{
 			return _percentUnusedWidth;
 		}
 		
@@ -248,72 +277,57 @@ package com.cimians.openPyro.core;
 		 * different from the earlier, it sets the measurement 
 		 * flag and calls invalidateSize
 		 */ 
-		public function setPercentUnusedHeight(h:Float):Float{
-			if(h==_percentUnusedHeight) return;
+		function setPercentUnusedHeight(h:Float):Float{
+			if(h==_percentUnusedHeight) return h;
 			//needsMeasurement = true;
 			_percentUnusedHeight = h;
-			if(!initialized) return;
-			this.invalidateSize()
+			if(!initialized) return Math.NaN;
+			this.invalidateSize();
 			return h;
 		}
 		
-		var _percentWidth:Float
-		public function setPercentWidth(w:Float):Float
-		{
-			if(w==_percentWidth) return;
+		function setPercentWidth(w:Float):Float {
+			if(w==_percentWidth) return w;
 			_percentWidth = w;
-			if(!initialized) return;
-			this.invalidateSize()
+			if(!initialized) return Math.NaN;
+			this.invalidateSize();
 			return w;
 		}
 		
-		public function getPercentWidth():Float
-		{
-			return _percentWidth
+		inline public function getPercentWidth():Float {
+			return _percentWidth;
 		}
 		
-		var _percentHeight:Float
-		public function setPercentHeight(h:Float):Float
-		{
-			if(h==_percentHeight) return;
+		function setPercentHeight(h:Float):Float {
+			if(h==_percentHeight) return h;
 			_percentHeight = h;
-			if(!initialized) return;
-			this.invalidateSize()
+			if(!initialized) return Math.NaN;
+			this.invalidateSize();
 			return h;
 		}
 		
-		public function getPercentHeight():Float
-		{
+		inline function getPercentHeight():Float {
 			return _percentHeight;
 		}
 		
 		/**
 		 * @private
 		 */ 
-		public function getPercentUnusedHeight():Float{
+		inline function getPercentUnusedHeight():Float{
 			return _percentUnusedHeight;
 		}
 		
-		var _parentContainer:UIControl;
 		
-		public function setParentContainer(c:UIControl):UIControl
-		{
+		inline function setParentContainer(c:UIControl):UIControl {
 			this._parentContainer = c;
 			return c;
 		}
 		
-		public function getParentContainer():UIControl
-		{
+		inline function getParentContainer():UIControl {
 			return _parentContainer;
 		}
 		
-		/**
-		 * The flag to mark that the control's size
-		 * has been invalidated. This means the control
-		 * is now waiting for a validateSize call.
-		 */ 
-		public var sizeInvalidated:Bool;
-		
+	
 		/**
 		 * Marks itself dirty and waits till either the container 
 		 * to validateSize or validates itself at the next enterframe 
@@ -326,7 +340,7 @@ package com.cimians.openPyro.core;
 			//Logger.debug(this, "invalidateSize")
 			if(sizeInvalidated) return;
 			sizeInvalidated=true;
-			if(this._parentContainer){
+			if(this._parentContainer != null){
 				_parentContainer.invalidateSize();
 			}
 			else{
@@ -363,13 +377,16 @@ package com.cimians.openPyro.core;
 		 * This property defines whether measure() will be called during 
 		 * validateSize() or not. 
 		 */ 
-		public function getUsesMeasurementStrategy():Bool{
-			if(isNaN(this._explicitHeight) || isNaN(this._explicitWidth)){
+		inline function getUsesMeasurementStrategy():Bool{
+			return (Math.isNaN(this._explicitHeight) || Math.isNaN(this._explicitWidth));
+            /*
+			if(Math.isNaN(this._explicitHeight) || Math.isNaN(this._explicitWidth)){
 				return true;
 			}
 			else{
 				return false;
 			}
+            */
 		}
 		
 		/**
@@ -389,7 +406,7 @@ package com.cimians.openPyro.core;
 			if(usesMeasurementStrategy){
 //				if(this._parentContainer){
 					measure();
-					checkDisplayListValidation()
+					checkDisplayListValidation();
 					sizeInvalidated=false;
 //				}
 			}	
@@ -404,8 +421,8 @@ package com.cimians.openPyro.core;
 			
 			for(j in 0...this.numChildren){
 				var child:MeasurableControl = cast( this.getChildAt(j), MeasurableControl);
-				if(!child) continue
-				child.validateSize()
+				if(child == null) continue;
+				child.validateSize();
 				child.dispatchEvent(new PyroEvent(PyroEvent.SIZE_VALIDATED));	
 			}
 		}
@@ -415,11 +432,11 @@ package com.cimians.openPyro.core;
 		 * has been added to the parent.
 		 */ 
 		function onAddedToParent(event:Event):Void{
-			if(!this.parent) return;
+			if(this.parent == null) return;
 			this.removeEventListener(Event.ADDED, onAddedToParent);
 			this.addEventListener(Event.REMOVED, onRemovedFromParent,false,0,true);
 			this._parentContainer = cast( this.parent, UIControl);
-			if(!_parentContainer)
+			if(_parentContainer == null)
 			{
 				doOnAdded();
 			}
@@ -455,11 +472,7 @@ package com.cimians.openPyro.core;
 			}
 		}
 		
-		var _measuredWidth:Float;
-		var _measuredHeight:Float;
-		
-		var _dimensionsChanged:Bool;
-		
+	
 		/**
 		 * Measure is called during the validateSize if
 		 * the needsmeasurement flag is set. 
@@ -470,11 +483,11 @@ package com.cimians.openPyro.core;
 		 * 
 		 */ 
 		public function measure():Void{
-			if(isNaN(this._explicitWidth))
+			if(Math.isNaN(this._explicitWidth))
 			{
-				calculateMeasuredWidth()
+				calculateMeasuredWidth();
 			}
-			if(isNaN(this._explicitHeight))
+			if(Math.isNaN(this._explicitHeight))
 			{
 				calculateMeasuredHeight();
 			}
@@ -483,15 +496,15 @@ package com.cimians.openPyro.core;
 		
 		function calculateMeasuredWidth():Void
 		{
-			if(!isNaN(this._percentUnusedWidth) && this._parentContainer)
+			if(!Math.isNaN(this._percentUnusedWidth) && this._parentContainer != null)
 			{
-				var computedWidth:Int = this._parentContainer.widthForMeasurement()*this._percentUnusedWidth/100;
-				if(!isNaN(_maximumWidth)){
+				var computedWidth:Float = this._parentContainer.widthForMeasurement()*this._percentUnusedWidth/100;
+				if(!Math.isNaN(_maximumWidth)){
 					computedWidth = Math.min(_maximumWidth, computedWidth);
 				}
 				measuredWidth = computedWidth;
 			}
-			else if(!isNaN(this._percentWidth) && this._parentContainer)
+			else if(!Math.isNaN(this._percentWidth) && this._parentContainer != null)
 			{
 				this.measuredWidth = this._parentContainer.width*this._percentWidth/100;
 			}
@@ -499,11 +512,11 @@ package com.cimians.openPyro.core;
 		
 		function calculateMeasuredHeight():Void
 		{
-			if(!isNaN(this._percentUnusedHeight) && this._parentContainer)
+			if(!Math.isNaN(this._percentUnusedHeight) && this._parentContainer != null)
 			{
 				this.measuredHeight = this._parentContainer.heightForMeasurement()*this._percentUnusedHeight/100;	
 			}
-			else if(!isNaN(this._percentHeight) && this._parentContainer)
+			else if(!Math.isNaN(this._percentHeight) && this._parentContainer != null)
 			{
 				this.measuredHeight = this._parentContainer.height*this._percentHeight/100;
 			}
@@ -517,7 +530,7 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function setMeasuredHeight(h:Float):Float
 		{
-			if(h == _measuredHeight) return
+			if(h == _measuredHeight) return h;
 			_measuredHeight = h;
 			displayListInvalidated = true;
 			_dimensionsChanged = true;
@@ -529,36 +542,29 @@ package com.cimians.openPyro.core;
 		/**
 		 * @private
 		 */ 
-		public function getMeasuredHeight():Float
+		inline function getMeasuredHeight():Float
 		{
 			return _measuredHeight;
 		}
 		
 		public function setMeasuredWidth(w:Float):Float
 		{
-			if(w  == _measuredWidth) return
+			if(w  == _measuredWidth) return w;
 			_measuredWidth = w;
 			displayListInvalidated = true;
-			_dimensionsChanged = true
+			_dimensionsChanged = true;
 			return w;
 		}
 		
 		/**
 		 * @private
 		 */ 
-		public function getMeasuredWidth():Float
+		function getMeasuredWidth():Float
 		{
 			return _measuredWidth;
 		}
 		
-		/**
-		 * Flag to mark a dirty displaylist. It basically means it is
-		 * waiting for a call to updateDisplayList at some point
-		 */ 
-		public var displayListInvalidated:Bool;
-		
-		public var forceInvalidateDisplayList:Bool;
-		
+
 		function invalidateDisplayList():Void{
 			if(!initialized) return;
 			if((!this.sizeInvalidated && !displayListInvalidated) || forceInvalidateDisplayList){
@@ -573,7 +579,7 @@ package com.cimians.openPyro.core;
 			if(_dimensionsChanged){
 			
 	//			trace(this.name,'dimensions changed ...queueValidateDL')
-				queueValidateDisplayList()
+				queueValidateDisplayList();
 			}	
 		}
 		
@@ -581,10 +587,10 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function queueValidateDisplayList():Void{
 			
-			if(this._parentContainer && _dimensionsChanged){
-				_parentContainer.queueValidateDisplayList()
+			if(this._parentContainer != null && _dimensionsChanged){
+				_parentContainer.queueValidateDisplayList();
 			}else{
-				this.addEventListener(Event.ENTER_FRAME, validateDisplayList)
+				this.addEventListener(Event.ENTER_FRAME, validateDisplayList);
 				
 			}
 		}
@@ -594,31 +600,28 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function validateDisplayList(?event:Event=null):Void{
 			
-			if(isNaN(this.getExplicitOrMeasuredWidth()) || isNaN(this.getExplicitOrMeasuredHeight())){
+			if(Math.isNaN(this.getExplicitOrMeasuredWidth()) || Math.isNaN(this.getExplicitOrMeasuredHeight())){
 				return;
 			}
-			if(event){
-				this.removeEventListener(Event.ENTER_FRAME,validateDisplayList) 
+			if(event != null){
+				this.removeEventListener(Event.ENTER_FRAME,validateDisplayList);
 			}
 			for(j in 0...this.numChildren){
 				var child:MeasurableControl = cast( this.getChildAt(j), MeasurableControl);
-				if(!child) continue
-				child.validateDisplayList()
+				if(child == null) continue;
+				child.validateDisplayList();
 			}
 			this.updateDisplayList(this.getExplicitOrMeasuredWidth(), this.getExplicitOrMeasuredHeight());
 			if(_dimensionsChanged){
 				_dimensionsChanged = false;
 				resizeHandler();
 			}
-			this.displayListInvalidated=false
+			this.displayListInvalidated=false;
 			//trace(this, this.name, ">>>>> calliing upC")
 			dispatchUpdateComplete();
-			
 		}
 		
-		var _creationCompleteFired:Bool ;
-		
-		public function getCreationCompleteFired():Bool{
+		inline function getCreationCompleteFired():Bool{
 			return _creationCompleteFired;
 		}
 		
@@ -632,11 +635,10 @@ package com.cimians.openPyro.core;
 				_creationCompleteFired = true;
 			}
 		}
-		
-		var _isVisible:Bool ;
-		public override function setVisible(value:Bool):Bool{
+
+		function setVisible(value:Bool):Bool{
 			this._isVisible = value;
-			super.visible =value
+			visible = value;
 			return value;
 		}
 		
@@ -672,11 +674,11 @@ package com.cimians.openPyro.core;
 		 * 
 		 */ 
 		public function getExplicitOrMeasuredWidth():Float{
-			if(!isNaN(this._explicitWidth)){
-				return _explicitWidth	
+			if(!Math.isNaN(this._explicitWidth)){
+				return _explicitWidth;
 			}
 			else{
-				return _measuredWidth
+				return _measuredWidth;
 			}
 		}
 		
@@ -685,11 +687,11 @@ package com.cimians.openPyro.core;
 		 * height computed by the <code>measure</code> function.
 		 */ 
 		public function getExplicitOrMeasuredHeight():Float{
-			if(!isNaN(this._explicitHeight)){
-				return _explicitHeight	
+			if(!Math.isNaN(this._explicitHeight)){
+				return _explicitHeight;	
 			}
 			else{
-				return _measuredHeight
+				return _measuredHeight;
 			}
 		}
 		
@@ -707,7 +709,7 @@ package com.cimians.openPyro.core;
 			this.addEventListener(MouseEvent.MOUSE_MOVE, disableEvent, true, 1,true);
 			//this.addEventListener(MouseEvent.MOUSE_UP, disableEvent, true, 1,true);
 			this.addEventListener(MouseEvent.CLICK, disableEvent, true, 1,true);
-			_mouseActionsDisabled = true
+			_mouseActionsDisabled = true;
 			
 		}	
 		
@@ -722,12 +724,11 @@ package com.cimians.openPyro.core;
 		}
 		
 		function disableEvent(event:Event):Void{
-			event.stopImmediatePropagation()
-			event.preventDefault()
+			event.stopImmediatePropagation();
+			event.preventDefault();
 		}
 		
-		var _mouseActionsDisabled:Bool ;
-		public function getMouseActionsDisabled():Bool{
+		inline function getMouseActionsDisabled():Bool{
 			return _mouseActionsDisabled;
 		}
 		
@@ -738,10 +739,10 @@ package com.cimians.openPyro.core;
 		 public function isMouseOver(event:MouseEvent):Bool{
 		 	if(event.localX < this.width && event.localX > 0 && 
 			event.localY < this.height && event.localY > 0){
-				return true
+				return true;
 			}
 			else{
-				return false
+				return false;
 			}
 		 } 
 		
@@ -753,7 +754,7 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function _S_addChild(child:DisplayObject):DisplayObject
 		{
-			return super.addChild(child);
+			return addChild(child);
 		}
 		
 		/**
@@ -763,15 +764,15 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function _S_addChildAt(child:DisplayObject, index:Int):DisplayObject
 		{
-			return super.addChildAt(child,index);
+			return addChildAt(child,index);
 		}
 		
-		var _includeInLayout:Bool public function setIncludeInLayout(value:Bool):Bool{
-			_includeInLayout = value
+        inline function setIncludeInLayout(value:Bool):Bool{
+			_includeInLayout = value;
 			return value;
 		}
 		
-		public function getIncludeInLayout():Bool{
+		inline function getIncludeInLayout():Bool{
 			return _includeInLayout;
 		}
 		
@@ -779,26 +780,26 @@ package com.cimians.openPyro.core;
 		{
 			this._explicitHeight = w;
 			this._explicitHeight = h;
-			this.validateSize()
-			this.validateDisplayList()
+			this.validateSize();
+			this.validateDisplayList();
 		}
 		
 		
 		public function get_S_width():Float{
-			return super.width
+			return width;
 		}
 		
 		public function set_S_width(w:Float):Float{
-			super.width = w;
+			width = w;
 			return w;
 		}
 		
 		public function get_S_height():Float{
-			return super.height
+			return height;
 		}
 		
 		public function set_S_height(h:Float):Float{
-			super.height = h;
+			height = h;
 			return h;
 		}
 		

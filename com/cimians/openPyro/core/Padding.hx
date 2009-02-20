@@ -5,24 +5,17 @@ package com.cimians.openPyro.core;
 		
 		
 		
-		public var bottom(getBottom, null) : Float
-		;
-		
-		public var left(getLeft, null) : Float
-		;
-		
-		public var right(getRight, null) : Float
-		;
-		
-		public var top(getTop, null) : Float
-		;
+		public var bottom(getBottom, null) : Float ;
+		public var left(getLeft, null) : Float ;
+		public var right(getRight, null) : Float ;
+		public var top(getTop, null) : Float ;
 		
 		var _top:Float;
 		var _right:Float;
 		var _bottom:Float;
 		var _left:Float;
 		
-		public function new(?top:Int=0, ?right:Int=0, ?bottom:Int=0, ?left:Int=0)
+		public function new(?top:Float=0, ?right:Float=0, ?bottom:Float=0, ?left:Float=0)
 		{
 			_top = top;
 			_right = right;

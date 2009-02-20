@@ -2,6 +2,8 @@ package com.cimians.openPyro.skins;
 
 	interface ISkinClient
 	{
-		function skin(skinImpl:ISkin):Void;
-		function styleName():String;
+        var skin(null, setSkin):ISkin;
+		//function setSkin(skinImpl:ISkin):ISkin;
+        var styleName(getStyleName, setStyleName):String;
+		//function getStyleName():String;
 	}

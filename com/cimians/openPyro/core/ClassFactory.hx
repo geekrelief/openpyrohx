@@ -1,20 +1,12 @@
 package com.cimians.openPyro.core;
 
-	
 	/**
 	 *  A ClassFactory instance is a "factory object" which can be used
 	 *  to generate instances of another class, each with identical properties.
 	 * 
 	 */	
 
-	class ClassFactory
-	 {
-		
-		/**
-	     *  The Class that the <code>newInstance()</code> method uses
-		 *  to generate objects from this factory object.
-	     */
-	    
+	class ClassFactory {
 		
 		/**
 	     *  The Class that the <code>newInstance()</code> method uses
@@ -45,12 +37,8 @@ package com.cimians.openPyro.core;
 	     */
 		public function new(?generator:Class<Dynamic> = null)
 		{
-			
 			properties = null;
-			super();
-			
     		this.generator = generator;
-			
 		}
 
 		/**
@@ -64,13 +52,14 @@ package com.cimians.openPyro.core;
 		 */
 		public function newInstance():Dynamic
 		{
-			var instance:Dynamic = new generator();
+			var instance:Dynamic = Type.createInstance(generator, []);
 	
 	        if (properties != null)
 	        {
-	        	for (var p:String in properties)
+                var props = Reflect.fields(properties);
+	        	for (p in props)
 				{
-	        		instance[p] = properties[p];
+                    Reflect.setField(instance, p, Reflect.field(properties, p));
 				}
 	       	}
 	

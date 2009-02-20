@@ -17,27 +17,16 @@ package com.cimians.openPyro.core;
 	 */ 
 	class UIControl extends MeasurableControl, implements ISkinClient, implements ISkin {
 		
-		
-		
 		public var backgroundPainter(getBackgroundPainter, setBackgroundPainter) : IPainter;
-		
-		public var measuredHeight(null, setMeasuredHeight) : Float;
-		
-		public var measuredWidth(null, setMeasuredWidth) : Float;
-		
 		public var padding(getPadding, setPadding) : Padding;
-		
-		public var skin(null, setSkin) : ISkin;
-		
-		public var skinnedControl(getSkinnedControl, setSkinnedControl) : UIControl
-		;
-		
+		public var skinnedControl(getSkinnedControl, setSkinnedControl) : UIControl;
+        public var skin(null, setSkin):ISkin;
 		public var styleName(getStyleName, setStyleName) : String;
-		
 		public var toolTip(null, setToolTip) : Dynamic;
 		
 		public function new() {
 			super();
+            _padding = new Padding();
 		}
 		
 		/**
@@ -46,11 +35,11 @@ package com.cimians.openPyro.core;
 		public override function initialize():Void
 		{
 			createChildren();
-			super.initialize()
-			if(_skin || !_styleName ) return;
+			super.initialize();
+			if(_skin != null || _styleName == null ) return;
 			
 			//var skinImpl:ISkin = SkinManager.getInstance().getSkinForStyleName(this._styleName);
-			SkinManager.getInstance().registerSkinClient(this, _styleName)
+			SkinManager.getInstance().registerSkinClient(this, _styleName);
 			//this.skin = skinImpl;
 			
 		}
@@ -70,11 +59,11 @@ package com.cimians.openPyro.core;
 			var ch:DisplayObject =  super._S_addChild(child);
 			if(Std.is( child, UIControl))
 			{
-				UIControl(child).parentContainer = this;
-				UIControl(child).doOnAdded()
+				cast(child, UIControl).parentContainer = this;
+				cast(child, UIControl).doOnAdded();
 			}
-			this.invalidateSize()
-			return ch
+			this.invalidateSize();
+			return ch;
 		}
 		
 		
@@ -86,24 +75,24 @@ package com.cimians.openPyro.core;
 			var ch:DisplayObject =  super._S_addChildAt(child, index);
 			if(Std.is( child, UIControl))
 			{
-				UIControl(child).parentContainer = this;
-				UIControl(child).doOnAdded()
+				cast(child, UIControl).parentContainer = this;
+				cast(child, UIControl).doOnAdded();
 			}
-			this.invalidateSize()
-			return ch
+			this.invalidateSize();
+			return ch;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */ 
 		public override function measure():Void{
-			if(isNaN(this._explicitWidth) && 
-				(!isNaN(this._percentWidth) || !isNaN(_percentUnusedWidth)))
+			if(Math.isNaN(this._explicitWidth) && 
+				(!Math.isNaN(this._percentWidth) || !Math.isNaN(_percentUnusedWidth)))
 			{
-				calculateMeasuredWidth()
+				calculateMeasuredWidth();
 			}
-			if(isNaN(this._explicitHeight) && 
-				(!isNaN(this._percentHeight) || !isNaN(_percentUnusedHeight)))
+			if(Math.isNaN(this._explicitHeight) && 
+				(!Math.isNaN(this._percentHeight) || !Math.isNaN(_percentUnusedHeight)))
 			{
 				calculateMeasuredHeight();
 			}
@@ -112,37 +101,51 @@ package com.cimians.openPyro.core;
 		
 		public override function checkDisplayListValidation():Void
 		{
-			doChildBasedValidation()
-			super.checkDisplayListValidation()
+			doChildBasedValidation();
+			super.checkDisplayListValidation();
 		}
 		
 		function doChildBasedValidation():Void
 		{
 			var child:DisplayObject;
-			if(isNaN(this._explicitWidth) && isNaN(this._percentWidth) && isNaN(_percentUnusedWidth))
+			if(Math.isNaN(this._explicitWidth) && Math.isNaN(this._percentWidth) && Math.isNaN(_percentUnusedWidth))
 			{
-				var maxW:Int = 0
+				var maxW:Float = 0;
 				for(j in 0...this.numChildren){
 					child = this.getChildAt(j);
-					if(child.width > maxW)
-					{
-						maxW = child.width;
-					}
+                    var mchild = cast(child, MeasurableControl);
+                    if(mchild == null) {
+    					if(child.width > maxW)
+    					{
+    						maxW = child.width;
+    					}
+                    } else {
+                        if(mchild.mwidth > maxW){
+                            maxW = mchild.mwidth;
+                        }
+                    }
 				}
 				
-				super.measuredWidth = maxW + _padding.left + _padding.right;
+				measuredWidth = maxW + _padding.left + _padding.right;
 			}
-			if(isNaN(this._explicitHeight) && isNaN(this._percentHeight) && isNaN(_percentUnusedHeight))
+			if(Math.isNaN(this._explicitHeight) && Math.isNaN(this._percentHeight) && Math.isNaN(_percentUnusedHeight))
 			{
-				var maxH:Int = 0
+				var maxH:Float = 0;
 				for(k in 0...this.numChildren){
 					child = this.getChildAt(k);
-					if(child.height > maxH)
-					{
-						maxH = child.height;
-					}
+                    var mchild = cast(child, MeasurableControl);
+                    if(mchild == null){
+    					if(child.height > maxH)
+    					{
+    						maxH = child.height;
+    					}
+                    } else {
+                        if(mchild.mheight > maxH){
+                            maxH = mchild.mheight;
+                        }
+                    }
 				}
-				super.measuredHeight = maxH + _padding.top + _padding.bottom;
+				measuredHeight = maxH + _padding.top + _padding.bottom;
 			}
 		}
 		
@@ -154,16 +157,16 @@ package com.cimians.openPyro.core;
 		 * dimensions are based on its own)
 		 */ 
 		public override function setMeasuredWidth(w:Float):Float{
-			if(w  == _measuredWidth) return
+			if(w  == _measuredWidth) return w;
 			_dimensionsChanged = true;
 			_measuredWidth = w;
 			for(i in 0...this.numChildren){
 				var child:UIControl = cast( this.getChildAt(i), UIControl);
-				if(!child) continue
+				if(child == null) continue;
 				child.needsMeasurement=true;
 			}
 				
-			invalidateDisplayList()
+			invalidateDisplayList();
 			return w;
 		}
 			
@@ -174,15 +177,15 @@ package com.cimians.openPyro.core;
 		 * dimensions are based on its own)
 		 */
 		public override function setMeasuredHeight(h:Float):Float{
-			if(h == _measuredHeight) return
+			if(h == _measuredHeight) return h;
 			this._dimensionsChanged = true;
 			_measuredHeight = h;
 			for(i in 0...this.numChildren){
 				var child:UIControl = cast( this.getChildAt(i), UIControl);
-				if(!child) continue
+				if(child == null) continue;
 				child.needsMeasurement=true;
 			}
-			invalidateDisplayList()
+			invalidateDisplayList();
 			return h;
 		}
 		
@@ -192,7 +195,7 @@ package com.cimians.openPyro.core;
 		 * percent-dimension based children
 		 */
 		public function widthForMeasurement():Float{
-			return this.width
+			return this.mwidth;
 		}
 		
 		/**
@@ -201,7 +204,7 @@ package com.cimians.openPyro.core;
 		 * percent-dimension based children
 		 */
 		public function heightForMeasurement():Float{
-			return this.height
+			return this.mheight;
 		}
 		
 		/**
@@ -210,7 +213,7 @@ package com.cimians.openPyro.core;
 		public override function removeChild(d:DisplayObject):DisplayObject{
 			
 			var d2:DisplayObject = super.removeChild(d);
-			this.invalidateSize()
+			this.invalidateSize();
 			return d2;
 		}
 		
@@ -221,15 +224,15 @@ package com.cimians.openPyro.core;
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			//_S_width = unscaledWidth
 			//_S_height = unscaledHeight;
-			if(this._backgroundPainter){
-				this.graphics.clear()
-				_backgroundPainter.draw(Sprite(this).graphics, unscaledWidth,unscaledHeight);
+			if(this._backgroundPainter != null){
+				this.graphics.clear();
+				_backgroundPainter.draw(cast(this, Sprite).graphics, unscaledWidth,unscaledHeight);
 			}
-			if(_skin && !(Std.is( _skin, MeasurableControl)) && (Std.is( _skin, DisplayObject))){
-				DisplayObject(_skin).width = unscaledWidth;
-				DisplayObject(_skin).height = unscaledHeight;
+			if(_skin != null && !(Std.is( _skin, MeasurableControl)) && (Std.is( _skin, DisplayObject))){
+				cast(_skin, DisplayObject).width = unscaledWidth;
+				cast(_skin, DisplayObject).height = unscaledHeight;
 			}
-			doLayoutChildren()
+			doLayoutChildren();
 		}
 		
 		public function doLayoutChildren():Void
@@ -239,7 +242,8 @@ package com.cimians.openPyro.core;
 				var child:DisplayObject = this.getChildAt(i);
 				// Skin elements do not get positioned. Its upto the
 				// skin to deal with the padding
-				if(child == _skin) continue;
+                if(Std.is(child, ISkin) && cast(child, ISkin) == _skin)
+                    continue;
 				
 				//child.x = padding.left;
 				//child.y = padding.top;
@@ -275,7 +279,7 @@ package com.cimians.openPyro.core;
 		
 		///////////////////// Skinning implementation ////////////
 		
-		var _styleName:String
+		var _styleName:String;
 		
 		/**
 		 * Defines the skin this component is registered to.
@@ -294,10 +298,10 @@ package com.cimians.openPyro.core;
 		 * @private
 		 */ 
 		public function setStyleName(selector:String):String{
-			if(_styleName == selector) return;	
+			if(_styleName == selector) return selector;	
 			if(initialized){
 				SkinManager.getInstance().unregisterSkinClient(this,_styleName);
-				SkinManager.getInstance().registerSkinClient(this, selector)
+				SkinManager.getInstance().registerSkinClient(this, selector);
 			}
 			this._styleName = selector;
 			return selector;
@@ -309,11 +313,11 @@ package com.cimians.openPyro.core;
 		
 		public function setSkinnedControl(uic:UIControl):UIControl
 		{
-			if(_skinnedControl){
-				_skinnedControl.removeEventListener(Event.RESIZE, onSkinnedControlResize)
+			if(_skinnedControl != null){
+				_skinnedControl.removeEventListener(Event.RESIZE, onSkinnedControlResize);
 			}
 			_skinnedControl = uic;
-			_skinnedControl.addEventListener(Event.RESIZE, onSkinnedControlResize)
+			_skinnedControl.addEventListener(Event.RESIZE, onSkinnedControlResize);
 			return uic;
 		}
 		
@@ -337,9 +341,9 @@ package com.cimians.openPyro.core;
 		var _skin:ISkin;
 		
 		public function setSkin(skinImpl:ISkin):ISkin{
-			if(!skinImpl) return;
+			if(skinImpl == null) return null;
 			
-			if(this._skin)
+			if(this._skin != null)
 			{
 				_skin.dispose();
 				_skin = null;
@@ -347,7 +351,7 @@ package com.cimians.openPyro.core;
 			_skin = skinImpl;
 			_skin.skinnedControl = this;
 			if(Std.is( _skin, UIControl)){
-				addChild(UIControl(_skin))
+				addChild(cast(_skin, UIControl));
 				//UIControl(_skin).percentUnusedWidth = 100
 				//UIControl(_skin).percentUnusedHeight = 100
 			}
@@ -361,23 +365,25 @@ package com.cimians.openPyro.core;
 	
 		public function setToolTip(data:Dynamic):Dynamic{
 			_toolTipData = data;
-			if(_toolTipData){
+			if(_toolTipData != null){
+                var fdata = _toolTipData;
+                var frenderer = toolTipRenderer;
 				this.addEventListener(MouseEvent.MOUSE_OVER, 
 										function(event:MouseEvent):Void{
-											TooltipManager.getInstance().showToolTip(event, _toolTipData, toolTipRenderer)
-										})
+											TooltipManager.getInstance().showToolTip(event, fdata, frenderer);
+										});
 				
 				this.addEventListener(MouseEvent.MOUSE_OUT, 
 				function(event:MouseEvent):Void{
-					TooltipManager.getInstance().hideToolTip()
-				})
+					TooltipManager.getInstance().hideToolTip();
+				});
 			}
 			return data;
 		}
 		
 		///////////////////// Padding //////////////////////////////
 		
-		var _padding:Padding ;
+		var _padding:Padding;
 		
 		/**
 		 * Paddings define the unusable space within
@@ -394,8 +400,8 @@ package com.cimians.openPyro.core;
 			this._explicitWidth = w;
 			this._explicitHeight = h;
 			for(i in 0...this.numChildren){
-				var uic:UIControl = cast( this.getChildAt(i), UIControl)
-				if(!uic) continue
+				var uic:UIControl = cast( this.getChildAt(i), UIControl);
+				if(uic == null) continue;
 				uic.validateSize();
 				uic.validateDisplayList();
 			}
@@ -407,7 +413,7 @@ package com.cimians.openPyro.core;
 		 * @private
 		 */ 
 		public function setPadding(p:Padding):Padding{
-			_padding = p
+			_padding = p;
 			this.invalidateDisplayList();
 			return p;
 		}
@@ -431,37 +437,31 @@ package com.cimians.openPyro.core;
 		 * 			or String
 		 */ 
 		public function setSize(w:Dynamic, h:Dynamic):Void{
-			var str:String
-			if(Std.is( w, Number)){
-				this.width = w
+			var str:String;
+			if(Std.is( w, Float)){
+				this.mwidth = w;
 			}
 			else if(Std.is( w, String)){
-				str = String(w)
-				if(str.charAt(str.length-1)== "%"){
-					str = str.substring(0, str.length-1)
-					this.percentUnusedWidth = Number(str);
+				str = w;
+				if(StringTools.endsWith(str, "%")){
+					this.percentUnusedWidth = Std.parseFloat(str.substr(0, str.length-1));
 				}
 			}
-			
 			else{
-				throw new Error('SetSize can only take a string or number as a param')
+				throw ("SetSize can only take a string or number as a param");
 			}
 			
-			if(Std.is( h, Number)){
-				this.height = h
+			if(Std.is( h, Float)){
+				this.mheight = h;
 			}
 			else if(Std.is( h, String)){
-				str = String(h)
-				if(str.charAt(str.length-1)== "%"){
-					str = str.substring(0, str.length-1)
-					this.percentUnusedHeight = Number(str);
+				str = h;
+				if(StringTools.endsWith(str, "%")){
+					this.percentUnusedHeight = Std.parseFloat(str.substr(0, str.length-1));
 				}
+			} 
+            else{
+				throw ("SetSize can only take a string or number as a param");
 			}
-			
-			else{
-				throw new Error('SetSize can only take a string or number as a param')
-			}
-			
 		}
-		
 	}

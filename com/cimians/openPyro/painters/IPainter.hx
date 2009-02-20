@@ -5,7 +5,7 @@ package com.cimians.openPyro.painters;
 	
 	interface IPainter
 	{
-		function padding(p:Padding):Void;
-		function padding():Padding;
+		function setPadding(p:Padding):Padding;
+		function getPadding():Padding;
 		function draw(gr:Graphics, w:Float, h:Float):Void;
 	}

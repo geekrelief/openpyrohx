@@ -2,6 +2,7 @@ package com.cimians.openPyro.core;
 
 	interface IDataRenderer
 	{
-		function data(d:Dynamic):Void;
-		function data():Dynamic;
+        var data(getData, setData):Dynamic;
+		//function setData(d:Dynamic):Void;
+		//function getData():Dynamic;
 	}

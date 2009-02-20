@@ -13,7 +13,7 @@ package com.cimians.openPyro.managers.toolTipClasses;
 	class DefaultToolTipRenderer extends UIControl, implements IDataRenderer {
 		
 		public var data(getData, setData) : Dynamic;
-		var _label:Label
+		var _label:Label;
 		var _labelFormat:TextFormat;
 		
 		public function new()
@@ -22,24 +22,24 @@ package com.cimians.openPyro.managers.toolTipClasses;
 		}
 		
 		override function createChildren():Void{
-			_label = new Label()
-			if(!_labelFormat){
+			_label = new Label();
+			if(_labelFormat == null){
 				_labelFormat = new TextFormat("Arial", 12, 0);
 			}
 			_label.addEventListener(PyroEvent.UPDATE_COMPLETE, onlabelUpdateComplete);
 			//_label.addEventListener()
 			_label.textFormat = _labelFormat;
 			addChild(_label);
-			var painter:FillPainter = new FillPainter(0xfff000,1,null,5)
+			var painter:FillPainter = new FillPainter(0xfff000,1,null,5);
 			this.backgroundPainter = painter;
-			this.filters = [new DropShadowFilter()]
+			this.filters = [new DropShadowFilter()];
 		}
 		
 		var _data:Dynamic;
 		public function setData(d:Dynamic):Dynamic{
 			_data = d;
-			if(_label){
-				_label.text = cast( (d), String);
+			if(_label != null){
+				_label.text = cast(d, String);
 			}
 			return d;
 		}
@@ -49,16 +49,14 @@ package com.cimians.openPyro.managers.toolTipClasses;
 		}
 		
 		function onlabelUpdateComplete(event:Event):Void{
-			trace(">> 2 ")
+			//trace(">> 2 ")
 			//updateDisplayList(width, height);
 		}
 		
 		public override function updateDisplayList(unscaledWidth:Float, unscaledHeight:Float):Void{
-			super.updateDisplayList(unscaledWidth, unscaledHeight)
-			_label.x = _label.y = 2
-			trace("l w:: "+_label.width)
-			
-				
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
+			_label.x = _label.y = 2;
+			//trace("l w:: "+_label.mwidth)
 		}
 		
 	}

@@ -7,17 +7,14 @@ package com.cimians.openPyro.painters;
 	class FillPainter implements IPainter {
 		
 		public var cornerRadius(null, setCornerRadius) : Float;
-		public var padding(getPadding, setPadding) : Padding
-		;
+		public var padding(getPadding, setPadding) : Padding ;
 		var _color:UInt;
 		var _alpha:Float;
 		var _stroke:Stroke;
 		var _padding:Padding;
-		var _cornerRadius:Int;
+		var _cornerRadius:Float;
 		
-		public function new(color:UInt, ?alpha:Int=1, ?stroke:Stroke=null, ?cornerRadius:Int=0){
-			
-			_cornerRadius =0;
+		public function new(color:UInt, ?alpha:Float=1, ?stroke:Stroke=null, ?cornerRadius:Float=0){
 			_color = color;
 			_alpha = alpha;
 			_stroke = stroke;
@@ -31,19 +28,19 @@ package com.cimians.openPyro.painters;
 		
 		public function draw(gr:Graphics, w:Float, h:Float):Void
 		{
-			var drawX:Int = 0;
-			var drawY:Int = 0;
-			var drawW:Int = w;
-			var drawH:Int = h;
+			var drawX:Float = 0;
+			var drawY:Float = 0;
+			var drawW:Float = w;
+			var drawH:Float = h;
 			
-			if(_padding){
-				drawX += _padding.left
-				drawY += _padding.top
-				drawW -= _padding.right + _padding.left
-				drawH -= padding.top + _padding.bottom
+			if(_padding != null){
+				drawX += _padding.left;
+				drawY += _padding.top;
+				drawW -= _padding.right + _padding.left;
+				drawH -= padding.top + _padding.bottom;
 			}
 
-			if(_stroke){
+			if(_stroke != null){
 				gr.lineStyle(_stroke.thickness, 
 							_stroke.color, 
 							_stroke.alpha, 
@@ -59,12 +56,12 @@ package com.cimians.openPyro.painters;
 		}
 		
 		public function toString():String{
-			return ("color: "+_color.toString(16)+"\n stroke: "+_stroke+"\n"+_alpha)
+			return ("color: "+StringTools.hex(_color, 16)+"\n stroke: "+_stroke+"\n"+_alpha);
 		}
 		
 		public function setPadding(p:Padding):Padding
 		{
-			_padding = p
+			_padding = p;
 			return p;
 		}
 		

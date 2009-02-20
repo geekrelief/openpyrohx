@@ -19,73 +19,67 @@ package com.cimians.openPyro.managers;
 	
 	class SkinManager extends EventDispatcher {
 		
+		public static var SKIN_SWF_LOADED:String = "skinSWFLoaded";
 		
-		
-		public static var SKIN_SWF_LOADED:String = "skinSWFLoaded"
-		
-		var skinClients:Dictionary
-		var skinDefinitions:Dictionary;
+		var skinClients:Hash<Array<ISkinClient>>;
+		var skinDefinitions:Hash<ClassFactory>;
 		
 		public function new(){
-			skinClients = new Dictionary()
-			skinDefinitions = new Dictionary();
+            super();
+			skinClients = new Hash();
+			skinDefinitions = new Hash();
+            invalidSelectors = new Array();
 		}
 		
-		static var instance:SkinManager
+		static var instance:SkinManager;
 		public static function getInstance():SkinManager
 		{
-			if(!instance)
+			if(instance == null)
 			{
-				instance = new SkinManager()
+				instance = new SkinManager();
 			}
 			return instance;
 		}
 		
 		public function registerSkinClient(client:ISkinClient, selector:String):Void
 		{
-			if(skinClients.hasOwnProperty(selector))
-			{
-				var skinnable:Array<Dynamic> = skinClients[selector]
-				skinnable.push(client);
-			}
-			else
-			{
-				skinClients[selector] = [client]
-			}
-				
+			if(skinClients.exists(selector)){
+                var skinnable:Array<ISkinClient> = skinClients.get(selector);
+                skinnable.push(client);
+            } else {
+                skinClients.set(selector, [client]);
+            }
 		}
 		
 		public function unregisterSkinClient(client:ISkinClient, selector:String):Void
 		{
-			if(!skinClients.hasOwnProperty(selector)) return;
-			var skinnable:Array<Dynamic> = skinClients[selector]
-			ArrayUtil.remove(skinnable, client);
+            if(skinClients.exists(selector)) {
+                skinClients.get(selector).remove(client);
+            }
 		}
-		
 		
 		
 		public function getSkinForStyleName(styleName:String):ISkin
 		{
-			var skinFactory:ClassFactory =  ClassFactory(this.skinDefinitions[styleName])
-			if(!skinFactory) return null;
-			var skin:ISkin =cast( skinFactory.newInstance(), ISkin);
+			var skinFactory:ClassFactory =  this.skinDefinitions.get(styleName);
+			if(skinFactory == null) return null;
+			var skin:ISkin = cast skinFactory.newInstance();
 			return skin;
 		}
 		
 		
-		
 		var timer:Timer;
-		var invalidSelectors:Array<Dynamic> ;
+		var invalidSelectors:Array<String> ;
 		
 		public function registerSkin(skinFactory:ClassFactory, selector:String):Void
 		{
-			if(skinDefinitions[selector] == skinFactory) return;
-			this.skinDefinitions[selector] = skinFactory;
+			if(skinDefinitions.get(selector) == skinFactory) return;
+			this.skinDefinitions.set(selector, skinFactory);
 			invalidSelectors.push(selector);
 			/* 
 			[TODO:] This needs to happen on the next EnterFrame, not Timer
 			*/
-			invalidateSkins()
+			invalidateSkins();
 		}
 		
 		public function registerFlaSkin(skin:Class<Dynamic>, selector:String):Void
@@ -97,12 +91,12 @@ package com.cimians.openPyro.managers;
 		
 		public function invalidateSkins():Void
 		{
-			if(! timer){
-				timer = new Timer(500, 1)
+			if(timer == null){
+				timer = new Timer(500, 1);
 				timer.addEventListener(TimerEvent.TIMER_COMPLETE, validateSkins);
 			}
 			if(!timer.running){
-				timer.start()
+				timer.start();
 			}	
 		}
 		
@@ -110,25 +104,23 @@ package com.cimians.openPyro.managers;
 		{
 			for (a in this.invalidSelectors)
 			{ 
-				var skinnable:Array<Dynamic> = cast( skinClients[a], Array);
-				var skinFactory:ClassFactory = this.skinDefinitions[a];
+				var skinnable:Array<ISkinClient> = skinClients.get(a);
+				var skinFactory:ClassFactory = this.skinDefinitions.get(a);
 				
-				if(!skinnable || !skinFactory) continue;
-				for(i in 0...skinnable.length)
+				if(skinnable == null || skinFactory == null) continue;
+				for(client in skinnable)
 				{
-					var client:ISkinClient = ISkinClient(skinnable[i])
-					client.skin = ISkin(skinFactory.newInstance());
-					
+					client.skin = cast skinFactory.newInstance();
 				}
 			}
 			this.invalidSelectors = new Array();	
 		}
 		
 		public function loadSkinSwf(swfURL:String):Void{
-			var loader:Loader = new Loader()
+			var loader:Loader = new Loader();
 			loader.contentLoaderInfo.addEventListener(Event.INIT, onSkinSWFLoaded);
-			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError)
-			loader.load(new URLRequest(swfURL), new LoaderContext(true, ApplicationDomain.currentDomain))
+			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
+			loader.load(new URLRequest(swfURL), new LoaderContext(true, ApplicationDomain.currentDomain));
 		}
 		
 		function onIOError(event:Event):Void{
@@ -137,8 +129,10 @@ package com.cimians.openPyro.managers;
 		
 		
 		function onSkinSWFLoaded(event:Event):Void{
-			LoaderInfo(event.target).removeEventListener(Event.INIT, onSkinSWFLoaded)
-			Object(LoaderInfo(event.target).loader.content).getDefinitions(this)
+			cast(event.target, LoaderInfo).removeEventListener(Event.INIT, onSkinSWFLoaded);
+
+            //?? what does this line below do?
+			//Object(cast(event.target, LoaderInfo).loader.content).getDefinitions(this)
 			
 			/*
 			for(var a:String in this.skinClients){

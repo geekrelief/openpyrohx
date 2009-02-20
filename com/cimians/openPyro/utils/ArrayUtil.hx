@@ -41,15 +41,11 @@ package com.cimians.openPyro.utils;
 		 * 			 </listing>
 		 */ 
 		public static function insertAt(src:Array<Dynamic>, idx:Float, data:Dynamic):Void{
-			if(idx<src.length){
-				var spliced:Array<Dynamic> = src.splice(idx);
-				src.push(data);
-				for(i in 0...spliced.length){
-					src.push(spliced[i]);
-				}
-			}
-			else{
-				src[idx] = (data)
+            var dx = Std.int(idx);
+			if(dx < src.length){
+                src.insert(dx, data);
+			} else {
+				src[dx] = data;
 			}
 		}
 		
@@ -57,15 +53,8 @@ package com.cimians.openPyro.utils;
 		 * Removes the FIRST instance of the item passed in as a parameter
 		 */ 
 		public static function remove(src:Array<Dynamic>,item:Dynamic):Void{
-			var index:Float = src.indexOf(item);
-			if(index==-1){
-				return;
-				//throw new Error("Could not remove item from Array, item doesnt exist in the Array");
-			}
-			src.splice(index,1);
+            src.remove(item);
 		}
-		
-		
 		
 		
 		/**
@@ -81,36 +70,54 @@ package com.cimians.openPyro.utils;
 					return i;
 				}
 			}
-			return NaN;
+			return Math.NaN;
 		}
-		
+
+        public static function indexOf(src:Array<Dynamic>, item:Dynamic): Int {
+            for(i in 0...src.length){
+                if( src[i] == item)
+                    return i;
+            }
+            return -1;
+        }
+	
 		/**
 		 * Swaps the positions of two items if they are found in the 
 		 * source array.
 		 */ 
 		public static function swapByValue(src:Array<Dynamic>, item1:Dynamic, item2:Dynamic):Void{
-			var idx1:Float =src.indexOf(item1);
-			var idx2:Float = src.indexOf(item2);
+			var idx1:Float = ArrayUtil.indexOf(src, item1);
+			var idx2:Float = ArrayUtil.indexOf(src, item2);
 			swapByIndex(src, idx1, idx2);
 		}
 		
 		public static function swapByIndex(src:Array<Dynamic>, idx1:Float, idx2:Float):Void{
-			var temp:Dynamic = src[idx1];
-			src[idx1] = src[idx2];
-			src[idx2] = temp;
+            var dx1 = Std.int(idx1);
+            var dx2 = Std.int(idx2);
+			var temp:Dynamic = src[dx1];
+			src[dx1] = src[dx2];
+			src[dx2] = temp;
 			
 		}
 		
-		public static function createRepeatingArray(n:Float, v:Float):Array<Dynamic> {
-			var result:Array<Dynamic> = new Array(n);
-			for (var i:Int = 0; i<n; i++) result[i] = v;
+		public static function createRepeatingArray(n:Float, v:Dynamic):Array<Dynamic> {
+			var result:Array<Dynamic> = new Array();
+			for (i in 0...Std.int(n)) result[i] = v;
 			
 			return result;
 		}
 		
-		public static function createProgressiveArray(n:Float, s:Float, e:Float):Array<Dynamic> {
-			var result:Array<Dynamic> = new Array(n);
-			for (var i:Int = 0; i<n; i++) result[i] = s + i*(e-s)/(n-1);
+		public static function createProgressiveArray(n:Float, s:Dynamic, e:Dynamic):Array<Dynamic> {
+			var result:Array<Dynamic> = new Array();
+            var floor:Bool = false;
+            if(Std.is(s, Int)) { floor = true; }
+			for (i in 0...Std.int(n)){
+                var val = s + i*(e-s)/(n-1);
+                if(floor)
+                    result[i] = Std.int(val);
+                else
+                    result[i] = val;
+            }
 			return result;
 		}
 		
@@ -121,16 +128,13 @@ package com.cimians.openPyro.utils;
 		 * TODO: This isnt the most efficient way to do it. There is a way using splice or something.
 		 */ 
 		public static function insertArrayAtEnd(sourceArray:Array<Dynamic>, arrayToInsert:Array<Dynamic>):Array<Dynamic>{
-			for (o in arrayToInsert){
-				sourceArray.push(o);
-			}
-			return sourceArray;
+            return sourceArray.concat(arrayToInsert);
 		}
 		
 		public static function insertArrayAtIndex(sourceArray:Array<Dynamic>, arrayToInsert:Array<Dynamic>, idx:Int):Array<Dynamic>{
 			var i:Int = arrayToInsert.length-1;
 			while (i>=0){
-				insertAt(sourceArray, idx, arrayToInsert[i])
+				insertAt(sourceArray, idx, arrayToInsert[i]);
 				i--;
 			}
 			return sourceArray;
@@ -143,13 +147,12 @@ package com.cimians.openPyro.utils;
 		}
 		
 		public static function removeDuplicates(arr:Array<Dynamic>):Array<Dynamic>{
-			var uniques:Array<Dynamic> = new Array()	
+			var uniques:Array<Dynamic> = new Array();
 			var i:UInt = 0;
 			while(i < arr.length){
 				var searchElement:Dynamic = arr[i];
-				if(uniques.indexOf(searchElement) != -1){
+				if(ArrayUtil.indexOf(uniques, searchElement) != -1){
 					removeItemAt(arr, i);
-					
 				}
 				else{
 					uniques.push(searchElement);
