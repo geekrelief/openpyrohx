@@ -11,17 +11,19 @@ package com.cimians.openPyro.effects;
 	 */ 
 	
 	class EffectDescriptor
-	 {
+	{
 		
 		public var target:DisplayObject;
 		public var duration:Float;
-		public var properties:Dynamic
+		public var properties:Dynamic;
 		
-		public function new(?target:DisplayObject = null, ?duration:Float = NaN, ?properties:Dynamic = null )
+		public function new(?target:DisplayObject = null, ?duration:Float, ?properties:Dynamic = null )
 		{
+            if(duration == null){
+                duration = Math.NaN;
+            }
 			this.target = target;
 			this.duration = duration;
 			this.properties = properties;
 		}
-
 	}

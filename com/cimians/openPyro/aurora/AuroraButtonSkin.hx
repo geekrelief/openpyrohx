@@ -14,39 +14,53 @@ package com.cimians.openPyro.aurora;
 	
 	class AuroraButtonSkin extends UIControl, implements IStateFulClient {
 		
-		public var colors(null, setColors) : Array<Dynamic>;
+		public var colors(null, setColors) : Array<UInt>;
 		public var cornerRadius(null, setCornerRadius) : Float;
-		public var downColors(null, setDownColors) : Array<Dynamic>;
+		public var downColors(null, setDownColors) : Array<UInt>;
 		public var icon(null, setIcon) : DisplayObject;
 		public var labelAlign(null, setLabelAlign) : String;
-		public var labelFormat(getLabelFormat, setLabelFormat) : TextFormat
-		;
-		public var overColors(null, setOverColors) : Array<Dynamic>;
-		public var skinnedControl(null, setSkinnedControl) : UIControl;
+		public var labelFormat(getLabelFormat, setLabelFormat) : TextFormat ;
+		public var overColors(null, setOverColors) : Array<UInt>;
 		public var stroke(null, setStroke) : Stroke;
-		public var upColors(null, setUpColors) : Array<Dynamic>;
-		var _cornerRadius:Int var gradientPainter:GradientFillPainter;
+		public var upColors(null, setUpColors) : Array<UInt>;
+
+		var _cornerRadius:Float;
+        var gradientPainter:GradientFillPainter;
 		var _stroke:Stroke ;
 		
+		var _labelFormat:TextFormat ;
+
+		var _labelAlign:String ;
+
+		var _upColors:Array<UInt> ;
+		var _overColors:Array<UInt> ;
+		var _downColors:Array<UInt> ;
+	
 		public function new()
 		{
-			
-			_cornerRadius = 0
-		;
+            super();
+			_cornerRadius = 0 ;
 			_stroke = new Stroke(1,0x777777,1,true);
 			this.mouseChildren=false;
+            _labelFormat = new TextFormat("Arial", 11, 0x111111, true);
+            _labelAlign = "center";
+
+            _upColors = [0xdfdfdf, 0xffffff];
+            _overColors = [0xffffff, 0xdfdfdf];
+            _downColors = [0xdfdfdf, 0xdfdfdf];
 		}
 		
 		public override function setSkinnedControl(uic:UIControl):UIControl{
-			if(skinnedControl)
+			if(skinnedControl != null)
 			{
-				skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
+				skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
 			}
-			super.skinnedControl = uic;
-			skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
+
+			super.setSkinnedControl(uic);
+			skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
 			if(Std.is( uic, Button))
 			{
-				this.changeState(null, Button(uic).currentState);
+				this.changeState(null, cast(uic, Button).currentState);
 				updateLabel();
 			}
 			this.buttonMode = true;
@@ -69,7 +83,7 @@ package com.cimians.openPyro.aurora;
 		public function setIcon(icn:DisplayObject):DisplayObject{
 			_icon = icn;
 			addChild(_icon);
-			if(skinnedControl){
+			if(skinnedControl != null){
 				invalidateDisplayList();
 			}
 			return icn;
@@ -77,16 +91,15 @@ package com.cimians.openPyro.aurora;
 		
 		////////////////// LABEL /////////////////
 		
-		var _labelFormat:TextFormat ;
 		
 		public function setLabelFormat(fmt:TextFormat):TextFormat
 		{
 			_labelFormat = fmt;
-			if(label)
+			if(label != null)
 			{
 				label.textFormat = fmt;
 			}
-			if(skinnedControl)
+			if(skinnedControl != null)
 			{
 				invalidateDisplayList();
 			}
@@ -104,22 +117,20 @@ package com.cimians.openPyro.aurora;
 		{
 			if(Std.is( this.skinnedControl, Button))
 			{
-				var bttn:Button = Button(this.skinnedControl);
-				if(!bttn.label) return;
-				if(!label){
+				var bttn:Button = cast this.skinnedControl;
+				if(bttn.label == null) return;
+				if(label == null){
 					label = new Label();
 					label.textFormat = _labelFormat;
 					addChild(label);
-					
 				}
 				label.text = bttn.label;
 			}
 		}
 		
-		var _labelAlign:String ;
 		public function setLabelAlign(direction:String):String{
 			_labelAlign = direction;
-			if(skinnedControl){
+			if(skinnedControl != null){
 				invalidateDisplayList();
 			}
 			return direction;
@@ -127,33 +138,30 @@ package com.cimians.openPyro.aurora;
 	
 		//////////// Colors ///////////////
 		
-		var _upColors:Array<Dynamic> ;
-		var _overColors:Array<Dynamic> ;
-		var _downColors:Array<Dynamic> ;
-		
-		public function setUpColors(clrs:Array<Dynamic>):Array<Dynamic>{
+	
+		public function setUpColors(clrs:Array<UInt>):Array<UInt>{
 			this._upColors = clrs;
-			if(this._skinnedControl)
+			if(this._skinnedControl != null)
 			{
-				invalidateDisplayList()	
+				invalidateDisplayList();
 			}
 			return clrs;
 		}
 		
-		public function setOverColors(clrs:Array<Dynamic>):Array<Dynamic>{
+		public function setOverColors(clrs:Array<UInt>):Array<UInt>{
 			this._overColors = clrs;
-			if(this._skinnedControl)
+			if(this._skinnedControl != null)
 			{
-				invalidateDisplayList()	
+				invalidateDisplayList();	
 			}
 			return clrs;
 		}
 		
-		public function setDownColors(clrs:Array<Dynamic>):Array<Dynamic>{
+		public function setDownColors(clrs:Array<UInt>):Array<UInt>{
 			this._downColors = clrs;
-			if(this._skinnedControl)
+			if(this._skinnedControl != null)
 			{
-				invalidateDisplayList()	
+				invalidateDisplayList();
 			}	
 			return clrs;
 		}
@@ -163,30 +171,30 @@ package com.cimians.openPyro.aurora;
 		 * in one pass. Not recommended since there is no feedback to
 		 * the user on rollover and rollout states.
 		 */ 
-		public function setColors(clrs:Array<Dynamic>):Array<Dynamic>{
+		public function setColors(clrs:Array<UInt>):Array<UInt>{
 			this._upColors = clrs;
 			this._overColors = clrs;
 			this._downColors = clrs;
-			if(this._skinnedControl)
+			if(this._skinnedControl != null)
 			{
-				invalidateDisplayList()	
+				invalidateDisplayList();
 			}	
 			return clrs;
 		}
 		
 		public function setStroke(str:Stroke):Stroke{
 			_stroke = str;
-			this.invalidateDisplayList();	
+			this.invalidateDisplayList();
 			return str;
 		}
 		
 		
 		public function setCornerRadius(cr:Float):Float{
 			this._cornerRadius = cr;
-			if(this.gradientPainter){
+			if(this.gradientPainter != null){
 				gradientPainter.cornerRadius = cr;
 			}
-			if(this._skinnedControl){
+			if(this._skinnedControl != null){
 				this.invalidateDisplayList();
 			}
 			return cr;
@@ -196,7 +204,7 @@ package com.cimians.openPyro.aurora;
 		
 		public function changeState(fromState:String, toState:String):Void
 		{
-			this.gradientPainter = new GradientFillPainter([0,0])
+			this.gradientPainter = new GradientFillPainter([0,0]);
 			if(toState==ButtonEvent.UP)
 			{
 				gradientPainter.colors = _upColors;
@@ -229,7 +237,7 @@ package com.cimians.openPyro.aurora;
 		
 		public override function dispose():Void
 		{
-			if(this.parent)
+			if(this.parent != null)
 			{
 				this.parent.removeChild(this);
 			}
@@ -239,21 +247,21 @@ package com.cimians.openPyro.aurora;
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			
-			if(label){
+			if(label != null){
 				
-				label.textField.autoSize = "left";
-				label.y = (unscaledHeight-label.height)/2;
+				label.textField.autoSize = flash.text.TextFieldAutoSize.LEFT;
+				label.y = (unscaledHeight-label.mheight)/2;
 				
 				if(this._labelAlign == "center"){
-					label.x = (unscaledWidth-label.width)/2;
+					label.x = (unscaledWidth-label.mwidth)/2;
 				}
 				else if(_labelAlign == "left"){
 					label.x = 10;
 				}
 			}
 			
-			if(_icon){
-				if(!label){
+			if(_icon != null){
+				if(label == null){
 					_icon.x = (unscaledWidth-_icon.width)/2;
 					_icon.y = (unscaledHeight-_icon.height)/2;
 				}

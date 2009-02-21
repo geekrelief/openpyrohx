@@ -9,25 +9,18 @@ package com.cimians.openPyro.aurora;
 	
 	class AuroraSliderSkin implements ISliderSkin {
 		
+		public var skinnedControl(null, setSkinnedControl) : UIControl; 
+		public var thumbSkin(getThumbSkin, null) : ISkin ;
+		public var trackSkin(getTrackSkin, null) : ISkin ;
 		
-		
-		public var skinnedControl(null, setSkinnedControl) : UIControl;
-		
-		public var thumbSkin(getThumbSkin, null) : ISkin
-		;
-		
-		public var trackSkin(getTrackSkin, null) : ISkin
-		;
-		
-		public var trackGradientRotation:Int;
+		public var trackGradientRotation:Float;
 		
 		var track:GradientRectSkin;
 		var _thumbSkin:AuroraButtonSkin;
 		
 		public function new()
 		{
-		
-		trackGradientRotation =0;
+		    trackGradientRotation =0;
 		}
 	
 		public function getThumbSkin():ISkin
@@ -41,18 +34,18 @@ package com.cimians.openPyro.aurora;
 		public function getTrackSkin():ISkin
 		{
 			track =  new GradientRectSkin();
-			track.stroke = new Stroke(1,0xcccccc)
+			track.stroke = new Stroke(1,0xcccccc);
 			track.gradientRotation = trackGradientRotation;
 			return track;
 		}
 		public function dispose():Void
 		{
-			if(_thumbSkin.parent)
+			if(_thumbSkin.parent != null)
 			{
 				_thumbSkin.parent.removeChild(_thumbSkin);
 			}
 			_thumbSkin = null;
-			if(track.parent){
+			if(track.parent != null){
 				track.parent.removeChild(track);
 			}
 			track = null;

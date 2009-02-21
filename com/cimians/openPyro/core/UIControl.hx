@@ -19,7 +19,7 @@ package com.cimians.openPyro.core;
 		
 		public var backgroundPainter(getBackgroundPainter, setBackgroundPainter) : IPainter;
 		public var padding(getPadding, setPadding) : Padding;
-		public var skinnedControl(getSkinnedControl, setSkinnedControl) : UIControl;
+		public var skinnedControl(null, setSkinnedControl) : UIControl;
         public var skin(null, setSkin):ISkin;
 		public var styleName(getStyleName, setStyleName) : String;
 		public var toolTip(null, setToolTip) : Dynamic;

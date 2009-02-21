@@ -9,15 +9,9 @@ package com.cimians.openPyro.aurora;
 
 	class AuroraContainerSkin implements IScrollableContainerSkin {	
 		
-			
-		
-		public var horizontalScrollBarSkin(getHorizontalScrollBarSkin, null) : IScrollBarSkin
-		;	
-		
+		public var horizontalScrollBarSkin(getHorizontalScrollBarSkin, null) : IScrollBarSkin ;	
 		public var skinnedControl(null, setSkinnedControl) : UIControl;	
-		
-		public var verticalScrollBarSkin(getVerticalScrollBarSkin, null) : IScrollBarSkin
-		;	
+		public var verticalScrollBarSkin(getVerticalScrollBarSkin, null) : IScrollBarSkin ;	
 		
 		var _horizontalScrollBarSkin:AuroraScrollBarSkin;
 		var _verticalScrollBarSkin:AuroraScrollBarSkin;
@@ -28,7 +22,7 @@ package com.cimians.openPyro.aurora;
 		
 		public function getVerticalScrollBarSkin():IScrollBarSkin
 		{
-			_verticalScrollBarSkin = new AuroraScrollBarSkin()
+			_verticalScrollBarSkin = new AuroraScrollBarSkin();
 			_verticalScrollBarSkin.direction = Direction.VERTICAL;
 			return _verticalScrollBarSkin;
 		}
@@ -42,7 +36,7 @@ package com.cimians.openPyro.aurora;
 		
 		public function setSkinnedControl(uic:UIControl):UIControl{
 			return uic;
-	}
+        }
 		
 		public function dispose():Void
 		{

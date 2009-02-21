@@ -8,22 +8,23 @@ package com.cimians.openPyro.layout;
 	
 	class VLayout implements ILayout, implements IContainerMeasurementHelper {
 		
-		
-		
-		public var container(null, setContainer) : UIContainer;
-		
-		public var initX(null, setInitX) : Float;
-		
-		public var initY(null, setInitY) : Float;
-		
+		public var container(null, setContainer) : UIContainer; 
+		public var initX(null, setInitX) : Float; 
+		public var initY(null, setInitY) : Float; 
 		public var prepare(null, setPrepare) : Dynamic;
 		
-		var _vGap:Int ;
+		var _vGap:Float ;
+
+		var _initY:Float ;
+		var _initX:Float ;
 		
-		public function new(?vGap:Int=0){
-			
-			_vGap = 0;
+		public var animationDuration:Float ;
+
+		public function new(?vGap:Float=0){
 			_vGap = vGap;
+            _initY = 0;
+            _initX = 0;
+            animationDuration = 0;
 		}
 		
 		var _container:UIContainer;
@@ -32,8 +33,6 @@ package com.cimians.openPyro.layout;
 			return container;
 		}
 		
-		var _initY:Int ;
-		var _initX:Int ;
 		
 		public function setInitX(n:Float):Float{
 			_initX = n;	
@@ -47,13 +46,20 @@ package com.cimians.openPyro.layout;
 		
 		public function getMaxWidth(children:Array<Dynamic>):Float
 		{
-			var maxW:Int=0;
+			var maxW:Float=0;
 			for(i in 0...children.length)
 			{
-				if(DisplayObject(children[i]).width > maxW)
-				{
-					maxW = DisplayObject(children[i]).width
-				}
+                if(Std.is(children[i], MeasurableControl)) {
+                    if(cast(children[i], MeasurableControl).mwidth > maxW)
+                    {
+                        maxW = cast(children[i], MeasurableControl).mwidth;
+                    }
+                } else {
+                    if(cast(children[i], DisplayObject).width > maxW)
+                    {
+                        maxW = cast(children[i], DisplayObject).width;
+                    }
+                }
 			}
 			return maxW;			
 		}
@@ -63,9 +69,12 @@ package com.cimians.openPyro.layout;
 		{
 			var nowY:Float=_initY;
 			for(i in 0...children.length){
-				var c:DisplayObject = cast( children[i], DisplayObject);
-				nowY+=c.height;
-				nowY+=this._vGap
+                if(Std.is(children[i], MeasurableControl)) {
+    				nowY+= cast(children[i], MeasurableControl).mheight;
+                } else {
+    				nowY+= cast(children[i], DisplayObject).height;
+                }
+				nowY+=this._vGap;
 			}
 			return nowY-_vGap;
 		}
@@ -76,12 +85,10 @@ package com.cimians.openPyro.layout;
 			return f;
 		}
 		
-		public var animationDuration:Int ;
-		
 		public function layout(children:Array<Dynamic>):Void{
 			
 			if(_prepare != null){
-				_prepare(children)
+				_prepare(children);
 			}	
 			
 			var nowY:Float=_initY;
@@ -89,15 +96,19 @@ package com.cimians.openPyro.layout;
 			for(i in 0...children.length){
 				var c:DisplayObject = cast( children[i], DisplayObject);
 				//c.y = nowY;
-				var eff:EffectDescriptor = new EffectDescriptor(c, animationDuration, {y:nowY})
+				var eff:EffectDescriptor = new EffectDescriptor(c, animationDuration, {y:nowY});
 				effectDescriptors.push(eff);
 				c.x = _initX;
-				nowY+=c.height;
-				nowY+=this._vGap
+                if(Std.is(c, MeasurableControl)){
+    				nowY+= cast(c, MeasurableControl).mheight;
+                } else {
+    				nowY+=c.height;
+                }
+				nowY+=this._vGap;
 			}
-			var move:PyroEffect = new PyroEffect()
+			var move:PyroEffect = new PyroEffect();
 			move.effectDescriptors = effectDescriptors;
-			move.start()		
+			move.start();
 		}
 		
 		/**		
@@ -119,10 +130,10 @@ package com.cimians.openPyro.layout;
 				
 				if(Std.is( children[i], MeasurableControl))				
 				{
-					var sizeableChild:MeasurableControl = MeasurableControl(children[i]);
-					if(!isNaN(sizeableChild.explicitHeight))
+					var sizeableChild:MeasurableControl = cast children[i];
+					if(!Math.isNaN(sizeableChild.explicitHeight))
 					{
-					container.explicitlyAllocatedHeight+=sizeableChild.explicitHeight;	
+    					container.explicitlyAllocatedHeight+=sizeableChild.explicitHeight;	
 					}
 				}
 

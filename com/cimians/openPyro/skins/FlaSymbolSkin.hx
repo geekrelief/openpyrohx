@@ -9,7 +9,7 @@ package com.cimians.openPyro.skins;
 		
 		public var movieClipClass(null, setMovieClipClass) : Class<Dynamic>;
 		public var selector(getSelector, null) : String ;
-		public var skinnedControl(getSkinnedControl, setSkinnedControl) : UIControl;
+		public var skinnedControl(null, setSkinnedControl) : UIControl;
 		
 		var _skin:MovieClip;
 		var _control:UIControl;

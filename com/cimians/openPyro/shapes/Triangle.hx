@@ -9,23 +9,25 @@ package com.cimians.openPyro.shapes;
 		
 		public var direction(null, setDirection) : String;
 		var _direction:String ;
-		
+
+        public var mheight(getHeight, setHeight):Float;
 		var _h:Float;
+
+        public var mwidth(getWidth, setWidth):Float;
 		var _w:Float;
 		
-		var _fillColor:UInt ;
-		var _fillAlpha:Int var _strokeColor:UInt;
-		var _strokeWidth:Int;
-		var _strokeAlpha:Int;
+		var _fillColor:UInt;
+		var _fillAlpha:Float;
+        var _strokeColor:UInt;
+		var _strokeWidth:Float;
+		var _strokeAlpha:Float;
 		
-		public function new(?direction:String = Direction.UP, ?width:Int=30, ?height:Int=30)
+		public function new(?direction:String, ?width:Float=30, ?height:Float=30)
 		{
-			
+            super();
 			_direction = Direction.UP;
 			_fillColor = 0x666666;
-			_fillAlpha = 1
-		
-		;
+			_fillAlpha = 1;
 			_strokeColor =0x000000;
 			_strokeWidth =0;
 			_strokeAlpha =1;
@@ -33,7 +35,6 @@ package com.cimians.openPyro.shapes;
 			_w = width;
 			_direction = direction;
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
-			
 		}
 		
 		function onAddedToStage(event:Event):Void
@@ -41,12 +42,12 @@ package com.cimians.openPyro.shapes;
 			this.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			drawShape();
 		}	
-		public function setStroke(strokeWidth:Float, ?strokeColor:UInt=0x000000, ?strokeAlpha:Int=1):Void
+		public function setStroke(strokeWidth:Float, ?strokeColor:UInt=0x000000, ?strokeAlpha:Float=1):Void
 		{
 			this._strokeWidth = strokeWidth;
 			this._strokeColor = strokeColor;
 			this._strokeAlpha = strokeAlpha;
-			if(this.stage){
+			if(this.stage != null){
 				drawShape();
 			}
 		}
@@ -55,14 +56,14 @@ package com.cimians.openPyro.shapes;
 		{
 			_fillColor = fillColor;
 			_fillAlpha = fillAlpha;
-			if(this.stage){
+			if(this.stage != null){
 				drawShape();
 			}	
 		}
 		
 		public function setDirection(pointDirection:String):String{
 			this._direction = pointDirection;
-			if(this.stage){
+			if(this.stage != null){
 				drawShape();
 			}
 			return pointDirection;
@@ -78,18 +79,13 @@ package com.cimians.openPyro.shapes;
 			
 			switch (_direction){
 				case Direction.UP:
-				drawUpArrow()
-				break;
+    				drawUpArrow();
 				case Direction.DOWN:
-				drawDownArrow()
-				break;
+    				drawDownArrow();
 				case Direction.LEFT:
-				drawLeftArrow()
-				break;
+    				drawLeftArrow();
 				case Direction.RIGHT:
-				drawRightArrow()
-				break;
-				
+    				drawRightArrow();
 			}
 			
 			this.graphics.endFill();
@@ -127,6 +123,23 @@ package com.cimians.openPyro.shapes;
 			this.graphics.lineTo(_w, _h);
 			this.graphics.lineTo( 0, _h);
 		}
-		
-		
+
+
+        function getHeight():Float{
+            return _h;
+        }
+
+        function setHeight(v:Float){
+            _h = v;
+            return v;
+        }
+
+        function getWidth():Float{
+            return _w;
+        }
+
+        function setWidth(v:Float){
+            _w = v;
+            return v;
+        }
 	}

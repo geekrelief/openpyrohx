@@ -435,11 +435,13 @@ package com.cimians.openPyro.core;
 			if(this.parent == null) return;
 			this.removeEventListener(Event.ADDED, onAddedToParent);
 			this.addEventListener(Event.REMOVED, onRemovedFromParent,false,0,true);
-			this._parentContainer = cast( this.parent, UIControl);
-			if(_parentContainer == null)
-			{
+
+            if(Std.is(this.parent, UIControl)){
+			    _parentContainer = cast( this.parent, UIControl);
+            } else {
+                _parentContainer = null;
 				doOnAdded();
-			}
+            }
 		}
 		
 		/**
@@ -758,7 +760,7 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function _S_addChild(child:DisplayObject):DisplayObject
 		{
-			return addChild(child);
+			return super.addChild(child);
 		}
 		
 		/**
@@ -768,7 +770,7 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function _S_addChildAt(child:DisplayObject, index:Int):DisplayObject
 		{
-			return addChildAt(child,index);
+			return super.addChildAt(child,index);
 		}
 		
         inline function setIncludeInLayout(value:Bool):Bool{

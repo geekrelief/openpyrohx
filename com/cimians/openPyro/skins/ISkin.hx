@@ -6,7 +6,7 @@ package com.cimians.openPyro.skins;
 	interface ISkin implements IBitmapDrawable{
 		
 		//var selector(getSelector, null):String;
-	    var skinnedControl(getSkinnedControl, setSkinnedControl):UIControl;	
+	    var skinnedControl(null, setSkinnedControl):UIControl;	
 		function dispose():Void;
 		
 	}
