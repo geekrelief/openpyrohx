@@ -20,44 +20,44 @@ package com.cimians.openPyro.controls.scrollBarClasses;
 		}
 		
 		public function setContainer(container:UIContainer):UIContainer{
-			_scrollBar = ScrollBar(container);
+			_scrollBar = cast container;
 			return container;
 		}
 		
 		
 		public function getMaxWidth(children:Array<Dynamic>):Float
 		{
-			return _scrollBar.width;
+			return _scrollBar.mwidth;
 		}
 		
 		public function getMaxHeight(children:Array<Dynamic>):Float
 		{
-			return _scrollBar.height;
+			return _scrollBar.mheight;
 		}
 		
 		public function layout(children:Array<Dynamic>):Void
 		{
-			var allocatedHeight:Int = 0;
-			if(_scrollBar.decrementButton)
+			var allocatedHeight:Float = 0;
+			if(_scrollBar.decrementButton != null)
 			{
 				_scrollBar.decrementButton.y =0;
-				allocatedHeight+=_scrollBar.decrementButton.height;
+				allocatedHeight+=_scrollBar.decrementButton.mheight;
 			}
-			if(_scrollBar.incrementButton)
+			if(_scrollBar.incrementButton != null)
 			{
-				_scrollBar.incrementButton.y =  _scrollBar.height-_scrollBar.incrementButton.height;
-				allocatedHeight+=_scrollBar.incrementButton.height;
+				_scrollBar.incrementButton.y =  _scrollBar.mheight-_scrollBar.incrementButton.mheight;
+				allocatedHeight+=_scrollBar.incrementButton.mheight;
 			}
-			if(_scrollBar.slider && _scrollBar.decrementButton)
+			if(_scrollBar.slider != null && _scrollBar.decrementButton != null)
 			{
-				_scrollBar.slider.y = _scrollBar.decrementButton.height;
+				_scrollBar.slider.y = _scrollBar.decrementButton.mheight;
 				
-				_scrollBar.slider.height = _scrollBar.height-allocatedHeight;
+				_scrollBar.slider.mheight = _scrollBar.mheight-allocatedHeight;
 			}
 			
 			// Immediately validate the size and displaylist of the slider
  			// else we get a lag (flicker) in the drawing.
- 			if(_scrollBar.slider && Std.is( _scrollBar.slider, MeasurableControl))
+ 			if(_scrollBar.slider != null && Std.is( _scrollBar.slider, MeasurableControl))
 			{
 				_scrollBar.slider.validateSize();
 				_scrollBar.slider.validateDisplayList();
@@ -65,21 +65,16 @@ package com.cimians.openPyro.controls.scrollBarClasses;
 		}
 		
 		public function setInitX(n:Float):Float{
-			
 			return n;
-			
-	}
+        }
 		
 		public function setInitY(n:Float):Float{
-			
 			return n;
-			
-	}
+        }
 		
 		var _prepare:Dynamic;
 		public function setPrepare(f:Dynamic):Dynamic{
 			_prepare = f;
 			return f;
 		}
-
 	}

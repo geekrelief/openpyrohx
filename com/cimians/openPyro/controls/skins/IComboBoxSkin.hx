@@ -3,6 +3,6 @@ package com.cimians.openPyro.controls.skins;
 	import com.cimians.openPyro.skins.ISkin;
 	
 	interface IComboBoxSkin implements ISkin{
-		function buttonSkin():ISkin;
-		function listSkin():ISkin;
+		var buttonSkin(getButtonSkin, null):ISkin;
+		var listSkin(getListSkin, null):ISkin;
 	}

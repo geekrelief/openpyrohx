@@ -4,43 +4,40 @@ package com.cimians.openPyro.painters;
 	
 	import flash.display.Graphics;
 	import flash.geom.Matrix;
+    import flash.display.GradientType;
 	
 	class GradientFillPainter implements IPainter {
 		
-		public var colors(null, setColors) : Array<Dynamic>;
+		public var colors(null, setColors) : Array<UInt>;
 		public var cornerRadius(null, setCornerRadius) : Float;
-		public var padding(getPadding, setPadding) : Padding
-		;
+		public var padding(getPadding, setPadding) : Padding ;
 		public var rotation(null, setRotation) : Float;
 		public var stroke(null, setStroke) : Stroke;
-		var _colors:Array<Dynamic>;
-		var _alphas:Array<Dynamic>;
+		var _colors:Array<UInt>;
+		var _alphas:Array<Float>;
 		var _ratios:Array<Dynamic>;
-		var _type:String ;
-		var _rotation:Int ;
+		var _type:GradientType;
+		var _rotation:Float ;
 		var _padding:Padding;
 		var _stroke:Stroke;
-		var _cornerRadius:Int public function new(colors:Array<Dynamic>,?alphas:Array<Dynamic>=null,?ratios:Array<Dynamic>=null, ?rotation:Int=0, ?cornerRadius:Int=0)
+		var _cornerRadius:Float;
+
+        public function new(colors:Array<UInt>, ?alphas:Array<Float>=null, ?ratios:Array<Dynamic>=null, ?rotation:Float=0, ?cornerRadius:Float=0)
 		{
-			
-			_type = "linear";
-			_rotation = 0;
-			_cornerRadius = 0
-		
-		;
+			_type = GradientType.LINEAR;
 			_colors = colors;
 			_alphas = alphas;
 			_ratios = ratios;
 			_rotation = rotation;
-			_cornerRadius = cornerRadius
-			if(!_alphas){
+			_cornerRadius = cornerRadius;
+			if(_alphas == null){
 				_alphas = new Array();
 				for(i in 0..._colors.length){
-					_alphas.push(1);	
+					_alphas.push(1.0);	
 				}
 			}
 			
-			if(!_ratios){
+			if(_ratios == null){
 				_ratios = new Array();
 				for(j in 0..._colors.length){
 					_ratios.push(j*255/_colors.length);	
@@ -65,7 +62,7 @@ package com.cimians.openPyro.painters;
 			return val;
 		}
 		
-		public function setColors(clrs:Array<Dynamic>):Array<Dynamic>{
+		public function setColors(clrs:Array<UInt>):Array<UInt>{
 			_colors = clrs;
 			return clrs;
 		}
@@ -73,34 +70,34 @@ package com.cimians.openPyro.painters;
 		
 		public function draw(gr:Graphics, w:Float, h:Float):Void
 		{
-			var drawX:Int = 0;
-			var drawY:Int = 0;
-			var drawW:Int = w;
-			var drawH:Int = h;
+			var drawX:Float = 0;
+			var drawY:Float = 0;
+			var drawW:Float = w;
+			var drawH:Float = h;
 			
-			if(_padding)
+			if(_padding != null)
 			{
-				drawX += _padding.left
-				drawY += _padding.top
-				drawW -= _padding.right + _padding.left
-				drawH -= padding.top + _padding.bottom
+				drawX += _padding.left;
+				drawY += _padding.top;
+				drawW -= _padding.right + _padding.left;
+				drawH -= padding.top + _padding.bottom;
 			}
 			
-			if(_stroke)
+			if(_stroke != null)
 			{
 				_stroke.apply(gr);
 			}
 			
-			var m:Matrix = new Matrix()
+			var m:Matrix = new Matrix();
 			m.createGradientBox(w,h,_rotation);
-			gr.beginGradientFill(_type,_colors,_alphas,_ratios,m)
+			gr.beginGradientFill(_type,_colors,_alphas,_ratios,m);
 			gr.drawRoundRect(drawX,drawY,drawW,drawH, _cornerRadius,_cornerRadius);
 			gr.endFill();
 		}
 		
 		public function setPadding(p:Padding):Padding
 		{
-			_padding = p
+			_padding = p;
 			return p;
 		}
 		

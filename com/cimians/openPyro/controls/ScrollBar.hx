@@ -17,43 +17,44 @@ package com.cimians.openPyro.controls;
 	
 	class ScrollBar extends UIContainer {
 		
-		
-		
-		public var decrementButton(getDecrementButton, setDecrementButton) : Button
-		;
-		
+		public var decrementButton(getDecrementButton, setDecrementButton) : Button ;
 		public var decrementButtonSkin(null, setDecrementButtonSkin) : ISkin;
-		
-		public var direction(getDirection, null) : String
-		;
-		
-		public var incrementButton(getIncrementButton, setIncrementButton) : Button
-		;
-		
-		public var incrementButtonSkin(null, setIncrementButtonSkin) : ISkin;
-		
-		public var maximum(getMaximum, setMaximum) : Float
-		;
-		
-		public var minimum(getMinimum, setMinimum) : Float
-		;
-		
-		public var skin(null, setSkin) : ISkin;
-		
-		public var slider(getSlider, setSlider) : Slider
-		;
-		
-		public var value(getValue, setValue) : Float
-		;
+		public var direction(getDirection, null) : String ;
+		public var incrementButton(getIncrementButton, setIncrementButton) : Button ;
+		public var incrementButtonSkin(null, setIncrementButtonSkin) : ISkin; 
+		public var maximum(getMaximum, setMaximum) : Float ;
+		public var minimum(getMinimum, setMinimum) : Float ;
+		public var slider(getSlider, setSlider) : Slider ;
+		public var value(getValue, setValue) : Float ;
 		
 		var _direction:String;
 		var _slider:Slider;
 		
+		public var incrementalScrollDelta:Float;
+		var _sliderThumbPosition:Float ;
+		var _value:Float ;
+		var _minimum:Float ;
+		var _maximum:Float ;
+
+		var _visibleScroll:Float ;
+		var _maxScroll:Float;
+		var _scrollButtonSize:Float ;
+	
 		public function new(direction:String)
 		{
 			this._direction = direction;
 			super();
-			_styleName = "ScrollBar"
+			_styleName = "ScrollBar";
+            incrementalScrollDelta = 25;
+            _sliderThumbPosition = 0;
+
+            _value = 0;
+            _minimum = 0;
+            _maximum = 100;
+
+            _visibleScroll = Math.NaN;
+            _maxScroll = Math.NaN;
+            _scrollButtonSize = Math.NaN;
 		}
 		
 		/**
@@ -64,18 +65,18 @@ package com.cimians.openPyro.controls;
 		 */ 
 		public override function initialize():Void
 		{
-			if(!_slider)
+			if(_slider == null)
 			{
 				slider = new Slider(_direction);
-				slider.addEventListener(PyroEvent.UPDATE_COMPLETE, onSliderUpdateComplete)
-				slider.minimum = _minimum
+				slider.addEventListener(PyroEvent.UPDATE_COMPLETE, onSliderUpdateComplete);
+				slider.minimum = _minimum;
 				slider.maximum = _maximum;
 			}
 			//if(!_layout)
 			//{
 				if(this._direction == Direction.HORIZONTAL)
 				{
-					_layout = new HScrollBarLayout()
+					_layout = new HScrollBarLayout();
 				}
 				else if(this._direction == Direction.VERTICAL)
 				{
@@ -84,7 +85,6 @@ package com.cimians.openPyro.controls;
 			//}
 			this._layout.container = this;
 			super.initialize();
-			
 		}
 		
 		public function getDirection():String
@@ -93,26 +93,26 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public override function setSkin(skinImpl:ISkin):ISkin{
-			super.skin = skinImpl;
+			skin = skinImpl;
 			if(Std.is( _skin, IScrollBarSkin))
 			{
-				var scrollBarSkin:IScrollBarSkin = IScrollBarSkin(skinImpl);
-				if(scrollBarSkin.sliderSkin)
+				var scrollBarSkin:IScrollBarSkin = cast skinImpl;
+				if(scrollBarSkin.sliderSkin != null)
 				{
-					if(!_slider)
+					if(_slider == null)
 					{
 						slider = new Slider(this._direction);
-						slider.minimum = _minimum
-						slider.maximum = _maximum
-						slider.addEventListener(PyroEvent.UPDATE_COMPLETE, onSliderUpdateComplete)
+						slider.minimum = _minimum;
+						slider.maximum = _maximum;
+						slider.addEventListener(PyroEvent.UPDATE_COMPLETE, onSliderUpdateComplete);
 					}
 					_slider.skin = scrollBarSkin.sliderSkin;
 				}
-				if(scrollBarSkin.incrementButtonSkin)
+				if(scrollBarSkin.incrementButtonSkin != null)
 				{
 					this.incrementButtonSkin = scrollBarSkin.incrementButtonSkin;
 				}
-				if(scrollBarSkin.decrementButtonSkin)
+				if(scrollBarSkin.decrementButtonSkin != null)
 				{
 					this.decrementButtonSkin = scrollBarSkin.decrementButtonSkin;
 				}
@@ -122,7 +122,7 @@ package com.cimians.openPyro.controls;
 		
 		function onSliderUpdateComplete(event:PyroEvent):Void
 		{
-			updateScrollUI()
+			updateScrollUI();
 		}
 		
 		var _incrementButton:Button;
@@ -152,7 +152,7 @@ package com.cimians.openPyro.controls;
 		var _incrementButtonSkin:ISkin;
 		public function setIncrementButtonSkin(skin:ISkin):ISkin{
 			_incrementButtonSkin = skin;
-			if(!_incrementButton)
+			if(_incrementButton == null)
 			{
 				incrementButton = new Button();
 				// trigger invalidateDL to retrigger the layout
@@ -176,9 +176,9 @@ package com.cimians.openPyro.controls;
 			{
 				b.percentUnusedHeight = 100;
 			}*/
-			_decrementButton.addEventListener(MouseEvent.CLICK, onDecrementButtonClick)
+			_decrementButton.addEventListener(MouseEvent.CLICK, onDecrementButtonClick);
 			_S_addChild(b);
-			invalidateSize()
+			invalidateSize();
 			//invalidateDisplayList();
 			return b;
 		}
@@ -187,26 +187,25 @@ package com.cimians.openPyro.controls;
 		 * The height/width the scrollbar must scroll
 		 * when one of the scroll buttons is clicked on.
 		 */ 
-		public var incrementalScrollDelta:Int;
 		function onDecrementButtonClick(event:Event):Void{
 			if(_slider.direction == Direction.HORIZONTAL){
-				_slider.thumbButton.x = Math.max(0, _slider.thumbButton.x - incrementalScrollDelta)	
+				_slider.thumbButton.x = Math.max(0, _slider.thumbButton.x - incrementalScrollDelta);
 			}
 			else if(slider.direction == Direction.VERTICAL){
-				_slider.thumbButton.y = Math.max(0, _slider.thumbButton.y - incrementalScrollDelta)
+				_slider.thumbButton.y = Math.max(0, _slider.thumbButton.y - incrementalScrollDelta);
 			}
-			_slider.dispatchScrollEvent()
+			_slider.dispatchScrollEvent();
 			
 		}
 		function onIncrementButtonClick(event:Event):Void{
 			//_slider.value = Math.min(1, _slider.value + incrementalScrollDelta/_slider.height)
 			if(_slider.direction == Direction.HORIZONTAL){
-				_slider.thumbButton.x = Math.min(_slider.height-_slider.thumbButton.height, _slider.thumbButton.x + incrementalScrollDelta)	
+				_slider.thumbButton.x = Math.min(_slider.height-_slider.thumbButton.height, _slider.thumbButton.x + incrementalScrollDelta);
 			}
 			else if(slider.direction == Direction.VERTICAL){
-				_slider.thumbButton.y = Math.min(_slider.height-_slider.thumbButton.height, _slider.thumbButton.y + incrementalScrollDelta)
+				_slider.thumbButton.y = Math.min(_slider.height-_slider.thumbButton.height, _slider.thumbButton.y + incrementalScrollDelta);
 			}
-			_slider.dispatchScrollEvent()
+			_slider.dispatchScrollEvent();
 		}
 		
 		public function getDecrementButton():Button
@@ -217,9 +216,9 @@ package com.cimians.openPyro.controls;
 		var _decrementButtonSkin:ISkin;
 		public function setDecrementButtonSkin(skin:ISkin):ISkin{
 			_decrementButtonSkin = skin;
-			if(!_decrementButton)
+			if(_decrementButton == null)
 			{
-				decrementButton = new Button()
+				decrementButton = new Button();
 			}
 			_decrementButton.skin = skin;
 			invalidateSize();
@@ -230,7 +229,7 @@ package com.cimians.openPyro.controls;
 		public function setSlider(sl:Slider):Slider
 		{
 			
-			if(_slider)
+			if(_slider == null)
 			{
 				_slider.removeEventListener(SliderEvent.CHANGE, onSliderThumbDrag);
 				removeChild(_slider);
@@ -241,18 +240,18 @@ package com.cimians.openPyro.controls;
 			_slider.addEventListener(SliderEvent.CHANGE, onSliderThumbDrag);
 			this._S_addChild(_slider);
 			if(_direction == Direction.HORIZONTAL){
-				_slider.explicitWidth = NaN;
+				_slider.explicitWidth = Math.NaN;
 				_slider.percentUnusedWidth = 100;
 				_slider.percentUnusedHeight = 100;
 			}
 			else if(_direction==Direction.VERTICAL){
-				_slider.explicitHeight = NaN;
+				_slider.explicitHeight = Math.NaN;
 				_slider.percentUnusedWidth = 100;
 				_slider.percentUnusedHeight = 100;
 			}
 			_slider.minimum = 0;
 			_slider.maximum = 1;
-			this.invalidateSize()
+			this.invalidateSize();
 			//this.invalidateDisplayList()	
 			return sl;
 			
@@ -263,7 +262,6 @@ package com.cimians.openPyro.controls;
 			return _slider;
 		}
 		
-		var _sliderThumbPosition:Int ;
 		function onSliderThumbDrag(event:SliderEvent):Void
 		{
 			var scrollEvent:ScrollEvent = new ScrollEvent(ScrollEvent.SCROLL);
@@ -286,15 +284,10 @@ package com.cimians.openPyro.controls;
 			
 		}
 		
-		
-		var _value:Int ;
-		var _minimum:Int ;
-		var _maximum:Int ;
-		
 		public function setMinimum(value:Float):Float
 		{
 			_minimum = value;
-			if(_slider)
+			if(_slider != null)
 			{
 				_slider.minimum = value;
 			}
@@ -309,9 +302,9 @@ package com.cimians.openPyro.controls;
 		public function setMaximum(value:Float):Float
 		{
 			_maximum = value;
-			if(_slider)
+			if(_slider != null)
 			{
-				_slider.maximum = value
+				_slider.maximum = value;
 			}
 			return value;
 		}
@@ -324,7 +317,7 @@ package com.cimians.openPyro.controls;
 		public function setValue(v:Float):Float
 		{
 			_value = v;
-			if(_slider){
+			if(_slider != null){
 				_slider.value = v;
 			}
 			return v;
@@ -332,13 +325,9 @@ package com.cimians.openPyro.controls;
 		
 		public function getValue():Float
 		{
-			return _slider.value
+			return _slider.value;
 		}
 		
-		
-		var _visibleScroll:Float ;
-		var _maxScroll:Float;
-		var _scrollButtonSize:Float ;
 		
 		public function setScrollProperty(visibleScroll:Float, maxScroll:Float):Void
 		{
@@ -349,16 +338,16 @@ package com.cimians.openPyro.controls;
 			
 			_visibleScroll = visibleScroll;
 			_maxScroll = maxScroll;
-			updateScrollUI()
+			updateScrollUI();
 		}
 		
 		function updateScrollUI():Void
 		{
-			if(!_slider) return;
+			if(_slider == null) return;
 			if(this._direction == Direction.VERTICAL)
 			{
-				_scrollButtonSize = Math.floor(_visibleScroll*_slider.height/_maxScroll)
-				_slider.thumbButtonHeight = _scrollButtonSize
+				_scrollButtonSize = Math.floor(_visibleScroll*_slider.height/_maxScroll);
+				_slider.thumbButtonHeight = _scrollButtonSize;
 				
 			}
 			else if(this._direction == Direction.HORIZONTAL)

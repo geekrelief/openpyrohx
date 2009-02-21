@@ -10,6 +10,6 @@ package com.cimians.openPyro.controls.events;
 		
 		public function new(type:String)
 		{
-			super(type)
+			super(type);
 		}
 	}

@@ -21,17 +21,10 @@ package com.cimians.openPyro.controls;
 
 	class Button extends UIControl {
 		
-		
-		
-		public var label(getLabel, setLabel) : String
-		;
-		
-		public var selected(getSelected, setSelected) : Bool;
-		
-		public var skin(null, setSkin) : ISkin;
-		
-		public var toggle(getToggle, setToggle) : Bool;
-		
+		public var label(getLabel, setLabel) : String ;
+		public var selected(getSelected, setSelected) : Bool; 
+		public var toggle(getToggle, setToggle) : Bool; 
+
 		var _buttonSkin:ISkin;
 		
 		/**
@@ -44,17 +37,21 @@ package com.cimians.openPyro.controls;
 		 * @see	com.cimians.openPyro.controls.Slider#thumbButton 
 		 */ 
 		public var mouseOutHandler:Dynamic ;
-		
+		var _toggle:Bool;
+		var _selected:Bool ;
+
 		public function new(){
 			
 			mouseOutHandler = onMouseOut;
 			super();
 			_styleName = "Button";
+            _toggle = false;
+            _selected = false;
 		}
 		
 		public override function initialize():Void{
 			super.initialize();
-			this.currentState = ButtonEvent.UP
+			this.currentState = ButtonEvent.UP;
 			this.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
 			this.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
 			this.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
@@ -81,14 +78,12 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public override function setSkin(skinImpl:ISkin):ISkin{
-			super.skin = skinImpl;
+			skin = skinImpl;
 			this._buttonSkin = skinImpl;
 			return skinImpl;
 		}
 		
 		/////////////// TOGGLE IMPLEMENTATION //////
-		
-		var _toggle:Bool ;
 		
 		/**
 		 * Sets whether a button is set as togglable or not.
@@ -96,7 +91,7 @@ package com.cimians.openPyro.controls;
 		 * state
 		 */ 
 		public function setToggle(b:Bool):Bool{
-			_toggle = b
+			_toggle = b;
 			return b;
 		}
 		
@@ -104,10 +99,9 @@ package com.cimians.openPyro.controls;
 		 * @private
 		 */ 
 		public function getToggle():Bool{
-			return _toggle
+			return _toggle;
 		}
 		
-		var _selected:Bool ;
 		/**
 		 * Sets a button's state to selected or not. This value is
 		 * ONLY set if the toggle property is set to true
@@ -124,7 +118,7 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public function getSelected():Bool{
-			return _selected
+			return _selected;
 		}
 		
 		//////////// States //////////////////////////
@@ -134,8 +128,8 @@ package com.cimians.openPyro.controls;
 		public function changeState(fromState:String, toState:String):Void{}
 		
 		function onMouseOver(event:MouseEvent):Void{
-			if(_buttonSkin && Std.is( _buttonSkin, IStateFulClient)){
-				IStateFulClient(this._buttonSkin).changeState(this.currentState,ButtonEvent.OVER);
+			if(_buttonSkin != null && Std.is( _buttonSkin, IStateFulClient)){
+				cast(this._buttonSkin, IStateFulClient).changeState(this.currentState,ButtonEvent.OVER);
 			}
 			this.currentState = ButtonEvent.OVER;
 			dispatchEvent(new ButtonEvent(ButtonEvent.OVER));
@@ -147,19 +141,19 @@ package com.cimians.openPyro.controls;
 					selected = false;
 				}
 				else{
-					selected = true
+					selected = true;
 				}
 			}
-			if(_buttonSkin  && Std.is( _buttonSkin, IStateFulClient)){
-				IStateFulClient(this._buttonSkin).changeState(this.currentState,ButtonEvent.DOWN);
+			if(_buttonSkin != null && Std.is( _buttonSkin, IStateFulClient)){
+				cast(this._buttonSkin, IStateFulClient).changeState(this.currentState,ButtonEvent.DOWN);
 			}
 			this.currentState = ButtonEvent.DOWN;
 			dispatchEvent(new ButtonEvent(ButtonEvent.DOWN));
 		}
 		
 		function onMouseUp(event:MouseEvent):Void{
-			if(_buttonSkin  && Std.is( _buttonSkin, IStateFulClient)){
-				IStateFulClient(this._buttonSkin).changeState(this.currentState, ButtonEvent.OVER);
+			if(_buttonSkin != null  && Std.is( _buttonSkin, IStateFulClient)){
+				cast(this._buttonSkin, IStateFulClient).changeState(this.currentState, ButtonEvent.OVER);
 			}
 			this.currentState = ButtonEvent.UP;
 			dispatchEvent(new ButtonEvent(ButtonEvent.UP));
@@ -167,11 +161,10 @@ package com.cimians.openPyro.controls;
 		
 		function onMouseOut(event:MouseEvent):Void
 		{
-			if(_buttonSkin  && Std.is( _buttonSkin, IStateFulClient)){
-				IStateFulClient(this._buttonSkin).changeState(this.currentState, ButtonEvent.UP);
+			if(_buttonSkin != null && Std.is( _buttonSkin, IStateFulClient)){
+				cast(this._buttonSkin, IStateFulClient).changeState(this.currentState, ButtonEvent.UP);
 			}
 			this.currentState = ButtonEvent.UP;
 			dispatchEvent(new ButtonEvent(ButtonEvent.UP));
 		}
-		
 	}

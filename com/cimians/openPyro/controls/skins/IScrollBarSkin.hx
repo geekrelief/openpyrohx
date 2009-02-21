@@ -3,8 +3,7 @@ package com.cimians.openPyro.controls.skins;
 	import com.cimians.openPyro.skins.ISkin;
 	
 	interface IScrollBarSkin implements ISkin{
-		function incrementButtonSkin():ISkin;
-		function decrementButtonSkin():ISkin;
-		function sliderSkin():ISliderSkin;
-			
+        var incrementButtonSkin(getIncrementButtonSkin, null):ISkin;
+        var decrementButtonSkin(getDecrementButtonSkin, null):ISkin;
+        var sliderSkin(getSliderSkin, null):ISliderSkin;
 	}

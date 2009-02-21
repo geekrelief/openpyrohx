@@ -23,58 +23,75 @@ package com.cimians.openPyro.core;
 	 */ 
 	class UIContainer extends UIControl {
 		
-		
-		
-		public var clipContent(getClipContent, setClipContent) : Bool
-		;
-		
+		public var clipContent(getClipContent, setClipContent) : Bool ;
 		public var contentHeight(getContentHeight, null) : Float;
-		
-		public var explicitlyAllocatedHeight(getExplicitlyAllocatedHeight, setExplicitlyAllocatedHeight) : Float
-		;
-		
-		public var explicitlyAllocatedWidth(getExplicitlyAllocatedWidth, setExplicitlyAllocatedWidth) : Float
-		;
-		
-		public var horizontalScrollBar(getHorizontalScrollBar, null) : ScrollBar
-		;
-		
+		public var explicitlyAllocatedHeight(getExplicitlyAllocatedHeight, setExplicitlyAllocatedHeight) : Float;
+		public var explicitlyAllocatedWidth(getExplicitlyAllocatedWidth, setExplicitlyAllocatedWidth) : Float;
+		public var horizontalScrollBar(getHorizontalScrollBar, null) : ScrollBar;
 		public var horizontalScrollIncrement(getHorizontalScrollIncrement, setHorizontalScrollIncrement) : Float;
-		
 		public var horizontalScrollPolicy(getHorizontalScrollPolicy, setHorizontalScrollPolicy) : Bool;
-		
 		public var horizontalScrollPosition(getHorizontalScrollPosition, setHorizontalScrollPosition) : Float;
-		
 		public var layout(getLayout, setLayout) : ILayout;
-		
-		public var layoutChildren(getLayoutChildren, null) : Array<Dynamic>
-		;
-		
-		public var scrollHeight(getScrollHeight, null) : Float
-		;
-		
-		public var scrollWidth(getScrollWidth, null) : Float
-		;
-		
-		public var verticalScrollBar(getVerticalScrollBar, setVerticalScrollBar) : ScrollBar;
-		
-		public var verticalScrollIncrement(getVerticalScrollIncrement, setVerticalScrollIncrement) : Float;
-		
-		public var verticalScrollPolicy(getVerticalScrollPolicy, setVerticalScrollPolicy) : Bool;
-		
+		public var layoutChildren(getLayoutChildren, null) : Array<Dynamic> ;
+		public var scrollHeight(getScrollHeight, null) : Float ;
+		public var scrollWidth(getScrollWidth, null) : Float ;
+		public var verticalScrollBar(getVerticalScrollBar, _setVerticalScrollBar) : ScrollBar; 
+		public var verticalScrollIncrement(getVerticalScrollIncrement, setVerticalScrollIncrement) : Float; 
+		public var verticalScrollPolicy(getVerticalScrollPolicy, setVerticalScrollPolicy) : Bool; 
 		public var verticalScrollPosition(getVerticalScrollPosition, setVerticalScrollPosition) : Float;
 		
 		var contentPane:UIControl;
-		var _horizontalScrollPolicy:Bool var _verticalScrollPolicy:Bool ;
+		var _horizontalScrollPolicy:Bool;
+        var _verticalScrollPolicy:Bool ;
+		var _explicitlyAllocatedWidth:Float ;
+		var _explicitlyAllocatedHeight:Float ;
+
+		var _layout:ILayout;
+        var layoutInvalidated:Bool ;
+
+		var _verticalScrollBar:ScrollBar;
+		var _horizontalScrollBar:ScrollBar;
+
+		var scrollBarsChanged:Bool ;
+
+		var _contentHeight:Float ;
+		var contentWidth:Float ;
+
+		var needsVerticalScrollBar:Bool ;
+		var needsHorizontalScrollBar:Bool ;
+        
+		var _horizontalScrollIncrement:Float ;
+		var _verticalScrollIncrement:Float ;
+
+		var scrollY:Float ;
+		var scrollX:Float ;
+	
+		var _clipContent:Bool ;
 		
 		public function new(){
-			
-			_horizontalScrollPolicy = true
-		;
+			_horizontalScrollPolicy = true ;
 			_verticalScrollPolicy = true;
 			super();
 			contentPane = new UIControl();
-			contentPane.name = "contentPane_"+this.name
+			contentPane.name = "contentPane_"+this.name;
+            _explicitlyAllocatedWidth = 0;
+            _explicitlyAllocatedHeight = 0;
+            _layout = new AbsoluteLayout();
+            layoutInvalidated = true;
+            scrollBarsChanged = false;
+            _contentHeight = 0;
+            contentWidth = 0;
+
+            needsVerticalScrollBar = false;
+            needsHorizontalScrollBar = false;
+
+            _horizontalScrollIncrement = 25;
+            _verticalScrollIncrement = 25;
+
+            scrollY = 0;
+            scrollX = 0;
+
+            _clipContent = true;
 		}
 		
 		/**
@@ -96,7 +113,7 @@ package com.cimians.openPyro.core;
 			
 			contentPane.percentUnusedWidth = 100;
 			contentPane.percentUnusedHeight = 100;
-			contentPane.doOnAdded()
+			contentPane.doOnAdded();
 		//	this.mask = this.maskShape;
 
 		}
@@ -106,7 +123,7 @@ package com.cimians.openPyro.core;
 			return b;
 		}
 		public function getHorizontalScrollPolicy():Bool{
-			return _horizontalScrollPolicy
+			return _horizontalScrollPolicy;
 		}
 		
 		public function setVerticalScrollPolicy(b:Bool):Bool{
@@ -124,10 +141,10 @@ package com.cimians.openPyro.core;
 			var ch:DisplayObject = contentPane.addChild(child);
 			if(Std.is( child, MeasurableControl))
 			{
-				var component:MeasurableControl = MeasurableControl(child)
+				var component:MeasurableControl = cast(child, MeasurableControl);
 				component.parentContainer = this;
 				component.addEventListener(PyroEvent.UPDATE_COMPLETE, onChildUpdateComplate);
-				component.doOnAdded()
+				component.doOnAdded();
 				
 			}
 			return ch;
@@ -138,7 +155,7 @@ package com.cimians.openPyro.core;
 			/*for(var i:uint=0; i<this.layoutChildren.length; i++)
 			{
 				var d:MeasurableControl = layoutChildren[i]
-				trace( i+": "+d.width);
+				trace( i+": "+d.mwidth);
 			}
 			trace(" -------- ")
 			*/
@@ -149,10 +166,10 @@ package com.cimians.openPyro.core;
 			var ch:DisplayObject = contentPane.addChild(child);
 			if(Std.is( child, MeasurableControl))
 			{
-				var component:MeasurableControl = MeasurableControl(child)
+				var component:MeasurableControl = cast(child, MeasurableControl);
 				component.parentContainer = this;
 				component.addEventListener(PyroEvent.UPDATE_COMPLETE, onChildUpdateComplate);
-				component.doOnAdded()
+				component.doOnAdded();
 			}
 			return ch;
 		}
@@ -163,7 +180,7 @@ package com.cimians.openPyro.core;
 		}
 		
 		public override function removeChild(child:DisplayObject):DisplayObject{
-			return contentPane.removeChild(child)
+			return contentPane.removeChild(child);
 		}
 		
 		public function removeAllChildren():Void{
@@ -175,19 +192,16 @@ package com.cimians.openPyro.core;
 		override function doChildBasedValidation():Void
 		{
 			var child:DisplayObject;
-			if(isNaN(this._explicitWidth) && isNaN(this._percentWidth) && isNaN(_percentUnusedWidth))
+			if(Math.isNaN(this._explicitWidth) && Math.isNaN(this._percentWidth) && Math.isNaN(_percentUnusedWidth))
 			{
-				super.measuredWidth = _layout.getMaxWidth(this.layoutChildren) + _padding.left + _padding.right;
+				measuredWidth = _layout.getMaxWidth(this.layoutChildren) + _padding.left + _padding.right;
 			}
-			if(isNaN(this._explicitHeight) && isNaN(this._percentHeight) && isNaN(_percentUnusedHeight))
+			if(Math.isNaN(this._explicitHeight) && Math.isNaN(this._percentHeight) && Math.isNaN(_percentUnusedHeight))
 			{
-				super.measuredHeight = _layout.getMaxHeight(this.layoutChildren) + _padding.top + _padding.bottom;
+				measuredHeight = _layout.getMaxHeight(this.layoutChildren) + _padding.top + _padding.bottom;
 			}
 		}
 		
-		
-		var _explicitlyAllocatedWidth:Int ;
-		var _explicitlyAllocatedHeight:Int ;
 		
 		/**
 		 * This property are modified by IContainerMeasurementHelpers.
@@ -239,7 +253,7 @@ package com.cimians.openPyro.core;
 		 */ 
 		public override function validateSize():Void
 		{
-			_explicitlyAllocatedWidth = _padding.left+_padding.right
+			_explicitlyAllocatedWidth = _padding.left+_padding.right;
 			_explicitlyAllocatedHeight = _padding.top+_padding.bottom;
 			var layoutChildrenArray:Array<Dynamic> = layoutChildren;
 			
@@ -248,46 +262,45 @@ package com.cimians.openPyro.core;
 			
 			if(Std.is( _layout, IContainerMeasurementHelper))
 			{
-				IContainerMeasurementHelper(_layout).calculateSizes(layoutChildrenArray, this)
+				cast(_layout, IContainerMeasurementHelper).calculateSizes(layoutChildrenArray, this);
 			}
 			super.validateSize();
 			
-			if(this._verticalScrollBar && _verticalScrollBar.visible)
+			if(this._verticalScrollBar != null && _verticalScrollBar.mvisible)
 			{
-				this.explicitlyAllocatedWidth-=_verticalScrollBar.width
+				this.explicitlyAllocatedWidth-=_verticalScrollBar.mwidth;
 				_verticalScrollBar.setScrollProperty(this.scrollHeight, this._contentHeight);
 			}
 			
-			if(this._horizontalScrollBar && _horizontalScrollBar.visible)
+			if(this._horizontalScrollBar != null && _horizontalScrollBar.mvisible)
 			{
-				this.explicitlyAllocatedHeight-=_horizontalScrollBar.height
+				this.explicitlyAllocatedHeight-=_horizontalScrollBar.mheight;
 				_horizontalScrollBar.setScrollProperty(this.scrollWidth, contentWidth);	
 			}
 			
-			if(_verticalScrollBar)
+			if(_verticalScrollBar != null)
 			{
-				if(_horizontalScrollBar && _horizontalScrollBar.visible){
-					_verticalScrollBar.setActualSize(_verticalScrollBar.width,this.height - _horizontalScrollBar.height);	
+				if(_horizontalScrollBar !=null && _horizontalScrollBar.mvisible){
+					_verticalScrollBar.setActualSize(_verticalScrollBar.mwidth,this.mheight - _horizontalScrollBar.mheight);	
 				}
 				else{
-					_verticalScrollBar.setActualSize(_verticalScrollBar.width,this.height)
+					_verticalScrollBar.setActualSize(_verticalScrollBar.mwidth,this.mheight);
 				}
 			}
-			if(_horizontalScrollBar)
+			if(_horizontalScrollBar != null)
 			{
-				if(_verticalScrollBar && _verticalScrollBar.visible)
+				if(_verticalScrollBar != null && _verticalScrollBar.mvisible)
 				{
-					//_horizontalScrollBar.width = this.width-_verticalScrollBar.width
-					_horizontalScrollBar.setActualSize(this.width-_verticalScrollBar.width, _horizontalScrollBar.height)
+					//_horizontalScrollBar.mwidth = this.mwidth-_verticalScrollBar.mwidth
+					_horizontalScrollBar.setActualSize(this.mwidth-_verticalScrollBar.mwidth, _horizontalScrollBar.mheight);
 				}
 				else{
-					_horizontalScrollBar.setActualSize(this.width, _horizontalScrollBar.height);
+					_horizontalScrollBar.setActualSize(this.mwidth, _horizontalScrollBar.mheight);
 				}
 			}
-			checkRevalidation()	
+			checkRevalidation();
 		}
 		
-		var _layout:ILayout var layoutInvalidated:Bool ;
 		/**
 		 * Containers can be assigned different layouts
 		 * which control the positioning of the 
@@ -303,13 +316,13 @@ package com.cimians.openPyro.core;
 		 * @private
 		 */ 
 		public function setLayout(l:ILayout):ILayout{
-			if(_layout == l) return
+			if(_layout == l) return l;
 			layoutInvalidated = true;
 			_layout = l;
 			_layout.container = this;
-			if(!initialized) return;
+			if(!initialized) return null;
 			
-			this.invalidateSize()
+			this.invalidateSize();
 			return l;
 		}
 		
@@ -323,11 +336,11 @@ package com.cimians.openPyro.core;
 		public function getLayoutChildren():Array<Dynamic>
 		{
 			var children:Array<Dynamic> = new Array();
-			if(!contentPane) return children;
+			if(contentPane == null) return children;
 			for(i in 0...this.contentPane.numChildren)
 			{
-				var child:MeasurableControl = cast( contentPane.getChildAt(i), MeasurableControl)
-				if(!child || !child.includeInLayout) continue
+				var child:MeasurableControl = cast( contentPane.getChildAt(i), MeasurableControl);
+				if(child == null || !child.includeInLayout) continue;
 				children.push(child);
 			}
 			return children;
@@ -340,10 +353,10 @@ package com.cimians.openPyro.core;
 		 */ 
 		public override function widthForMeasurement():Float
 		{
-			var containerWidth:Float = this.width - this._explicitlyAllocatedWidth
-			if(this._verticalScrollBar && _verticalScrollBar.visible==true)
+			var containerWidth:Float = this.mwidth - this._explicitlyAllocatedWidth;
+			if(this._verticalScrollBar != null && _verticalScrollBar.mvisible == true)
 			{
-				containerWidth-=_verticalScrollBar.width;
+				containerWidth-=_verticalScrollBar.mwidth;
 			}
 			return containerWidth;
 		}
@@ -353,10 +366,10 @@ package com.cimians.openPyro.core;
 		 */
 		public override function heightForMeasurement():Float
 		{
-			var containerHeight:Float =  this.height-this._explicitlyAllocatedHeight;
-			if(this._horizontalScrollBar && _horizontalScrollBar.visible==true)
+			var containerHeight:Float =  this.mheight-this._explicitlyAllocatedHeight;
+			if(this._horizontalScrollBar != null && _horizontalScrollBar.mvisible==true)
 			{
-				containerHeight-=_horizontalScrollBar.height;
+				containerHeight-=_horizontalScrollBar.mheight;
 			}
 			return containerHeight;
 		}
@@ -367,10 +380,10 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function getScrollWidth():Float
 		{
-			var containerWidth:Float = this.width-padding.left-padding.right
-			if(this._verticalScrollBar && _verticalScrollBar.visible==true)
+			var containerWidth:Float = this.mwidth-padding.left-padding.right;
+			if(this._verticalScrollBar != null && _verticalScrollBar.mvisible==true)
 			{
-				containerWidth-=_verticalScrollBar.width;
+				containerWidth-=_verticalScrollBar.mwidth;
 			}
 			return containerWidth;
 		}
@@ -381,16 +394,14 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function getScrollHeight():Float
 		{
-			var containerHeight:Float =  this.height-padding.top-padding.bottom;
-			if(this._horizontalScrollBar && _horizontalScrollBar.visible==true)
+			var containerHeight:Float =  this.mheight-padding.top-padding.bottom;
+			if(this._horizontalScrollBar != null && _horizontalScrollBar.mvisible==true)
 			{
-				containerHeight-=_horizontalScrollBar.height;
+				containerHeight-=_horizontalScrollBar.mheight;
 			}
 			return containerHeight;
 		}
 		
-		var _verticalScrollBar:ScrollBar;
-		var _horizontalScrollBar:ScrollBar;
 		
 		/**
 		 * Returns The instance of the created verticalScrollBar
@@ -402,9 +413,9 @@ package com.cimians.openPyro.core;
 		 * anymore.
 		 */ 
 		public function getVerticalScrollBar():ScrollBar{
-			if(_verticalScrollBar && _verticalScrollBar.visible)
+			if(_verticalScrollBar != null && _verticalScrollBar.mvisible)
 			{
-				return _verticalScrollBar
+				return _verticalScrollBar;
 			}
 			else
 			{
@@ -424,9 +435,9 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function getHorizontalScrollBar():ScrollBar
 		{
-			if(_horizontalScrollBar && _horizontalScrollBar.visible)
+			if(_horizontalScrollBar != null && _horizontalScrollBar.mvisible)
 			{
-				return _horizontalScrollBar
+				return _horizontalScrollBar;
 			}
 			else
 			{
@@ -437,77 +448,76 @@ package com.cimians.openPyro.core;
 		/**
 		 * @private
 		 */ 
-		public function setVerticalScrollBar(scrollBar:ScrollBar):ScrollBar{
-			if(_verticalScrollBar)
+		public function _setVerticalScrollBar(scrollBar:ScrollBar):ScrollBar{
+			if(_verticalScrollBar != null)
 			{
 				_verticalScrollBar.removeEventListener(ScrollEvent.SCROLL, onVerticalScroll);
-				_verticalScrollBar.removeEventListener(PyroEvent.UPDATE_COMPLETE, onVScrollBarUpdateComplete)
-				_verticalScrollBar.removeEventListener(PyroEvent.SIZE_VALIDATED, onVerticalScrollBarSizeValidated)
+				_verticalScrollBar.removeEventListener(PyroEvent.UPDATE_COMPLETE, onVScrollBarUpdateComplete);
+				_verticalScrollBar.removeEventListener(PyroEvent.SIZE_VALIDATED, onVerticalScrollBarSizeValidated);
 			}
 			_verticalScrollBar = scrollBar;
 			addChild(scrollBar);
-			if(this._contentHeight > this.height)
+			if(this._contentHeight > this.mheight)
 			{
 				setVerticalScrollBar();
 			}
 			return scrollBar;
 		}
 		
-		var scrollBarsChanged:Bool ;
 		
 		function checkRevalidation():Void
 		{
 			if(_horizontalScrollPolicy){
-				checkNeedsHScrollBar()
+				checkNeedsHScrollBar();
 			}
 			if(_verticalScrollPolicy)
 			{
-				checkNeedsVScrollBar()
+				checkNeedsVScrollBar();
 			}
 			
 			if(needsHorizontalScrollBar && 
-					this._skin && 
+					this._skin != null && 
 					Std.is( this._skin, IScrollableContainerSkin) && 
-					IScrollableContainerSkin(_skin).horizontalScrollBarSkin)
+					cast(_skin, IScrollableContainerSkin).horizontalScrollBarSkin != null)
 			{
-				if(!_horizontalScrollBar)
+				if(_horizontalScrollBar == null)
 				{
 					createHScrollBar();
 				}
-				if(_horizontalScrollBar.visible==false)
+				if(_horizontalScrollBar.mvisible==false)
 				{
-					_horizontalScrollBar.visible = true;
+					_horizontalScrollBar.mvisible = true;
 					scrollBarsChanged = true;
 				}
 			}
 			else
 			{
-				if(_horizontalScrollBar && _horizontalScrollBar.visible==true)
+				if(_horizontalScrollBar != null && _horizontalScrollBar.mvisible==true)
 				{
-					_horizontalScrollBar.visible = false;
+					_horizontalScrollBar.mvisible = false;
 					scrollBarsChanged = true;
 				}
 			}
 			if(needsVerticalScrollBar && 
-				this._skin && 
+				this._skin != null && 
 				Std.is( this._skin, IScrollableContainerSkin) && 
-				IScrollableContainerSkin(_skin).verticalScrollBarSkin)
+				cast(_skin, IScrollableContainerSkin).verticalScrollBarSkin != null)
 			{
-				if(!_verticalScrollBar)
+				if(_verticalScrollBar == null)
 				{
 					createVScrollBar();
 				}
-				if(_verticalScrollBar.visible == false)
+				if(_verticalScrollBar.mvisible == false)
 				{
-					_verticalScrollBar.visible = true;
+					_verticalScrollBar.mvisible = true;
 					scrollBarsChanged=true;
 				}
 			}
 			else
 			{
-				if(_verticalScrollBar && _verticalScrollBar.visible == true)
+				if(_verticalScrollBar != null && _verticalScrollBar.mvisible == true)
 				{
-					_verticalScrollBar.visible = false;
+					_verticalScrollBar.mvisible = false;
 					scrollBarsChanged = true;
 				}
 			}
@@ -520,21 +530,15 @@ package com.cimians.openPyro.core;
 			}
 		}
 			
-		var _contentHeight:Int ;
-		var contentWidth:Int ;
-		
 		public function getContentHeight():Float{
 			return _contentHeight;
 		}
 		
-		var needsVerticalScrollBar:Bool ;
-		var needsHorizontalScrollBar:Bool ;
-		
 		function checkNeedsVScrollBar():Void
 		{
 			_contentHeight = this._layout.getMaxHeight(this.layoutChildren);
-			if(_contentHeight > this.height){
-				needsVerticalScrollBar = true
+			if(_contentHeight > this.mheight){
+				needsVerticalScrollBar = true;
 			}
 			else{
 				needsVerticalScrollBar = false;
@@ -543,8 +547,8 @@ package com.cimians.openPyro.core;
 		function checkNeedsHScrollBar():Void
 		{
 			contentWidth = this._layout.getMaxWidth(this.layoutChildren);
-			if(contentWidth > this.width){
-				needsHorizontalScrollBar = true
+			if(contentWidth > this.mwidth){
+				needsHorizontalScrollBar = true;
 			}
 			else{
 				needsHorizontalScrollBar = false;
@@ -558,58 +562,58 @@ package com.cimians.openPyro.core;
 			_verticalScrollBar.minimum = 0;
 			_verticalScrollBar.incrementalScrollDelta = _verticalScrollIncrement;
 			_verticalScrollBar.name = "vscrollbar_"+this.name;
-			_verticalScrollBar.width = 15;
+			_verticalScrollBar.mwidth = 15;
 			_verticalScrollBar.addEventListener(PyroEvent.SIZE_VALIDATED, onVerticalScrollBarSizeValidated);
 			_verticalScrollBar.addEventListener(PyroEvent.UPDATE_COMPLETE, onVScrollBarUpdateComplete);
-			_verticalScrollBar.skin = IScrollableContainerSkin(_skin).verticalScrollBarSkin;
-			_verticalScrollBar.addEventListener(ScrollEvent.SCROLL, onVerticalScroll)
-			_verticalScrollBar.doOnAdded()
-			_verticalScrollBar.visible = false;
+			_verticalScrollBar.skin = cast(_skin, IScrollableContainerSkin).verticalScrollBarSkin;
+			_verticalScrollBar.addEventListener(ScrollEvent.SCROLL, onVerticalScroll);
+			_verticalScrollBar.doOnAdded();
+			_verticalScrollBar.mvisible = false;
 			_S_addChild(_verticalScrollBar);
 		}
 		
 		function hideVScrollBar():Void
 		{
-			if(_verticalScrollBar)
+			if(_verticalScrollBar != null)
 			{
-				_verticalScrollBar.visible=false;
+				_verticalScrollBar.mvisible=false;
 			}
 		}
 			
 		function createHScrollBar():Void
 		{
 			_horizontalScrollBar = new ScrollBar(Direction.HORIZONTAL);
-			_horizontalScrollBar.maximum = 1
-			_horizontalScrollBar.minimum = 0
-			_horizontalScrollBar.incrementalScrollDelta = _horizontalScrollIncrement
+			_horizontalScrollBar.maximum = 1;
+			_horizontalScrollBar.minimum = 0;
+			_horizontalScrollBar.incrementalScrollDelta = _horizontalScrollIncrement;
 			_horizontalScrollBar.name = "hscrollbar_"+this.name;
-			_horizontalScrollBar.height = 15;
-			_horizontalScrollBar.addEventListener(PyroEvent.SIZE_VALIDATED, onHorizontalScrollBarSizeValidated)
+			_horizontalScrollBar.mheight = 15;
+			_horizontalScrollBar.addEventListener(PyroEvent.SIZE_VALIDATED, onHorizontalScrollBarSizeValidated);
 			_horizontalScrollBar.addEventListener(ScrollEvent.SCROLL, onHorizontalScroll);
 			_horizontalScrollBar.parentContainer = this;
-			_horizontalScrollBar.doOnAdded()
-			_horizontalScrollBar.skin = IScrollableContainerSkin(_skin).horizontalScrollBarSkin;	
-			_horizontalScrollBar.visible = false;
+			_horizontalScrollBar.doOnAdded();
+			_horizontalScrollBar.skin = cast(_skin, IScrollableContainerSkin).horizontalScrollBarSkin;	
+			_horizontalScrollBar.mvisible = false;
 			_S_addChild(_horizontalScrollBar);	
 		}
 		
 		function onHorizontalScrollBarSizeValidated(event:PyroEvent):Void
 		{
-			_horizontalScrollBar.removeEventListener(PyroEvent.SIZE_VALIDATED, onHorizontalScrollBarSizeValidated)
+			_horizontalScrollBar.removeEventListener(PyroEvent.SIZE_VALIDATED, onHorizontalScrollBarSizeValidated);
 			_horizontalScrollBar.setScrollProperty(this.scrollWidth, contentWidth);	
 		}
 		
 		function onVerticalScrollBarSizeValidated(event:PyroEvent):Void
 		{
-			_verticalScrollBar.removeEventListener(PyroEvent.SIZE_VALIDATED, onVerticalScrollBarSizeValidated)
+			_verticalScrollBar.removeEventListener(PyroEvent.SIZE_VALIDATED, onVerticalScrollBarSizeValidated);
 			_verticalScrollBar.setScrollProperty(this.scrollWidth, contentWidth);
 		}
 		
 		function hideHScrollBar():Void
 		{
-			if(_horizontalScrollBar)
+			if(_horizontalScrollBar != null)
 			{
-				_horizontalScrollBar.visible=false;
+				_horizontalScrollBar.mvisible=false;
 			}
 		}
 		
@@ -618,22 +622,22 @@ package com.cimians.openPyro.core;
 			{
 				addChild(_verticalScrollBar);
 			}
-			_verticalScrollBar.height = this.height;
+			_verticalScrollBar.mheight = this.mheight;
 		}
 		
 		function handleMouseWheel(event:MouseEvent):Void{
-			if(this.verticalScrollBar){
+			if(this.verticalScrollBar != null){
 				var scrollDelta:Float = verticalScrollBar.value - event.delta*.02;
-				scrollDelta = Math.min(scrollDelta, 1)
+				scrollDelta = Math.min(scrollDelta, 1);
 				scrollDelta = Math.max(0, scrollDelta);
 				verticalScrollBar.value = scrollDelta;
 			}
 		}
 		
 		public function setHorizontalScrollPosition(value:Float):Float{
-			if(!_horizontalScrollBar) return
-			if(value > 1){
-				throw new Error("UIContainer scrollpositions range from 0 to 1")
+			if(_horizontalScrollBar == null) return Math.NaN;
+			if(value > 1 || value < 0){
+				throw ("UIContainer scrollpositions range from 0 to 1");
 			}
 			this._horizontalScrollBar.value = value;
 			return value;
@@ -643,30 +647,28 @@ package com.cimians.openPyro.core;
 			return _horizontalScrollBar.value;
 		}
 		
-		var _horizontalScrollIncrement:Int ;
 		public function setHorizontalScrollIncrement(n:Float):Float{
 			_horizontalScrollIncrement = n;
-			if(_horizontalScrollBar){
+			if(_horizontalScrollBar != null){
 				_horizontalScrollBar.incrementalScrollDelta = n;
 			}
 			return n;
 		}
 		
 		public function getHorizontalScrollIncrement():Float{
-			return _horizontalScrollIncrement
+			return _horizontalScrollIncrement;
 		}
 		
-		var _verticalScrollIncrement:Int ;
 		public function setVerticalScrollIncrement(n:Float):Float{
 			_verticalScrollIncrement = n;
-			if(_verticalScrollBar){
+			if(_verticalScrollBar != null){
 				_verticalScrollBar.incrementalScrollDelta = n;
 			}
 			return n;
 		}
 		
 		public function getVerticalScrollIncrement():Float{
-			return _verticalScrollIncrement
+			return _verticalScrollIncrement;
 		}
 		
 		
@@ -675,9 +677,9 @@ package com.cimians.openPyro.core;
 		 * The valid values are between 0 and 1 
 		 */ 
 		public function setVerticalScrollPosition(value:Float):Float{
-			if(!_verticalScrollBar) return;
-			if(value > 1){
-				throw new Error("UIContainer scrollpositions range from 0 to 1")
+			if(_verticalScrollBar == null) return Math.NaN;
+			if(value > 1 || value < 0){
+				throw ("UIContainer scrollpositions range from 0 to 1");
 			}
 			this._verticalScrollBar.value = value;
 			return value;
@@ -687,22 +689,20 @@ package com.cimians.openPyro.core;
 			return _verticalScrollBar.value;
 		}
 		
-		var scrollY:Int ;
-		var scrollX:Int ;
-		
+	
 		/**
 		 * Event listener for when the vertical scrollbar is 
 		 * used.
 		 */ 
 		function onVerticalScroll(event:ScrollEvent):Void
 		{
-			var scrollAbleHeight:Float = this._contentHeight - this.height;
-			if(_horizontalScrollBar)
+			var scrollAbleHeight:Float = this._contentHeight - this.mheight;
+			if(_horizontalScrollBar != null)
 			{
-				scrollAbleHeight+=_horizontalScrollBar.height;
+				scrollAbleHeight+=_horizontalScrollBar.mheight;
 			}
-			scrollY = event.value*scrollAbleHeight
-			setContentMask()
+			scrollY = event.value*scrollAbleHeight;
+			setContentMask();
 		}
 		
 		/**
@@ -711,13 +711,13 @@ package com.cimians.openPyro.core;
 		 */ 
 		function onHorizontalScroll(event:ScrollEvent):Void
 		{
-			var scrollAbleWidth:Float = this.contentWidth - this.width;
-			if(_verticalScrollBar)
+			var scrollAbleWidth:Float = this.contentWidth - this.mwidth;
+			if(_verticalScrollBar != null)
 			{
-				scrollAbleWidth+=_verticalScrollBar.width;
+				scrollAbleWidth+=_verticalScrollBar.mwidth;
 			}
-			scrollX = event.value*scrollAbleWidth
-			setContentMask()
+			scrollX = event.value*scrollAbleWidth;
+			setContentMask();
 		}
 		
 		/**
@@ -732,25 +732,23 @@ package com.cimians.openPyro.core;
 		{
 			if(layoutInvalidated)
 			{
-				doLayoutChildren()
+				doLayoutChildren();
 			}
-			if(_verticalScrollBar && _verticalScrollBar.visible==true)
+			if(_verticalScrollBar != null && _verticalScrollBar.mvisible==true)
 			{
-				_verticalScrollBar.x = this.width - _verticalScrollBar.width;
+				_verticalScrollBar.x = this.mwidth - _verticalScrollBar.mwidth;
 			}
-			if(_horizontalScrollBar && _horizontalScrollBar.visible==true)
+			if(_horizontalScrollBar != null && _horizontalScrollBar.mvisible==true)
 			{
-				_horizontalScrollBar.y = this.height - _horizontalScrollBar.height;
+				_horizontalScrollBar.y = this.mheight - _horizontalScrollBar.mheight;
 			}	
 			super.updateDisplayList(unscaledWidth, unscaledHeight);	
 			if(_clipContent){
 				//this.scrollRect = new Rectangle(0,0,unscaledWidth, unscaledHeight);
-				this.setContentMask()
+				this.setContentMask();
 			}
 		}
 		
-		
-		var _clipContent:Bool ;
 		
 		public function setClipContent(b:Bool):Bool
 		{
@@ -782,11 +780,11 @@ package com.cimians.openPyro.core;
 		 */ 
 		function onVScrollBarUpdateComplete(event:PyroEvent):Void
 		{
-			if(_horizontalScrollBar){
-				_horizontalScrollBar.y = _verticalScrollBar.height;
+			if(_horizontalScrollBar != null){
+				_horizontalScrollBar.y = _verticalScrollBar.mheight;
 				if(_clipContent){
-					//this.scrollRect = new Rectangle(0,0, this.width, this.height);
-					this.setContentMask()
+					//this.scrollRect = new Rectangle(0,0, this.mwidth, this.mheight);
+					this.setContentMask();
 				}
 			}
 		}
@@ -797,30 +795,30 @@ package com.cimians.openPyro.core;
 		 */
 		function onHScrollBarUpdateComplete(event:PyroEvent):Void
 		{
-			if(_verticalScrollBar){
-				_verticalScrollBar.x = _horizontalScrollBar.width;
+			if(_verticalScrollBar != null){
+				_verticalScrollBar.x = _horizontalScrollBar.mwidth;
 				if(_clipContent){
-					//this.scrollRect = new Rectangle(0,0, this.width, this.height);
-					this.setContentMask()
+					//this.scrollRect = new Rectangle(0,0, this.mwidth, this.mheight);
+					this.setContentMask();
 				}
 			}
 		}
 		
 		function setContentMask():Void{
-			var contentW:Float = width
-			var contentH:Float = height;
+			var contentW:Float = mwidth;
+			var contentH:Float = mheight;
 			
-			if(_verticalScrollBar && _verticalScrollBar.visible==true){
-				contentW-=_verticalScrollBar.width	
+			if(_verticalScrollBar != null && _verticalScrollBar.mvisible==true){
+				contentW-=_verticalScrollBar.mwidth;
 			}
-			if(_horizontalScrollBar && _horizontalScrollBar.visible==true){
-				contentH-=_horizontalScrollBar.height
+			if(_horizontalScrollBar != null && _horizontalScrollBar.mvisible==true){
+				contentH-=_horizontalScrollBar.mheight;
 			}
-			if(_verticalScrollBar){
+			if(_verticalScrollBar != null){
 				
 			}
 			var rect:Rectangle = new Rectangle(scrollX,scrollY,contentW,contentH);
 			
-			this.contentPane.scrollRect = rect
+			this.contentPane.scrollRect = rect;
 		}
 	}

@@ -7,17 +7,11 @@ package com.cimians.openPyro.layout;
 
 	class AbsoluteLayout implements ILayout, implements IContainerMeasurementHelper {
 		
-		
-		
 		public var container(null, setContainer) : UIContainer;
-		
 		public var initX(null, setInitX) : Float;
-		
 		public var initY(null, setInitY) : Float;
-		
-		public var prepare(null, setPrepare) : Dynamic;
-		
-		var _container:UIContainer
+		public var prepare(null, setPrepare) : Dynamic; 
+		var _container:UIContainer;
 		
 		public function new() {
 			
@@ -25,11 +19,11 @@ package com.cimians.openPyro.layout;
 		
 		public function setInitX(n:Float):Float{
 			return n;
-	}
+    	}
 		
 		public function setInitY(n:Float):Float{
 			return n;
-	}
+    	}
 		
 		public function setContainer(c:UIContainer):UIContainer{
 			_container = c;
@@ -43,26 +37,40 @@ package com.cimians.openPyro.layout;
 		
 		public function getMaxWidth(children:Array<Dynamic>):Float
 		{
-			var maxW:Int=0;
+			var maxW:Float=0;
 			for(i in 0...children.length)
 			{
-				if(DisplayObject(children[i]).width > maxW)
-				{
-					maxW = DisplayObject(children[i]).width
-				}
+                if(Std.is(children[i], MeasurableControl)){
+                    if(cast(children[i], MeasurableControl).mwidth > maxW)
+                    {
+                        maxW = cast(children[i], MeasurableControl).mwidth;
+                    }
+                } else {
+                    if(cast(children[i], DisplayObject).width > maxW)
+                    {
+                        maxW = cast(children[i], DisplayObject).width;
+                    }
+                }
 			}
 			return maxW;
 		}
 		
 		public function getMaxHeight(children:Array<Dynamic>):Float
 		{
-			var maxH:Int=0;
+			var maxH:Float=0;
 			for(i in 0...children.length)
 			{
-				if(DisplayObject(children[i]).height > maxH)
-				{
-					maxH = DisplayObject(children[i]).height
-				}
+                if(Std.is(children[i], MeasurableControl)){
+                    if(cast(children[i], MeasurableControl).mheight > maxH)
+                    {
+                        maxH = cast(children[i], MeasurableControl).mheight;
+                    }
+                } else {
+                    if(cast(children[i], DisplayObject).height > maxH)
+                    {
+                        maxH = cast(children[i], DisplayObject).height;
+                    }
+                }
 			}
 			return maxH;
 		}
@@ -86,12 +94,12 @@ package com.cimians.openPyro.layout;
 			{
 				if(Std.is( children[i], MeasurableControl))				
 				{
-					var sizeableChild:MeasurableControl = MeasurableControl(children[i]);
-					if(!isNaN(sizeableChild.explicitWidth))
+					var sizeableChild:MeasurableControl = cast children[i];
+					if(!Math.isNaN(sizeableChild.explicitWidth))
 					{
 						container.explicitlyAllocatedWidth+=sizeableChild.explicitWidth;
 					}
-					if(!isNaN(sizeableChild.explicitHeight))
+					if(!Math.isNaN(sizeableChild.explicitHeight))
 					{
 						container.explicitlyAllocatedHeight+=sizeableChild.explicitHeight;	
 					}

@@ -4,8 +4,6 @@ package com.cimians.openPyro.controls.events;
 
 	class ScrollEvent extends Event {
 		
-		
-		
 		public static var SCROLL:String = "scroll";
 		public static var CHANGE:String = "change";
 		

@@ -37,7 +37,7 @@ package com.cimians.openPyro.core;
 		public var percentUnusedWidth(getPercentUnusedWidth, setPercentUnusedWidth) : Float;
 		public var percentWidth(getPercentWidth, setPercentWidth) : Float ;
 		public var usesMeasurementStrategy(getUsesMeasurementStrategy, null) : Bool;
-		public var mvisible(null, setVisible) : Bool;
+		public var mvisible(getVisible, setVisible) : Bool;
 		public var mwidth(getWidth, setWidth) : Float;
 
 		public var initialized:Bool ;
@@ -635,6 +635,10 @@ package com.cimians.openPyro.core;
 				_creationCompleteFired = true;
 			}
 		}
+
+        inline function getVisible():Bool {
+            return this._isVisible;
+        }
 
 		function setVisible(value:Bool):Bool{
 			this._isVisible = value;

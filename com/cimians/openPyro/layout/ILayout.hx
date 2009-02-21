@@ -4,11 +4,11 @@ package com.cimians.openPyro.layout;
 	
 	interface ILayout
 	{
-		function initX(n:Float):Void
-		function initY(n:Float):Void;
-		function container(c:UIContainer):Void
+        var initX(null, setInitX):Float;
+        var initY(null, setInitY):Float;
+        var container(null, setContainer):UIContainer;
 		function layout(children:Array<Dynamic>):Void;
 		function getMaxWidth(children:Array<Dynamic>):Float;
 		function getMaxHeight(children:Array<Dynamic>):Float;
-		function prepare(f:Dynamic):Void;
+        var prepare(null, setPrepare):Dynamic;
 	}
