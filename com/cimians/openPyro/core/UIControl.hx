@@ -113,16 +113,16 @@ package com.cimians.openPyro.core;
 				var maxW:Float = 0;
 				for(j in 0...this.numChildren){
 					child = this.getChildAt(j);
-                    var mchild = cast(child, MeasurableControl);
-                    if(mchild == null) {
+                    if(Std.is(child, MeasurableControl)){
+                        var mchild = cast(child, MeasurableControl);
+                        if(mchild.mwidth > maxW){
+                            maxW = mchild.mwidth;
+                        }
+                    } else {
     					if(child.width > maxW)
     					{
     						maxW = child.width;
     					}
-                    } else {
-                        if(mchild.mwidth > maxW){
-                            maxW = mchild.mwidth;
-                        }
                     }
 				}
 				
@@ -133,16 +133,16 @@ package com.cimians.openPyro.core;
 				var maxH:Float = 0;
 				for(k in 0...this.numChildren){
 					child = this.getChildAt(k);
-                    var mchild = cast(child, MeasurableControl);
-                    if(mchild == null){
+                    if(Std.is(child, MeasurableControl)) {
+                        var mchild = cast(child, MeasurableControl);
+                        if(mchild.mheight > maxH){
+                            maxH = mchild.mheight;
+                        }
+                    } else {
     					if(child.height > maxH)
     					{
     						maxH = child.height;
     					}
-                    } else {
-                        if(mchild.mheight > maxH){
-                            maxH = mchild.mheight;
-                        }
                     }
 				}
 				measuredHeight = maxH + _padding.top + _padding.bottom;
@@ -161,9 +161,10 @@ package com.cimians.openPyro.core;
 			_dimensionsChanged = true;
 			_measuredWidth = w;
 			for(i in 0...this.numChildren){
-				var child:UIControl = cast( this.getChildAt(i), UIControl);
-				if(child == null) continue;
-				child.needsMeasurement=true;
+                var c = this.getChildAt(i);
+                if(Std.is(c, UIControl)) {
+                    cast(c, UIControl).needsMeasurement = true;
+                }
 			}
 				
 			invalidateDisplayList();
@@ -181,9 +182,10 @@ package com.cimians.openPyro.core;
 			this._dimensionsChanged = true;
 			_measuredHeight = h;
 			for(i in 0...this.numChildren){
-				var child:UIControl = cast( this.getChildAt(i), UIControl);
-				if(child == null) continue;
-				child.needsMeasurement=true;
+                var c = this.getChildAt(i);
+                if(Std.is(c, UIControl)) {
+                    cast(c, UIControl).needsMeasurement = true;
+                }
 			}
 			invalidateDisplayList();
 			return h;
@@ -400,10 +402,11 @@ package com.cimians.openPyro.core;
 			this._explicitWidth = w;
 			this._explicitHeight = h;
 			for(i in 0...this.numChildren){
-				var uic:UIControl = cast( this.getChildAt(i), UIControl);
-				if(uic == null) continue;
-				uic.validateSize();
-				uic.validateDisplayList();
+                var c = this.getChildAt(i);
+                if(Std.is(c, UIControl)) {
+				    cast(c, UIControl).validateSize();
+				    cast(c, UIControl).validateDisplayList();
+                }
 			}
 			this.updateDisplayList(this.getExplicitOrMeasuredWidth(), this.getExplicitOrMeasuredHeight());
 		}

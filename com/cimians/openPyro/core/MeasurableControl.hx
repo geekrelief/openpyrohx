@@ -420,10 +420,17 @@ package com.cimians.openPyro.core;
 			//sizeInvalidated=false;
 			
 			for(j in 0...this.numChildren){
+                var c = this.getChildAt(j);
+                if(Std.is(c, MeasurableControl)){
+                    cast(c, MeasurableControl).validateSize();
+				    cast(c, MeasurableControl).dispatchEvent(new PyroEvent(PyroEvent.SIZE_VALIDATED));	
+                }
+                /*
 				var child:MeasurableControl = cast( this.getChildAt(j), MeasurableControl);
 				if(child == null) continue;
 				child.validateSize();
 				child.dispatchEvent(new PyroEvent(PyroEvent.SIZE_VALIDATED));	
+                */
 			}
 		}
 		
@@ -609,9 +616,15 @@ package com.cimians.openPyro.core;
 				this.removeEventListener(Event.ENTER_FRAME,validateDisplayList);
 			}
 			for(j in 0...this.numChildren){
+                var c = this.getChildAt(j);
+                if(Std.is(c, MeasurableControl)){
+                    cast(c, MeasurableControl).validateDisplayList();
+                }
+                /*
 				var child:MeasurableControl = cast( this.getChildAt(j), MeasurableControl);
 				if(child == null) continue;
 				child.validateDisplayList();
+                */
 			}
 			this.updateDisplayList(this.getExplicitOrMeasuredWidth(), this.getExplicitOrMeasuredHeight());
 			if(_dimensionsChanged){
