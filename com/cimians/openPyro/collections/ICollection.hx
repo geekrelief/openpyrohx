@@ -3,10 +3,10 @@ package com.cimians.openPyro.collections;
 	import flash.events.IEventDispatcher;
 	
 	interface ICollection implements IEventDispatcher{
-		function length():Int;
-		function normalizedArray():Array<Dynamic>;
-		function iterator():IIterator;
-		function filterFunction(f:Dynamic):Void
+		var length(getLength, null):Int;
+		var normalizedArray(getNormalizedArray, null):Array<Dynamic>;
+		var iterator(getIterator, null):IIterator;
+		var filterFunction(null, setFilterFunction):Dynamic;
 		function refresh():Void;
 		
 		/**

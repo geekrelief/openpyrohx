@@ -8,7 +8,6 @@ package com.cimians.openPyro.collections;
 		function getNext():Dynamic;
 		function hasPrevious():Bool;
 		function getPrevious():Dynamic;
-		function cursorIndex(idx:Int):Void;
-		function cursorIndex():Int;
+        var cursorIndex(getCursorIndex, setCursorIndex):Int;
 		function reset():Void;
 	}

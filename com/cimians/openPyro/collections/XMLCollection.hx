@@ -10,39 +10,39 @@ package com.cimians.openPyro.collections;
 	class XMLCollection extends EventDispatcher, implements ICollection {
 		
 		public var filterFunction(null, setFilterFunction) : Dynamic;
-		public var iterator(getIterator, null) : IIterator
-		;
-		public var length(getLength, null) : Int
-		;
+		public var iterator(getIterator, null) : IIterator ;
+		public var length(getLength, null) : Int ;
 		public var normalizedArray(getNormalizedArray, null) : Array<Dynamic>;
 		public var source(getSource, setSource) : Dynamic;
-		var _xml:XML;
+
+		var _xml:Xml;
 		var _normalizedArray:Array<Dynamic>;
 		var _unfilteredNormalizedArray:Array<Dynamic>;
 		var _originalNormalizedArray:Array<Dynamic>;
 		var _iterator:ArrayIterator;
 		
-		public function new(?xml:XML=null)
+		public function new(?xml:Xml=null)
 		{
+            super();
 			_xml = xml;
 			_normalizedArray = new Array();
 			parseNode(_xml, 0, null);
-			_originalNormalizedArray = _normalizedArray.concat();
-			_unfilteredNormalizedArray = _normalizedArray.concat();
+			_originalNormalizedArray = _normalizedArray.copy();
+			_unfilteredNormalizedArray = _normalizedArray.copy();
 			_iterator = new ArrayIterator(this);
 		}
 		
 		
-		function parseNode(node:XML, depth:Int, parentNodeDescriptor:XMLNodeDescriptor):Void{
+		function parseNode(node:Xml, depth:Int, parentNodeDescriptor:XMLNodeDescriptor):Void{
 			
-			var desc:XMLNodeDescriptor = new XMLNodeDescriptor()
-			desc.node = node
-			desc.depth = depth
+			var desc:XMLNodeDescriptor = new XMLNodeDescriptor();
+			desc.node = node;
+			desc.depth = depth;
 			desc.parent = parentNodeDescriptor;
 			_normalizedArray.push(desc);
 			depth++;
-			for(i in 0...node.children().length()){
-				parseNode(node.children()[i], depth, desc);
+			for(e in node.elements()){
+				parseNode(e, depth, desc);
 			}
 		}
 		
@@ -54,7 +54,7 @@ package com.cimians.openPyro.collections;
 			_xml = x;
 			_normalizedArray = new Array();
 			parseNode(_xml, 0, null);
-			_unfilteredNormalizedArray = _normalizedArray.concat();
+			_unfilteredNormalizedArray = _normalizedArray.copy();
 			dispatchEvent(new CollectionEvent(CollectionEvent.COLLECTION_CHANGED));
 			return x;
 		}
@@ -65,7 +65,7 @@ package com.cimians.openPyro.collections;
 		
 		public function getLength():Int
 		{
-			return _xml.length();
+			return _xml.toString().length;
 		}
 		
 		public function getIterator():IIterator
@@ -74,19 +74,19 @@ package com.cimians.openPyro.collections;
 		}
 		
 		public function getItemIndex(item:Dynamic):Int{
-			return _normalizedArray.indexOf(item);
+			return ArrayUtil.indexOf(_normalizedArray, item);
 		}
 		
 		public function getOpenChildNodes(item:XMLNodeDescriptor):Array<Dynamic>{
 			var allChildNodes:Array<Dynamic> = getChildNodes(item);
-			var visibleChildNodes:Array<Dynamic> = new Array()
+			var visibleChildNodes:Array<Dynamic> = new Array();
 			while(allChildNodes.length > 0){
 				var newNode:XMLNodeDescriptor = allChildNodes.shift();
 				visibleChildNodes.push(newNode);
 				if(!newNode.isLeaf() && !newNode.open){
 					var closedNodeChildren:Array<Dynamic> = getChildNodes(newNode);
 					for(i in 0...closedNodeChildren.length){
-						if(allChildNodes.indexOf(closedNodeChildren[i]) != -1){
+						if(ArrayUtil.indexOf(allChildNodes, closedNodeChildren[i]) != -1){
 							ArrayUtil.remove(allChildNodes, closedNodeChildren[i]);
 						}
 					}
@@ -101,7 +101,7 @@ package com.cimians.openPyro.collections;
 		 */ 	
 		public function getChildNodes(item:XMLNodeDescriptor):Array<Dynamic>{
 			
-			var idx:Float = _unfilteredNormalizedArray.indexOf(item);
+			var idx:Int = ArrayUtil.indexOf(_unfilteredNormalizedArray, item);
 			var foundAllChildren:Bool = false;
 			var childNodesArray:Array<Dynamic> = new Array();
 			while(!foundAllChildren){
@@ -133,7 +133,7 @@ package com.cimians.openPyro.collections;
 		
 		public function removeItems(items:Array<Dynamic>):Void{
 			for(i in 0...items.length){
-				ArrayUtil.remove(_normalizedArray,items[i])	
+				ArrayUtil.remove(_normalizedArray,items[i]);
 			}
 			var collectionEvent:CollectionEvent = new CollectionEvent(CollectionEvent.COLLECTION_CHANGED);
 			collectionEvent.delta = items;
@@ -142,7 +142,7 @@ package com.cimians.openPyro.collections;
 		}
 		
 		public function addItems(items:Array<Dynamic>, parentNode:XMLNodeDescriptor):Void{
-			var nodeIndex:Int = _normalizedArray.indexOf(parentNode);
+			var nodeIndex:Int = ArrayUtil.indexOf(_normalizedArray, parentNode);
 			ArrayUtil.insertArrayAtIndex(_normalizedArray,items, (nodeIndex+1));
 			var collectionEvent:CollectionEvent = new CollectionEvent(CollectionEvent.COLLECTION_CHANGED);
 			collectionEvent.delta = items;
@@ -151,16 +151,16 @@ package com.cimians.openPyro.collections;
 			dispatchEvent(collectionEvent);	
 		}
 		
-		var _filterFunction:Dynamic;
+		var _filterFunction:Dynamic -> Bool;
 		
-		public function setFilterFunction(f:Dynamic):Dynamic{
+		public function setFilterFunction(f:Dynamic -> Bool):Dynamic -> Bool{
 			this._filterFunction = f;
 			return f;
 		}
 		
 		public function refresh():Void{
-			_normalizedArray = _originalNormalizedArray.filter(_filterFunction);
-			_unfilteredNormalizedArray = _normalizedArray.concat();
+			_normalizedArray = Lambda.array(Lambda.filter(_originalNormalizedArray, _filterFunction));
+			_unfilteredNormalizedArray = _normalizedArray.copy();
 			
 			var collectionEvent:CollectionEvent = new CollectionEvent(CollectionEvent.COLLECTION_CHANGED);
 			collectionEvent.kind = CollectionEventKind.RESET;

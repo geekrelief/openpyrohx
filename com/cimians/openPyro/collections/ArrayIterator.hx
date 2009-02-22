@@ -11,22 +11,25 @@ package com.cimians.openPyro.collections;
 		public var normalizedArray(getNormalizedArray, null) : Array<Dynamic>;
 		var _array:Array<Dynamic>;
 		var _collection:ICollection;
+		var _cursorIndex:Int;
 		
 		public function new(collection:ICollection){
+            super();
 			_collection = collection;
 			collection.addEventListener(CollectionEvent.COLLECTION_CHANGED, onCollectionChanged);
-			setSource()
+			setSource();
+            _cursorIndex = -1;
 		}
 		
 		function onCollectionChanged(event:CollectionEvent):Void{
-			setSource()
+			setSource();
 		}
 		
 		function setSource():Void{
-			_array = cast( _collection.normalizedArray, Array);
+			_array = cast( _collection.normalizedArray, Array<Dynamic>);
 		}
 		
-		var _cursorIndex:Int public function getCurrent():Dynamic{
+        public function getCurrent():Dynamic{
 			return _array[_cursorIndex];
 		}
 		

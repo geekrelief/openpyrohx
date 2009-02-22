@@ -1,23 +1,23 @@
 package com.cimians.openPyro.collections;
 
 	import com.cimians.openPyro.collections.events.CollectionEvent;
+	import com.cimians.openPyro.utils.ArrayUtil;
 	
 	import flash.events.EventDispatcher;
 	
 	class ArrayCollection extends EventDispatcher, implements ICollection {
 		
 		public var filterFunction(null, setFilterFunction) : Dynamic;
-		public var iterator(getIterator, null) : IIterator
-		;
-		public var length(getLength, null) : Int
-		;
+		public var iterator(getIterator, null) : IIterator ;
+		public var length(getLength, null) : Int ;
 		public var normalizedArray(getNormalizedArray, null) : Array<Dynamic>;
-		public var source(getSource, setSource) : Dynamic
-		;
+		public var source(getSource, setSource) : Dynamic ;
+
 		var _originalSource:Array<Dynamic>;
 		
 		public function new(?source:Array<Dynamic> = null)
 		{
+            super();
 			_source = source;
 			_originalSource = source;
 			_iterator = new ArrayIterator(this);
@@ -45,7 +45,7 @@ package com.cimians.openPyro.collections;
 		
 		public function getLength():Int
 		{
-			if(_source){
+			if(_source != null){
 				return _source.length;
 			}
 			return 0;
@@ -58,7 +58,7 @@ package com.cimians.openPyro.collections;
 		
 		public function getItemIndex(ob:Dynamic):Int
 		{
-			return _source.indexOf(ob);
+			return ArrayUtil.indexOf(_source, ob);
 		}
 		
 		public function removeItems(items:Array<Dynamic>):Void{
