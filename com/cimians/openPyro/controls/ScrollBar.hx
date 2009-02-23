@@ -229,7 +229,7 @@ package com.cimians.openPyro.controls;
 		public function setSlider(sl:Slider):Slider
 		{
 			
-			if(_slider == null)
+			if(_slider != null)
 			{
 				_slider.removeEventListener(SliderEvent.CHANGE, onSliderThumbDrag);
 				removeChild(_slider);

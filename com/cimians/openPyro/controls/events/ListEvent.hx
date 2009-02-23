@@ -9,14 +9,12 @@ package com.cimians.openPyro.controls.events;
 		
 		public function new(type:String)
 		{
-			super(type)
+			super(type);
 		}
 		
 		public override function clone():Event
 		{
-			var listEvent:ListEvent =  new ListEvent(this.type)
+			var listEvent:ListEvent =  new ListEvent(this.type);
 			return listEvent;
 		}
-		
-
 	}

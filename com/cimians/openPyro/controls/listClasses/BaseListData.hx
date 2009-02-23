@@ -4,9 +4,9 @@ package com.cimians.openPyro.controls.listClasses;
 	
 	
 	class BaseListData
-	 {
+	{
 		
-		public var list:List
+		public var list:List;
 		public var rowIndex:Int;
 		
 		public function new()

@@ -10,25 +10,30 @@ package com.cimians.openPyro.controls;
 
 	class Image extends UIControl {
 		
-		public var autoLoad(getAutoLoad, setAutoLoad) : Bool
-		;
+		public var autoLoad(getAutoLoad, setAutoLoad) : Bool ;
 		public var contentHeight(getContentHeight, null) : Float;
 		public var contentWidth(getContentWidth, null) : Float;
-		public var loader(getLoader, null) : Loader
-		;
-		public var loaderContext(getLoaderContext, setLoaderContext) : LoaderContext
-		;
-		public var maintainAspectRatio(getMaintainAspectRatio, setMaintainAspectRatio) : Bool
-		;
+		public var loader(getLoader, null) : Loader ;
+		public var loaderContext(getLoaderContext, setLoaderContext) : LoaderContext ;
+		public var maintainAspectRatio(getMaintainAspectRatio, setMaintainAspectRatio) : Bool ;
 		public var scaleToFit(getScaleToFit, setScaleToFit) : Bool;
 		public var source(null, setSource) : String;
+
 		var _sourceURL:String ;
 		var _loader:Loader;
 		
+		var _autoLoad:Bool;
+
+		var _scaleToFit:Bool ;
+
+		var _maintainAspectRatio:Bool ;
+
 		public function new() {
-			
 			_sourceURL = "";
 			super();
+            _autoLoad = true;
+            _scaleToFit = true;
+            _maintainAspectRatio = true;
 		}
 		
 		override function createChildren():Void
@@ -39,7 +44,7 @@ package com.cimians.openPyro.controls;
 			_loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, onIOError);
 			addChild(_loader);
 			
-			if(!_loaderContext)
+			if(_loaderContext != null)
 			{
 				_loaderContext = new LoaderContext(true);
 			}
@@ -49,7 +54,6 @@ package com.cimians.openPyro.controls;
 			}
 		}
 		
-		var _autoLoad:Bool ;
 		public function setAutoLoad(b:Bool):Bool
 		{
 			_autoLoad = b;	
@@ -62,15 +66,15 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public function setSource(url:String):String{
-			if(url == _sourceURL) return;
+			if(url == _sourceURL) return url;
 			_sourceURL = url;
-			if(_loader && _autoLoad){
+			if(_loader != null && _autoLoad){
 				_loader.load(new URLRequest(url), _loaderContext);
 			}
 			return url;
 		}
 		
-		var _loaderContext:LoaderContext
+		var _loaderContext:LoaderContext;
 		
 		/**
 		 * The LoaderContext that is used when loading an 
@@ -103,21 +107,22 @@ package com.cimians.openPyro.controls;
 			dispatchEvent(new Event(Event.COMPLETE));
 			forceInvalidateDisplayList = true;
 			invalidateSize();
-			invalidateDisplayList()
+			invalidateDisplayList();
 		}
+
 		override function doChildBasedValidation():Void{
-			if(!_loader ||  !_loader.content) return;
-			if(isNaN(this._explicitWidth) && isNaN(this._percentWidth) && isNaN(_percentUnusedWidth)){
-				measuredWidth = _loader.content.width
+			if(_loader == null ||  _loader.content == null) return;
+			if(Math.isNaN(this._explicitWidth) && Math.isNaN(this._percentWidth) && Math.isNaN(_percentUnusedWidth)){
+				measuredWidth = _loader.content.width;
 			}
-			if(isNaN(this._explicitHeight) && isNaN(this._percentHeight) && isNaN(_percentUnusedHeight))
+			if(Math.isNaN(this._explicitHeight) && Math.isNaN(this._percentHeight) && Math.isNaN(_percentUnusedHeight))
 			{
 				measuredHeight = _loader.content.height;
 			}
 		}
 		
 		public function getContentWidth():Float{
-			return _loader.content.width
+			return _loader.content.width;
 		}
 		
 		public function getContentHeight():Float{
@@ -129,28 +134,25 @@ package com.cimians.openPyro.controls;
 			//todo: Put broken thumb skin here//
 		}
 		
-		var _scaleToFit:Bool ;
 		public function getScaleToFit():Bool{
 			return _scaleToFit;
 		}
 		
 		public function setScaleToFit(value:Bool):Bool{
 			_scaleToFit = value;
-			if(_scaleToFit && _loader && _loader.content)
+			if(_scaleToFit && _loader != null && _loader.content != null)
 			{
-				scaleImageContent()
+				scaleImageContent();
 			}
 			return value;
 		}
 		
-		
-		
-		var _maintainAspectRatio:Bool ;
 		public function setMaintainAspectRatio(value:Bool):Bool
 		{
 			_maintainAspectRatio = value;
 			return value;
 		}
+
 		public function getMaintainAspectRatio():Bool
 		{
 			return _maintainAspectRatio;
@@ -161,8 +163,8 @@ package com.cimians.openPyro.controls;
 		
 			var scaleX:Float;
 			var scaleY:Float;	
-			scaleX = width / _loader.content.width;
-			scaleY = height / _loader.content.height;
+			scaleX = mwidth / _loader.content.width;
+			scaleY = mheight / _loader.content.height;
 			
 			if(_maintainAspectRatio)
 			{
@@ -180,8 +182,8 @@ package com.cimians.openPyro.controls;
 		public override function updateDisplayList(unscaledWidth:Float, unscaledHeight:Float):Void
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			if(_loader && _loader.content && _scaleToFit){
-				scaleImageContent()
+			if(_loader != null && _loader.content != null && _scaleToFit){
+				scaleImageContent();
 			}
 		}
 		

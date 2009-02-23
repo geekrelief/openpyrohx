@@ -11,26 +11,19 @@ package com.cimians.openPyro.controls.listClasses;
 	
 	class DefaultListRenderer extends UIControl, implements IDataRenderer, implements IListDataRenderer {
 		
-		
-		
 		public var baseListData(null, setBaseListData) : BaseListData;
 		
-		public var data(getData, setData) : Dynamic
-		;
-		
-		public var labelFormat(null, setLabelFormat) : TextFormat;
-		
-		public var rollOutBackgroundPainter(null, setRollOutBackgroundPainter) : IPainter;
-		
-		public var rollOverBackgroundPainter(null, setRollOverBackgroundPainter) : IPainter;
-		
-		public var selected(getSelected, setSelected) : Bool
-		;
+		public var data(getData, setData) : Dynamic ; 
+		public var labelFormat(null, setLabelFormat) : TextFormat; 
+		public var rollOutBackgroundPainter(null, setRollOutBackgroundPainter) : IPainter; 
+		public var rollOverBackgroundPainter(null, setRollOverBackgroundPainter) : IPainter; 
+		public var selected(getSelected, setSelected) : Bool ;
 		
 		var _labelField:TextField;
 		
 		var _rollOverBackgroundPainter:IPainter;
 		var _rollOutBackgroundPainter:IPainter;
+		var _labelFormat:TextFormat;
 		
 		public function new() {
 			super();
@@ -39,34 +32,34 @@ package com.cimians.openPyro.controls.listClasses;
 		override function createChildren():Void
 		{
 			super.createChildren();
-			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler)
-			this.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler)
-			_labelField = new TextField()
+			this.addEventListener(MouseEvent.MOUSE_OVER, mouseOverHandler);
+			this.addEventListener(MouseEvent.MOUSE_OUT, mouseOutHandler);
+			_labelField = new TextField();
 			_labelField.selectable=false;
 			
-			if(!_labelFormat){
-				_labelField.defaultTextFormat= new TextFormat("Arial",12)
+			if(_labelFormat == null){
+				_labelField.defaultTextFormat= new TextFormat("Arial",12);
 			} 
 			else{
 				_labelField.defaultTextFormat = _labelFormat;
 			}
 			addChild(_labelField);
-			if(_data && _baseListData && _baseListData.list){
+			if(_data != null && _baseListData != null && _baseListData.list != null){
 				_labelField.text = _baseListData.list.labelFunction(_data);
 			}
 			
-			if(!_rollOverBackgroundPainter){
-				_rollOverBackgroundPainter = new FillPainter(0x559DE6)
+			if(_rollOverBackgroundPainter == null){
+				_rollOverBackgroundPainter = new FillPainter(0x559DE6);
 			}
-			if(!_rollOutBackgroundPainter){
-				_rollOutBackgroundPainter = new FillPainter(0xffffff)
+			if(_rollOutBackgroundPainter == null){
+				_rollOutBackgroundPainter = new FillPainter(0xffffff);
 			}
-			this.backgroundPainter = this._rollOutBackgroundPainter
+			this.backgroundPainter = this._rollOutBackgroundPainter;
 		}
 		
 		var _baseListData:BaseListData;
 		public function setBaseListData(value:BaseListData):BaseListData{
-			_baseListData = value
+			_baseListData = value;
 			return value;
 		}
 		public function setRollOutBackgroundPainter(painter:IPainter):IPainter{
@@ -79,10 +72,9 @@ package com.cimians.openPyro.controls.listClasses;
 			return painter;
 		}
 		
-		var _labelFormat:TextFormat;
 		public function setLabelFormat(format:TextFormat):TextFormat{
 			_labelFormat = format;
-			if(_labelField){
+			if(_labelField != null){
 				_labelField.defaultTextFormat = format;
 			}
 			return format;
@@ -106,7 +98,7 @@ package com.cimians.openPyro.controls.listClasses;
 		{
 			_data = value;
 			
-			if(_labelField && _baseListData && _baseListData.list){
+			if(_labelField != null && _baseListData != null && _baseListData.list != null){
 				_labelField.text =  _baseListData.list.labelFunction(_data);
 			}
 			return value;
@@ -141,9 +133,8 @@ package com.cimians.openPyro.controls.listClasses;
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 		
 			_labelField.x = _labelField.y = 5;
-			_labelField.width = unscaledWidth-10
+			_labelField.width = unscaledWidth-10;
 			_labelField.height = Math.max(unscaledHeight-10,20);
-			
 		}
 
 	}

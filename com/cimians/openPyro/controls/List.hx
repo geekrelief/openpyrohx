@@ -14,6 +14,7 @@ package com.cimians.openPyro.controls;
 	import com.cimians.openPyro.core.IDataRenderer;
 	import com.cimians.openPyro.core.ObjectPool;
 	import com.cimians.openPyro.core.UIContainer;
+	import com.cimians.openPyro.core.MeasurableControl;
 	import com.cimians.openPyro.layout.VLayout;
 	import com.cimians.openPyro.utils.ArrayUtil;
 	import com.cimians.openPyro.utils.StringUtil;
@@ -31,37 +32,32 @@ package com.cimians.openPyro.controls;
 		 */ 
 		
 		
-		public var dataProvider(getDataProvider, setDataProvider) : Dynamic;
-		
-		public var itemRenderer(null, setItemRenderer) : ClassFactory;
-		
-		public var labelFunction(getLabelFunction, setLabelFunction) : Dynamic;
-		
-		public var layoutChildren(getLayoutChildren, null) : Array<Dynamic>;
-		
-		public var originalRawDataProvider(getOriginalRawDataProvider, null) : Dynamic;
-		
-		public var selectedIndex(getSelectedIndex, setSelectedIndex) : Int
-		;
-		
+		public var dataProvider(getDataProvider, setDataProvider) : Dynamic; 
+		public var itemRenderer(null, setItemRenderer) : ClassFactory; 
+		public var labelFunction(getLabelFunction, setLabelFunction) : Dynamic; 
+		public var originalRawDataProvider(getOriginalRawDataProvider, null) : Dynamic; 
+		public var selectedIndex(getSelectedIndex, setSelectedIndex) : Int ;
 		public var selectedItem(getSelectedItem, setSelectedItem) : Dynamic;
 		
 		/**
 		 * Resets scrolls when the dataProvider changes
 		 */ 
-		public var autoResetScrollOnDataProviderChange:Bool public function new()
+		public var autoResetScrollOnDataProviderChange:Bool;
+		var _labelFunction:Dynamic;
+        
+		var _selectedIndex:Int ;
+
+        public function new()
 		{
-			
-			autoResetScrollOnDataProviderChange = true
-		
-		
-		;
+			autoResetScrollOnDataProviderChange = true;
 			super();
-			this._labelFunction = StringUtil.toStringLabel
+			this._labelFunction = StringUtil.toStringLabel;
 			_layout = new VLayout();
+            renderers = new Array();
+            _selectedIndex = -1;
 		}
 		
-		var _labelFunction:Dynamic  public function setLabelFunction(func:Dynamic):Dynamic{
+        public function setLabelFunction(func:Dynamic):Dynamic{
 			_labelFunction = func;
 			/*
 			 * TODO: Change label functions on all itemRenderers
@@ -76,14 +72,14 @@ package com.cimians.openPyro.controls;
 		
 		override function createChildren():Void
 		{
-			if(!this._rendererPool){
+			if(this._rendererPool == null){
 				var cf:ClassFactory = new ClassFactory(DefaultListRenderer);
-				cf.properties = {percentWidth:100, height:25};
-				_rendererPool = new ObjectPool(cf)
+				cf.properties = {percentWidth:100, mheight:25};
+				_rendererPool = new ObjectPool(cf);
 			}
 		}
 		
-		var renderers:Array<Dynamic> ;
+		var renderers:Array<Dynamic>;
 		var _rendererPool:ObjectPool;
 		var selectedRenderer:DisplayObject;
 		
@@ -92,21 +88,21 @@ package com.cimians.openPyro.controls;
 		
 		public function setDataProvider(dp:Dynamic):Dynamic{
 			if(dp == _originalRawDataProvider){
-				return;
+				return dp;
 			}
-			_originalRawDataProvider =dp
+			_originalRawDataProvider = dp;
 			if(autoResetScrollOnDataProviderChange){
-				verticalScrollPosition = 0
-				horizontalScrollPosition=0
+				verticalScrollPosition = 0;
+				horizontalScrollPosition = 0;
 			}
-			if(_dataProvider){
+			if(_dataProvider != null){
 				_dataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGED, onSourceCollectionChanged);
 				_dataProvider.iterator.addEventListener(IteratorEvent.ITERATOR_MOVED, onIteratorMoved);
 			}
-			convertDataToCollection(dp)
+			convertDataToCollection(dp);
 			_dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGED, onSourceCollectionChanged);
 			_dataProvider.iterator.addEventListener(IteratorEvent.ITERATOR_MOVED, onIteratorMoved);
-			createRenderers()
+			createRenderers();
 			return dp;
 		}
 		
@@ -115,8 +111,8 @@ package com.cimians.openPyro.controls;
 		}
 		
 		function createRenderers():Void{
-			if(!_rendererPool) return;
-			returnRenderersToPool()
+			if(_rendererPool == null) return;
+			returnRenderersToPool();
 			var renderer:DisplayObject;
 			
 			var iterator:IIterator = _dataProvider.iterator;
@@ -125,14 +121,14 @@ package com.cimians.openPyro.controls;
 			while(iterator.hasNext())
 			{
 				var listData:Dynamic = iterator.getNext();
-				renderer = DisplayObject(_rendererPool.getObject());
+				renderer = cast(_rendererPool.getObject(), DisplayObject);
 				setRendererData(renderer, listData, iterator.cursorIndex);
 				renderers.push(renderer);
 				contentPane.addChildAt(renderer,0);
 				
 			}
 			// reset the iterator to -1
-			iterator.reset()
+			iterator.reset();
 			
 			displayListInvalidated = true;
 			this.forceInvalidateDisplayList = true;
@@ -158,26 +154,26 @@ package com.cimians.openPyro.controls;
 		function onSourceCollectionChanged(event:CollectionEvent):Void{
 		
 			if(event.kind == CollectionEventKind.REMOVE){
-				handleDataProviderItemsRemoved(event)
+				handleDataProviderItemsRemoved(event);
 			}
 			
 			else if(event.kind == CollectionEventKind.ADD){
-				handDataProviderItemsAdded(event)
+				handDataProviderItemsAdded(event);
 			}
 			else if(event.kind == CollectionEventKind.RESET){
 				createRenderers();	
 			}
 			
-			this.displayListInvalidated = true
+			this.displayListInvalidated = true;
 			this.layoutInvalidated = true;
-			this.invalidateSize()
+			this.invalidateSize();
 		}
 		
 		function onIteratorMoved(event:IteratorEvent):Void{
 			var data:Dynamic = _dataProvider.iterator.getCurrent();
 			var renderer:DisplayObject = dataToItemRenderer(data);
 			if(Std.is( renderer, IListDataRenderer)){
-				IListDataRenderer(renderer).selected = true;
+				cast(renderer, IListDataRenderer).selected = true;
 			}
 			selectedRenderer = renderer;
 			dispatchEvent(new ListEvent(ListEvent.CHANGE));
@@ -187,10 +183,10 @@ package com.cimians.openPyro.controls;
 		{
 			var childNodesData:Array<Dynamic> = event.delta;
 			
-			var renderer:DisplayObject
+			var renderer:DisplayObject;
 			for(i in 0...childNodesData.length){
 					renderer = dataToItemRenderer(childNodesData[i]);
-					if(renderer && renderer.parent){
+					if(renderer != null && renderer.parent != null){
 						renderer.parent.removeChild(renderer);
 						ArrayUtil.remove(renderers, renderer);
 					}
@@ -200,25 +196,29 @@ package com.cimians.openPyro.controls;
 		function handDataProviderItemsAdded(event:CollectionEvent):Void
 		{
 			var childNodesData:Array<Dynamic> = event.delta;
-			var renderer:DisplayObject
+			var renderer:DisplayObject;
 			var eventSourceData:Dynamic = event.eventNode;
-			var parentNode:DisplayObject
+			var parentNode:DisplayObject;
 			
 			
 			//trace(XMLNodeDescriptor(eventSourceData).nodeString);	
 			for(j in 0...renderers.length){
 				var r:DisplayObject = renderers[j];
 			
-				if(IDataRenderer(r).data == eventSourceData){
+				if(cast(r, IDataRenderer).data == eventSourceData){
 					parentNode = r;
 					var positionRefNode:DisplayObject = parentNode;
-					var k:Int=childNodesData.length-1;
+					var k:Int = childNodesData.length-1;
 					while (k>=0){
 						var newRenderer:DisplayObject = cast( _rendererPool.getObject(), DisplayObject);
-						var listData:Dynamic = childNodesData[k]
+						var listData:Dynamic = childNodesData[k];
 						setRendererData(newRenderer, listData, k);
 						this.contentPane.addChildAt(newRenderer,0);
-						newRenderer.y = positionRefNode.y - newRenderer.height;
+                        if(Std.is(newRenderer, MeasurableControl)) {
+						    newRenderer.y = positionRefNode.y - cast(newRenderer, MeasurableControl).mheight;
+                        }else {
+						    newRenderer.y = positionRefNode.y - newRenderer.height;
+                        }
 						positionRefNode = newRenderer;
 						ArrayUtil.insertAt(renderers, (j+1), newRenderer);	
 						k--;
@@ -229,11 +229,11 @@ package com.cimians.openPyro.controls;
 		}
 		
 		function returnRenderersToPool():Void{
-			var renderer:DisplayObject
+			var renderer:DisplayObject;
 			while(renderers.length > 0)
 			{
 				renderer = renderers.shift();
-				if(renderer.parent)
+				if(renderer.parent != null)
 				{
 					renderer.parent.removeChild(renderer);
 				}
@@ -244,12 +244,12 @@ package com.cimians.openPyro.controls;
 		function setRendererData(renderer:DisplayObject, data:Dynamic, index:Int):Void
 		{
 			if(Std.is( renderer, IListDataRenderer)){
-				var baseListData:BaseListData = new BaseListData()
+				var baseListData:BaseListData = new BaseListData();
 				baseListData.list = this;
 				baseListData.rowIndex = index;
 				
-				IListDataRenderer(renderer).baseListData = baseListData;
-				IListDataRenderer(renderer).data = data;
+				cast(renderer, IListDataRenderer).baseListData = baseListData;
+				cast(renderer, IListDataRenderer).data = data;
 			
 			}
 			renderer.addEventListener(MouseEvent.CLICK, handleRendererClick);
@@ -258,32 +258,32 @@ package com.cimians.openPyro.controls;
 		
 		function handleRendererClick(event:MouseEvent):Void
 		{
-				// dont react if the click is coming from a currently 
-				// selected child.
-				if(IListDataRenderer(event.currentTarget).selected) return;
-				
-				
-				if(selectedRenderer && Std.is( selectedRenderer, IListDataRenderer)){
-					IListDataRenderer(selectedRenderer).selected = false;
-				}
-				var newIndex:Int = itemRendererToIndex(cast( event.currentTarget, DisplayObject));
-				if(newIndex != selectedIndex){
-					selectedIndex = newIndex;
-					selectedRenderer = cast( event.currentTarget, DisplayObject);
-					if(Std.is( selectedRenderer, IListDataRenderer)){
-						IListDataRenderer(selectedRenderer).selected = true;
-					}
-				}
-				
-				dispatchEvent(new ListEvent(ListEvent.ITEM_CLICK));
+            // dont react if the click is coming from a currently 
+            // selected child.
+            if(cast(event.currentTarget, IListDataRenderer).selected) return;  // we could fire a reclick event
+            
+            
+            if(selectedRenderer != null && Std.is( selectedRenderer, IListDataRenderer)){
+                cast(selectedRenderer, IListDataRenderer).selected = false;
+            }
+            var newIndex:Int = itemRendererToIndex(cast( event.currentTarget, DisplayObject));
+            if(newIndex != selectedIndex){
+                selectedIndex = newIndex;
+                selectedRenderer = cast( event.currentTarget, DisplayObject);
+                if(Std.is( selectedRenderer, IListDataRenderer)){
+                    cast(selectedRenderer, IListDataRenderer).selected = true;
+                }
+            }
+            
+            dispatchEvent(new ListEvent(ListEvent.ITEM_CLICK));
 		}
 		
 		
 		public function dataToItemRendererIndex(data:Dynamic):Int
 		{
 			for(i in 0...renderers.length){
-				if(IDataRenderer(renderers[i]).data == data){
-					return i
+				if(cast(renderers[i], IDataRenderer).data == data){
+					return i;
 				}
 			}
 			return -1;
@@ -291,8 +291,8 @@ package com.cimians.openPyro.controls;
 		
 		public function dataToItemRenderer(data:Dynamic):DisplayObject{
 			for(i in 0...renderers.length){
-				if(IDataRenderer(renderers[i]).data == data){
-					return renderers[i]
+				if(cast(renderers[i], IDataRenderer).data == data){
+					return renderers[i];
 				}
 			}
 			return null;
@@ -300,7 +300,7 @@ package com.cimians.openPyro.controls;
 		
 		public function itemRendererToIndex(renderer:DisplayObject):Int
 		{
-			var data:Dynamic = IDataRenderer(renderer).data;
+			var data:Dynamic = cast(renderer, IDataRenderer).data;
 			return _dataProvider.getItemIndex(data);
 		}
 		
@@ -311,7 +311,7 @@ package com.cimians.openPyro.controls;
 			if(_selectedIndex == -1){
 				return null;
 			}
-			return IDataRenderer(renderers[_selectedIndex]).data;
+			return cast(renderers[_selectedIndex], IDataRenderer).data;
 		}
 		
 		public function setSelectedItem(item:Dynamic):Dynamic{
@@ -321,44 +321,41 @@ package com.cimians.openPyro.controls;
 			// to the renderers.
 			
 			
-			if(!renderers || renderers.length == 0)
+			if(renderers == null || renderers.length == 0)
 			{
-				throw new Error("LIST does not have renderers")
-				return;
+				throw ("LIST does not have renderers");
+				return null;
 			}
 			for(i in 0...renderers.length)
 			{
-				if (item == IDataRenderer(renderers[i]).data)
+				if (item == cast(renderers[i], IDataRenderer).data)
 				{
 					if(Std.is( renderers[i], IListDataRenderer))
 					{
-						IListDataRenderer(renderers[i]).selected = true;
+						cast(renderers[i], IListDataRenderer).selected = true;
 					}
-					return;
+					return item;
 				}
 			}
 			
-			throw new Error("Selected item not found in List data");
+			throw ("Selected item not found in List data");
 			return item;
 			// TODO: 
 			// right now i am assuming all data is rendererd 
 			// This will change when object pool is connected
 			// to the renderers.
-			
-			
 		}
 		
-		var _selectedIndex:Int ;
 		
 		public function setSelectedIndex(index:Int):Int
 		{
-			if(_selectedIndex == index) return;
-			if(this.selectedRenderer && Std.is( this.selectedRenderer, IListDataRenderer)){
-				IListDataRenderer(selectedRenderer).selected = false;
+			if(_selectedIndex == index) return index;
+			if(this.selectedRenderer != null && Std.is( this.selectedRenderer, IListDataRenderer)){
+				cast(selectedRenderer, IListDataRenderer).selected = false;
 			}
 			
 			_selectedIndex = index;
-			if(_dataProvider){
+			if(_dataProvider != null){
 				//selectedItem = _dataProvider[index];
 				_dataProvider.iterator.cursorIndex = index;
 			}
@@ -376,15 +373,15 @@ package com.cimians.openPyro.controls;
 			_rendererPool = new ObjectPool(itemRenderer);
 			
 			renderers = new Array();
-			var renderer:DisplayObject
-			if(_dataProvider)
+			var renderer:DisplayObject;
+			if(_dataProvider != null)
 			{
 				for(j in 0..._dataProvider.length)
 				{
-					renderer = DisplayObject(_rendererPool.getObject());
+					renderer = cast(_rendererPool.getObject(), DisplayObject);
 					renderers.push(renderer);
 					contentPane.addChildAt(renderer,0);
-					setRendererData(renderer,j, j)
+					setRendererData(renderer,j, j);
 				}		
 			}
 			this.displayListInvalidated = true;
@@ -394,11 +391,11 @@ package com.cimians.openPyro.controls;
 		}
 		
 		function destroyOldRenderers():Void{
-			var renderer:DisplayObject
-			if(renderers){
+			var renderer:DisplayObject;
+			if(renderers != null){
 				while(renderers.length > 0){
 					renderer = renderers.shift();
-					if(renderer.parent){
+					if(renderer.parent != null){
 						renderer.parent.removeChild(renderer);
 						renderer = null;
 					}
@@ -413,7 +410,4 @@ package com.cimians.openPyro.controls;
 		public override function getLayoutChildren():Array<Dynamic>{
 			return this.renderers;
 		}
-		
-		
-		
 	}
