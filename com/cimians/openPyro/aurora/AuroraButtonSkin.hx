@@ -36,6 +36,8 @@ package com.cimians.openPyro.aurora;
 		var _overColors:Array<UInt> ;
 		var _downColors:Array<UInt> ;
 	
+		var label:Label;
+
 		public function new()
 		{
             super();
@@ -51,13 +53,13 @@ package com.cimians.openPyro.aurora;
 		}
 		
 		public override function setSkinnedControl(uic:UIControl):UIControl{
-			if(skinnedControl != null)
+			if(_skinnedControl != null)
 			{
-				skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
+				_skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
 			}
 
 			super.setSkinnedControl(uic);
-			skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
+			_skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
 			if(Std.is( uic, Button))
 			{
 				this.changeState(null, cast(uic, Button).currentState);
@@ -71,7 +73,7 @@ package com.cimians.openPyro.aurora;
 		
 		function onSkinnedControlPropertyChange(event:PyroEvent):Void
 		{
-			if(Std.is( skinnedControl, Button))
+			if(Std.is( _skinnedControl, Button))
 			{
 				updateLabel();
 			}
@@ -83,7 +85,7 @@ package com.cimians.openPyro.aurora;
 		public function setIcon(icn:DisplayObject):DisplayObject{
 			_icon = icn;
 			addChild(_icon);
-			if(skinnedControl != null){
+			if(_skinnedControl != null){
 				invalidateDisplayList();
 			}
 			return icn;
@@ -99,7 +101,7 @@ package com.cimians.openPyro.aurora;
 			{
 				label.textFormat = fmt;
 			}
-			if(skinnedControl != null)
+			if(_skinnedControl != null)
 			{
 				invalidateDisplayList();
 			}
@@ -111,13 +113,12 @@ package com.cimians.openPyro.aurora;
 			return _labelFormat;
 		}
 		
-		var label:Label;
 		
 		public function updateLabel():Void
 		{
-			if(Std.is( this.skinnedControl, Button))
+			if(Std.is( this._skinnedControl, Button))
 			{
-				var bttn:Button = cast this.skinnedControl;
+				var bttn:Button = cast(this._skinnedControl, Button);
 				if(bttn.label == null) return;
 				if(label == null){
 					label = new Label();
@@ -130,7 +131,7 @@ package com.cimians.openPyro.aurora;
 		
 		public function setLabelAlign(direction:String):String{
 			_labelAlign = direction;
-			if(skinnedControl != null){
+			if(_skinnedControl != null){
 				invalidateDisplayList();
 			}
 			return direction;

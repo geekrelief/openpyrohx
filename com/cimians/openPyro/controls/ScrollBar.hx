@@ -51,10 +51,6 @@ package com.cimians.openPyro.controls;
             _value = 0;
             _minimum = 0;
             _maximum = 100;
-
-            _visibleScroll = Math.NaN;
-            _maxScroll = Math.NaN;
-            _scrollButtonSize = Math.NaN;
 		}
 		
 		/**
@@ -93,10 +89,10 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public override function setSkin(skinImpl:ISkin):ISkin{
-			skin = skinImpl;
+			super.setSkin(skinImpl);
 			if(Std.is( _skin, IScrollBarSkin))
 			{
-				var scrollBarSkin:IScrollBarSkin = cast skinImpl;
+				var scrollBarSkin:IScrollBarSkin = cast(skinImpl, IScrollBarSkin);
 				if(scrollBarSkin.sliderSkin != null)
 				{
 					if(_slider == null)
@@ -346,13 +342,13 @@ package com.cimians.openPyro.controls;
 			if(_slider == null) return;
 			if(this._direction == Direction.VERTICAL)
 			{
-				_scrollButtonSize = Math.floor(_visibleScroll*_slider.height/_maxScroll);
+				_scrollButtonSize = Math.floor(_visibleScroll*_slider.mheight/_maxScroll);
 				_slider.thumbButtonHeight = _scrollButtonSize;
 				
 			}
 			else if(this._direction == Direction.HORIZONTAL)
 			{
-				_scrollButtonSize =  Math.floor(_visibleScroll*_slider.width/_maxScroll);
+				_scrollButtonSize =  Math.floor(_visibleScroll*_slider.mwidth/_maxScroll);
 				_slider.thumbButtonWidth = _scrollButtonSize;
 			}	
 		}

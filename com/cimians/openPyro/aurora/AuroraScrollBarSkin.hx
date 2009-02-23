@@ -22,8 +22,7 @@ package com.cimians.openPyro.aurora;
 		
 		public function new()
 		{
-		
-		direction = Direction.VERTICAL ;
+		    direction = Direction.VERTICAL;
 		}
 
 		public function getIncrementButtonSkin():ISkin

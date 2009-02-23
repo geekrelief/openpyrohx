@@ -78,10 +78,10 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public override function setSkin(skinImpl:ISkin):ISkin{
-			skin = skinImpl;
+			super.setSkin(skinImpl);
 			if(Std.is( skinImpl, ISliderSkin))
 			{
-				var sliderSkin:ISliderSkin = cast skinImpl;
+				var sliderSkin:ISliderSkin = cast(skinImpl, ISliderSkin);
 				if(sliderSkin.trackSkin != null && Std.is( sliderSkin.trackSkin, DisplayObject)) 
                     this.trackSkin = cast(sliderSkin.trackSkin, DisplayObject);
 				if(sliderSkin.thumbSkin != null)

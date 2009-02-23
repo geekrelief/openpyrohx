@@ -115,7 +115,7 @@ package com.cimians.openPyro.core;
             displayListInvalidated = true;
             forceInvalidateDisplayList = false;
             _creationCompleteFired = false;
-            _isVisible = true;
+            mvisible = true;
             _mouseActionsDisabled = false;
             _includeInLayout = true;
 		}
@@ -578,7 +578,6 @@ package com.cimians.openPyro.core;
 				forceInvalidateDisplayList=false;
 				displayListInvalidated=true;
 				queueValidateDisplayList();
-				
 			}
 		}
 		
@@ -606,7 +605,6 @@ package com.cimians.openPyro.core;
 		 * validateDisplayList is called as a response to invalidateDisplayList.
 		 */ 
 		public function validateDisplayList(?event:Event=null):Void{
-			
 			if(Math.isNaN(this.getExplicitOrMeasuredWidth()) || Math.isNaN(this.getExplicitOrMeasuredHeight())){
 				return;
 			}
@@ -618,11 +616,6 @@ package com.cimians.openPyro.core;
                 if(Std.is(c, MeasurableControl)){
                     cast(c, MeasurableControl).validateDisplayList();
                 }
-                /*
-				var child:MeasurableControl = cast( this.getChildAt(j), MeasurableControl);
-				if(child == null) continue;
-				child.validateDisplayList();
-                */
 			}
 			this.updateDisplayList(this.getExplicitOrMeasuredWidth(), this.getExplicitOrMeasuredHeight());
 			if(_dimensionsChanged){

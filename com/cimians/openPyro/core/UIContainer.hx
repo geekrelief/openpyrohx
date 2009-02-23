@@ -265,7 +265,7 @@ package com.cimians.openPyro.core;
 				cast(_layout, IContainerMeasurementHelper).calculateSizes(layoutChildrenArray, this);
 			}
 			super.validateSize();
-			
+
 			if(this._verticalScrollBar != null && _verticalScrollBar.mvisible)
 			{
 				this.explicitlyAllocatedWidth-=_verticalScrollBar.mwidth;
@@ -339,9 +339,12 @@ package com.cimians.openPyro.core;
 			if(contentPane == null) return children;
 			for(i in 0...this.contentPane.numChildren)
 			{
-				var child:MeasurableControl = cast( contentPane.getChildAt(i), MeasurableControl);
-				if(child == null || !child.includeInLayout) continue;
-				children.push(child);
+                var c = contentPane.getChildAt(i);
+                if(Std.is(c, MeasurableControl)) {
+    				var child:MeasurableControl = cast(c, MeasurableControl);
+				    if(child.includeInLayout)
+        				children.push(child);
+                }
 			}
 			return children;
 		}
@@ -484,7 +487,7 @@ package com.cimians.openPyro.core;
 				{
 					createHScrollBar();
 				}
-				if(_horizontalScrollBar.mvisible==false)
+				if(!_horizontalScrollBar.mvisible)
 				{
 					_horizontalScrollBar.mvisible = true;
 					scrollBarsChanged = true;
@@ -507,7 +510,7 @@ package com.cimians.openPyro.core;
 				{
 					createVScrollBar();
 				}
-				if(_verticalScrollBar.mvisible == false)
+				if(!_verticalScrollBar.mvisible)
 				{
 					_verticalScrollBar.mvisible = true;
 					scrollBarsChanged=true;
@@ -515,7 +518,7 @@ package com.cimians.openPyro.core;
 			}
 			else
 			{
-				if(_verticalScrollBar != null && _verticalScrollBar.mvisible == true)
+				if(_verticalScrollBar != null && _verticalScrollBar.mvisible)
 				{
 					_verticalScrollBar.mvisible = false;
 					scrollBarsChanged = true;

@@ -20,7 +20,7 @@ package com.cimians.openPyro.aurora;
 		
 		public function new()
 		{
-		    trackGradientRotation =0;
+		    trackGradientRotation = 0;
 		}
 	
 		public function getThumbSkin():ISkin

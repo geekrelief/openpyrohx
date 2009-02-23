@@ -14,25 +14,24 @@ package com.cimians.openPyro.aurora;
 		
 		
 		
-		public var checkIcon(null, setCheckIcon) : DisplayObject;
-		
-		public var skinnedControl(null, setSkinnedControl) : UIControl;
-		
+		public var checkIcon(null, setCheckIcon) : DisplayObject; 
+		public var skinnedControl(null, setSkinnedControl) : UIControl; 
 		public var uncheckIcon(null, setUncheckIcon) : DisplayObject;
 		
 		/*[Embed(source="/assets/graphic_assets.swf", symbol="checkIcon")]*/
-		var TickGraphic:Class<Dynamic>
+		var TickGraphic:Class<Dynamic>;
 		
+		var _checkIcon:DisplayObject;
+
 		public function new()
 		{
 		}
 		
-		var _checkIcon:DisplayObject
 		
 		public var cornerRadius:Int public var boxLabelGap:Int ;
 		
 		public function setCheckIcon(icon:DisplayObject):DisplayObject{
-			_checkIcon = icon
+			_checkIcon = icon;
 			return icon;
 		}
 		
@@ -43,14 +42,14 @@ package com.cimians.openPyro.aurora;
 		}
 		
 		public override function setSkinnedControl(uic:UIControl):UIControl{
-			super.skinnedControl = uic
-			checkSelectedStatus()
+			super.setSkinnedControl(uic);
+			checkSelectedStatus();
 			return uic;
 		}
 		
 		override function onSkinnedControlPropertyChange(event:PyroEvent):Void{
 			super.onSkinnedControlPropertyChange(event);
-			checkSelectedStatus()
+			checkSelectedStatus();
 		}
 		
 		public override function changeState(fromState:String, toState:String):Void

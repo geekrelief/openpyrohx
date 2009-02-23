@@ -78,7 +78,8 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public override function setSkin(skinImpl:ISkin):ISkin{
-			skin = skinImpl;
+			//skin = skinImpl;
+            super.setSkin(skinImpl);
 			this._buttonSkin = skinImpl;
 			return skinImpl;
 		}

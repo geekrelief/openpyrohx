@@ -24,6 +24,9 @@ package com.cimians.openPyro.core;
 		public var styleName(getStyleName, setStyleName) : String;
 		public var toolTip(null, setToolTip) : Dynamic;
 		
+		var _skinnedControl:UIControl;
+		var _skin:ISkin;
+
 		public function new() {
 			super();
             _padding = new Padding();
@@ -114,7 +117,7 @@ package com.cimians.openPyro.core;
 				for(j in 0...this.numChildren){
 					child = this.getChildAt(j);
                     if(Std.is(child, MeasurableControl)){
-                        var mchild = cast(child, MeasurableControl);
+                        var mchild:MeasurableControl = cast child;
                         if(mchild.mwidth > maxW){
                             maxW = mchild.mwidth;
                         }
@@ -134,7 +137,7 @@ package com.cimians.openPyro.core;
 				for(k in 0...this.numChildren){
 					child = this.getChildAt(k);
                     if(Std.is(child, MeasurableControl)) {
-                        var mchild = cast(child, MeasurableControl);
+                        var mchild:MeasurableControl = cast child;
                         if(mchild.mheight > maxH){
                             maxH = mchild.mheight;
                         }
@@ -213,7 +216,6 @@ package com.cimians.openPyro.core;
 		 * @inhertiDoc
 		 */ 
 		public override function removeChild(d:DisplayObject):DisplayObject{
-			
 			var d2:DisplayObject = super.removeChild(d);
 			this.invalidateSize();
 			return d2;
@@ -311,7 +313,6 @@ package com.cimians.openPyro.core;
 		
 		public function dispose():Void{}
 		
-		var _skinnedControl:UIControl;
 		
 		public function setSkinnedControl(uic:UIControl):UIControl
 		{
@@ -321,11 +322,6 @@ package com.cimians.openPyro.core;
 			_skinnedControl = uic;
 			_skinnedControl.addEventListener(Event.RESIZE, onSkinnedControlResize);
 			return uic;
-		}
-		
-		public function getSkinnedControl():UIControl
-		{
-			return _skinnedControl;
 		}
 		
 		/**
@@ -340,7 +336,6 @@ package com.cimians.openPyro.core;
 			this.mheight = _skinnedControl.mheight;
 		}
 		
-		var _skin:ISkin;
 		
 		public function setSkin(skinImpl:ISkin):ISkin{
 			if(skinImpl == null) return null;

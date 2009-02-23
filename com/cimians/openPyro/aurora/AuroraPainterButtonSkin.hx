@@ -17,14 +17,9 @@ package com.cimians.openPyro.aurora;
 		
 		
 		public var icon(null, setIcon) : DisplayObject;
-		
-		public var labelAlign(null, setLabelAlign) : String;
-		
-		public var labelFormat(getLabelFormat, setLabelFormat) : TextFormat
-		;
-		
+		public var labelAlign(null, setLabelAlign) : String; 
+		public var labelFormat(getLabelFormat, setLabelFormat) : TextFormat ;
 		public var painters(null, setPainters) : IPainter;
-		
 		public var skinnedControl(null, setSkinnedControl) : UIControl;
 		
 		public function new()
@@ -33,15 +28,15 @@ package com.cimians.openPyro.aurora;
 		}
 		
 		public override function setSkinnedControl(uic:UIControl):UIControl{
-			if(skinnedControl)
+			if(_skinnedControl)
 			{
-				skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
+				_skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
 			}
-			super.skinnedControl = uic;
-			skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
+			super.setSkinnedControl(uic);
+			_skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
 			if(Std.is( uic, Button))
 			{
-				this.changeState(null, Button(uic).currentState);
+				this.changeState(null, cast(uic, Button).currentState);
 				updateLabel();
 			}
 			this.buttonMode = true;
@@ -52,7 +47,7 @@ package com.cimians.openPyro.aurora;
 		
 		function onSkinnedControlPropertyChange(event:PyroEvent):Void
 		{
-			if(Std.is( skinnedControl, Button))
+			if(Std.is( _skinnedControl, Button))
 			{
 				updateLabel();
 			}
@@ -64,7 +59,7 @@ package com.cimians.openPyro.aurora;
 		public function setIcon(icn:DisplayObject):DisplayObject{
 			_icon = icn;
 			addChild(_icon);
-			if(skinnedControl){
+			if(_skinnedControl != null){
 				invalidateDisplayList();
 			}
 			return icn;
@@ -77,11 +72,11 @@ package com.cimians.openPyro.aurora;
 		public function setLabelFormat(fmt:TextFormat):TextFormat
 		{
 			_labelFormat = fmt;
-			if(label)
+			if(label != null)
 			{
 				label.textFormat = fmt;
 			}
-			if(skinnedControl)
+			if(_skinnedControl != null)
 			{
 				invalidateDisplayList();
 			}
@@ -97,11 +92,11 @@ package com.cimians.openPyro.aurora;
 		
 		public function updateLabel():Void
 		{
-			if(Std.is( this.skinnedControl, Button))
+			if(Std.is( this._skinnedControl, Button))
 			{
-				var bttn:Button = Button(this.skinnedControl);
-				if(!bttn.label) return;
-				if(!label){
+				var bttn:Button = Button(this._skinnedControl);
+				if(bttn.label == null) return;
+				if(label == null){
 					label = new Label();
 					label.textFormat = _labelFormat;
 					addChild(label);
@@ -114,7 +109,7 @@ package com.cimians.openPyro.aurora;
 		var _labelAlign:String ;
 		public function setLabelAlign(direction:String):String{
 			_labelAlign = direction;
-			if(skinnedControl){
+			if(_skinnedControl != null){
 				invalidateDisplayList();
 			}
 			return direction;
@@ -165,7 +160,7 @@ package com.cimians.openPyro.aurora;
 		
 		public override function dispose():Void
 		{
-			if(this.parent)
+			if(this.parent != null)
 			{
 				this.parent.removeChild(this);
 			}
@@ -175,13 +170,13 @@ package com.cimians.openPyro.aurora;
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			
-			if(label){
+			if(label != null){
 				
 				label.textField.autoSize = "left";
-				label.y = (unscaledHeight-label.height)/2;
+				label.y = (unscaledHeight-label.mheight)/2;
 				
 				if(this._labelAlign == "center"){
-					label.x = (unscaledWidth-label.width)/2;
+					label.x = (unscaledWidth-label.mwidth)/2;
 				}
 				else if(_labelAlign == "left"){
 					label.x = 10;
@@ -189,7 +184,7 @@ package com.cimians.openPyro.aurora;
 			}
 			
 			if(_icon){
-				if(!label){
+				if(label == null){
 					_icon.x = (unscaledWidth-_icon.width)/2;
 				}
 				else{
