@@ -261,6 +261,7 @@ package com.cimians.openPyro.core;
 			if(w == _percentUnusedWidth) return w;
 			_percentUnusedWidth = w;
 			if(!initialized) return Math.NaN;
+            trace("invalidateSize");
 			invalidateSize();
 			return w;
 		}
@@ -404,11 +405,9 @@ package com.cimians.openPyro.core;
 		 */ 
 		public function validateSize():Void{
 			if(usesMeasurementStrategy){
-//				if(this._parentContainer){
-					measure();
-					checkDisplayListValidation();
-					sizeInvalidated=false;
-//				}
+                measure();
+                checkDisplayListValidation();
+                sizeInvalidated=false;
 			}	
 			else{
 				sizeInvalidated=false;
@@ -474,7 +473,6 @@ package com.cimians.openPyro.core;
 				}
 			}
 			else{
-				
 				if(this.sizeInvalidated){
 					_parentContainer.invalidateSize();
 				}
@@ -515,7 +513,7 @@ package com.cimians.openPyro.core;
 			}
 			else if(!Math.isNaN(this._percentWidth) && this._parentContainer != null)
 			{
-				this.measuredWidth = this._parentContainer.width*this._percentWidth/100;
+				this.measuredWidth = this._parentContainer.mwidth*this._percentWidth/100;
 			}
 		}
 		
@@ -527,7 +525,7 @@ package com.cimians.openPyro.core;
 			}
 			else if(!Math.isNaN(this._percentHeight) && this._parentContainer != null)
 			{
-				this.measuredHeight = this._parentContainer.height*this._percentHeight/100;
+				this.measuredHeight = this._parentContainer.mheight*this._percentHeight/100;
 			}
 		}
 		
@@ -756,8 +754,8 @@ package com.cimians.openPyro.core;
 		 * while the mouse was over the displayObject
 		 */
 		 public function isMouseOver(event:MouseEvent):Bool{
-		 	if(event.localX < this.width && event.localX > 0 && 
-			event.localY < this.height && event.localY > 0){
+		 	if(event.localX < this.mwidth && event.localX > 0 && 
+			event.localY < this.mheight && event.localY > 0){
 				return true;
 			}
 			else{

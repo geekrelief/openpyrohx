@@ -125,7 +125,6 @@ package com.cimians.openPyro.controls;
 				setRendererData(renderer, listData, iterator.cursorIndex);
 				renderers.push(renderer);
 				contentPane.addChildAt(renderer,0);
-				
 			}
 			// reset the iterator to -1
 			iterator.reset();
@@ -381,7 +380,7 @@ package com.cimians.openPyro.controls;
 					renderer = cast(_rendererPool.getObject(), DisplayObject);
 					renderers.push(renderer);
 					contentPane.addChildAt(renderer,0);
-					setRendererData(renderer,j, j);
+					setRendererData(renderer, j, j);
 				}		
 			}
 			this.displayListInvalidated = true;

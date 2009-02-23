@@ -4,16 +4,13 @@ package com.cimians.openPyro.collections;
 	
 	class CollectionHelpers
     {
-		public function new() { }
-		
 		public static function sourceToCollection(src:Dynamic):ICollection{
 			if(Std.is( src, Array)){
-				return new ArrayCollection(cast(src, Array<Dynamic>));
+				return new ArrayCollection(src);
 			} else if(Std.is(src, Xml)){
-				var x = new XMLCollection(cast( src, Xml));
+				var x = new XMLCollection(src);
                 return x;
-			}
-			else {
+			} else {
                 return cast(src, ICollection);
             }
 		}

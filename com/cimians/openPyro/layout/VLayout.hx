@@ -91,11 +91,12 @@ package com.cimians.openPyro.layout;
 				_prepare(children);
 			}	
 			
+            /*
 			var nowY:Float=_initY;
 			var effectDescriptors:Array<Dynamic>  = new Array();
 			for(i in 0...children.length){
 				var c:DisplayObject = cast( children[i], DisplayObject);
-				//c.y = nowY;
+				c.y = nowY;
 				var eff:EffectDescriptor = new EffectDescriptor(c, animationDuration, {y:nowY});
 				effectDescriptors.push(eff);
 				c.x = _initX;
@@ -109,6 +110,19 @@ package com.cimians.openPyro.layout;
 			var move:PyroEffect = new PyroEffect();
 			move.effectDescriptors = effectDescriptors;
 			move.start();
+            */
+
+			var nowY:Float=_initY;
+			for(i in 0...children.length){
+				var c:DisplayObject = cast children[i];
+				c.y = nowY;
+				c.x = _initX;
+                if(Std.is(c, MeasurableControl)){
+    				nowY+=cast(c, MeasurableControl).mheight+_vGap;
+                } else {
+				    nowY+=c.height+_vGap;
+                }
+			}		
 		}
 		
 		/**		

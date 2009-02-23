@@ -59,7 +59,16 @@ package com.cimians.openPyro.core;
                 var props = Reflect.fields(properties);
 	        	for (p in props)
 				{
-                    Reflect.setField(instance, p, Reflect.field(properties, p));
+                    if(Reflect.hasField(instance, p)) {
+                        var field = Reflect.field(instance, p);
+                        if(Reflect.isFunction(field)) {
+                            Reflect.callMethod(instance, field, [Reflect.field(properties, p)]);
+                        } else {
+                            Reflect.setField(instance, p, Reflect.field(properties, p));
+                        }
+                    } else {
+                        throw ("newInstance of "+generator+" does not have field: "+p);
+                    }
 				}
 	       	}
 	

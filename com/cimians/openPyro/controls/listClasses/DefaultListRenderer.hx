@@ -24,6 +24,10 @@ package com.cimians.openPyro.controls.listClasses;
 		var _rollOverBackgroundPainter:IPainter;
 		var _rollOutBackgroundPainter:IPainter;
 		var _labelFormat:TextFormat;
+
+		var _baseListData:BaseListData;
+		
+		var _data:Dynamic;
 		
 		public function new() {
 			super();
@@ -57,7 +61,6 @@ package com.cimians.openPyro.controls.listClasses;
 			this.backgroundPainter = this._rollOutBackgroundPainter;
 		}
 		
-		var _baseListData:BaseListData;
 		public function setBaseListData(value:BaseListData):BaseListData{
 			_baseListData = value;
 			return value;
@@ -91,8 +94,6 @@ package com.cimians.openPyro.controls.listClasses;
 				this.backgroundPainter = _rollOutBackgroundPainter;
 			}
 		}
-		
-		var _data:Dynamic;
 		
 		public function setData(value:Dynamic):Dynamic
 		{
@@ -136,5 +137,4 @@ package com.cimians.openPyro.controls.listClasses;
 			_labelField.width = unscaledWidth-10;
 			_labelField.height = Math.max(unscaledHeight-10,20);
 		}
-
 	}

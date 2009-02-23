@@ -26,7 +26,7 @@ package com.cimians.openPyro.collections;
 		}
 		
 		function setSource():Void{
-			_array = cast( _collection.normalizedArray, Array<Dynamic>);
+			_array = _collection.normalizedArray;
 		}
 		
         public function getCurrent():Dynamic{

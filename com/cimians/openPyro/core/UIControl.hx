@@ -228,7 +228,7 @@ package com.cimians.openPyro.core;
 			//_S_height = unscaledHeight;
 			if(this._backgroundPainter != null){
 				this.graphics.clear();
-				_backgroundPainter.draw(cast(this, Sprite).graphics, unscaledWidth,unscaledHeight);
+				_backgroundPainter.draw(cast(this, Sprite).graphics, unscaledWidth, unscaledHeight);
 			}
 			if(_skin != null && !(Std.is( _skin, MeasurableControl)) && (Std.is( _skin, DisplayObject))){
 				cast(_skin, DisplayObject).width = unscaledWidth;
@@ -336,8 +336,8 @@ package com.cimians.openPyro.core;
 		 */ 
 		function onSkinnedControlResize(event:Event):Void
 		{
-			this.width = _skinnedControl.width;
-			this.height = _skinnedControl.height;
+			this.mwidth = _skinnedControl.mwidth;
+			this.mheight = _skinnedControl.mheight;
 		}
 		
 		var _skin:ISkin;

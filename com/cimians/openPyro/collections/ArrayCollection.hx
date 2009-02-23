@@ -66,13 +66,9 @@ package com.cimians.openPyro.collections;
 		}
 		
 		public function setFilterFunction(f:Dynamic):Dynamic{
-			
 			return f;
-			
-	}
+	    }
 		
 		public function refresh():Void{
-		
 		}
-		
 	}

@@ -9,8 +9,6 @@ package com.cimians.openPyro.core;
 	 */ 
 	class ObjectPool {
 		
-		
-		
 		var availableObjects:Array<Dynamic>;
 		var populatedObjects:Array<Dynamic>;
 		var _classFactory:ClassFactory;
@@ -38,7 +36,7 @@ package com.cimians.openPyro.core;
 		}
 		
 		public function returnToPool(r:Dynamic):Void{
-			ArrayUtil.removeItemAt(populatedObjects, populatedObjects.indexOf(r));
+			ArrayUtil.removeItemAt(populatedObjects, ArrayUtil.indexOf(populatedObjects, r));
 			this.availableObjects.push(r);
 		}
 	}

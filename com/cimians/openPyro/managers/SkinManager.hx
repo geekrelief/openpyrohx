@@ -84,7 +84,7 @@ package com.cimians.openPyro.managers;
 		
 		public function registerFlaSkin(skin:Class<Dynamic>, selector:String):Void
 		{
-			var flaSkinFactory:ClassFactory = new ClassFactory(FlaSymbolSkin);
+			var flaSkinFactory = new ClassFactory(FlaSymbolSkin);
 			flaSkinFactory.properties = {movieClipClass:skin};
 			registerSkin(flaSkinFactory, selector);
 		}
