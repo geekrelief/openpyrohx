@@ -12,10 +12,12 @@ package com.cimians.openPyro.controls;
 		public var textField(getTextField, null) : TextField ;
 		public var textFormat(getTextFormat, setTextFormat) : TextFormat;
 		var _textField:TextField;
+		var _text:String;
 		
 		public function new()
 		{
 			super();
+            _text = "";
 		}
 		
 		override function createChildren():Void{
@@ -69,7 +71,6 @@ package com.cimians.openPyro.controls;
 		}
 		
 		
-		var _text:String ;
 		
 		/**
 		 * Sets the string that will be displayed

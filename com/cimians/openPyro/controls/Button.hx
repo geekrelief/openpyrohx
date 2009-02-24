@@ -40,6 +40,8 @@ package com.cimians.openPyro.controls;
 		var _toggle:Bool;
 		var _selected:Bool ;
 
+		public var currentState:String;
+
 		public function new(){
 			
 			mouseOutHandler = onMouseOut;
@@ -78,7 +80,6 @@ package com.cimians.openPyro.controls;
 		}
 		
 		public override function setSkin(skinImpl:ISkin):ISkin{
-			//skin = skinImpl;
             super.setSkin(skinImpl);
 			this._buttonSkin = skinImpl;
 			return skinImpl;
@@ -124,7 +125,6 @@ package com.cimians.openPyro.controls;
 		
 		//////////// States //////////////////////////
 		
-		public var currentState:String;
 		
 		public function changeState(fromState:String, toState:String):Void{}
 		

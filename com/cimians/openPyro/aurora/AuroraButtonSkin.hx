@@ -123,9 +123,11 @@ package com.cimians.openPyro.aurora;
 				if(label == null){
 					label = new Label();
 					label.textFormat = _labelFormat;
+				    label.text = bttn.label;
 					addChild(label);
-				}
-				label.text = bttn.label;
+				} else {
+				    label.text = bttn.label;
+                }
 			}
 		}
 		

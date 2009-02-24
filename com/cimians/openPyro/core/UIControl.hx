@@ -347,6 +347,7 @@ package com.cimians.openPyro.core;
 			}
 			_skin = skinImpl;
 			_skin.skinnedControl = this;
+
 			if(Std.is( _skin, UIControl)){
 				addChild(cast(_skin, UIControl));
 				//UIControl(_skin).percentUnusedWidth = 100

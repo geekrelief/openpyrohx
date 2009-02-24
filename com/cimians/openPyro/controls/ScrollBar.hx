@@ -196,10 +196,10 @@ package com.cimians.openPyro.controls;
 		function onIncrementButtonClick(event:Event):Void{
 			//_slider.value = Math.min(1, _slider.value + incrementalScrollDelta/_slider.height)
 			if(_slider.direction == Direction.HORIZONTAL){
-				_slider.thumbButton.x = Math.min(_slider.height-_slider.thumbButton.height, _slider.thumbButton.x + incrementalScrollDelta);
+				_slider.thumbButton.x = Math.min(_slider.mwidth-_slider.thumbButton.mwidth, _slider.thumbButton.x + incrementalScrollDelta);
 			}
 			else if(slider.direction == Direction.VERTICAL){
-				_slider.thumbButton.y = Math.min(_slider.height-_slider.thumbButton.height, _slider.thumbButton.y + incrementalScrollDelta);
+				_slider.thumbButton.y = Math.min(_slider.mheight-_slider.thumbButton.mheight, _slider.thumbButton.y + incrementalScrollDelta);
 			}
 			_slider.dispatchScrollEvent();
 		}
