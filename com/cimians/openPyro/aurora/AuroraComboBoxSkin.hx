@@ -25,7 +25,7 @@ package com.cimians.openPyro.aurora;
 			_buttonSkin = new AuroraButtonSkin();
 			_buttonSkin.labelAlign = "left";
 			_buttonSkin.cornerRadius = 10;
-			_buttonSkin.filters = [new DropShadowFilter(.5,90,0,1,0,0)]
+			_buttonSkin.filters = [new DropShadowFilter(.5,90,0,1,0,0)];
 			return _buttonSkin;
 		}
 		
@@ -41,7 +41,7 @@ package com.cimians.openPyro.aurora;
 		}
 		
 		public function setSkinnedControl(control:UIControl):UIControl{
-			if(_buttonSkin)
+			if(_buttonSkin != null)
 			{
 				_buttonSkin.skinnedControl = control;
 			}

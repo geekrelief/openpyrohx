@@ -364,11 +364,11 @@ package com.cimians.openPyro.core;
 		public function setToolTip(data:Dynamic):Dynamic{
 			_toolTipData = data;
 			if(_toolTipData != null){
-                var fdata = _toolTipData;
-                var frenderer = toolTipRenderer;
+                _toolTipData = data;
+                var self = this;
 				this.addEventListener(MouseEvent.MOUSE_OVER, 
 										function(event:MouseEvent):Void{
-											TooltipManager.getInstance().showToolTip(event, fdata, frenderer);
+											TooltipManager.getInstance().showToolTip(event, self._toolTipData, self.toolTipRenderer);
 										});
 				
 				this.addEventListener(MouseEvent.MOUSE_OUT, 

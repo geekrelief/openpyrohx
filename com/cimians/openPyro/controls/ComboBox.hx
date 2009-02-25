@@ -18,7 +18,7 @@ package com.cimians.openPyro.controls;
 	import flash.events.MouseEvent;
 	import flash.filters.DropShadowFilter;
 	
-	import gs.TweenMax;
+    import feffects.Tween; 
 	
 	/*[Event(name='open',type='com.cimians.openPyro.controls.events.DropDownEvent')]*/
 	/*[Event(name='close',type='com.cimians.openPyro.controls.events.DropDownEvent')]*/
@@ -30,50 +30,60 @@ package com.cimians.openPyro.controls;
 		public var button(null, setButton) : Button;
 		public var dataProvider(null, setDataProvider) : Array<Dynamic>;
 		public var list(null, setList) : List;
-		public var maxDropDownHeight(getMaxDropDownHeight, setMaxDropDownHeight) : Float
-		;
-		public var selectedIndex(getSelectedIndex, null) : Int
-		;
-		public var skin(null, setSkin) : ISkin;
+		public var maxDropDownHeight(getMaxDropDownHeight, setMaxDropDownHeight) : Float;
+		public var selectedIndex(getSelectedIndex, null) : Int;
+
 		var _bttn:Button;
 		var listHolder:Sprite;
 		var _list:List;
 		var _maskShape:Shape;
 		
+		var _dataProvider:Array<Dynamic>;
+		var _selectedIndex:Int ;
+
+		public var _bttnLabelFunction:Dynamic ;
+			
+		var _isOpen:Bool ;
+		var _maxDropDownHeight:Float ;
+		
 		public function new() {
 			super();
+            _selectedIndex = -1;
+            _bttnLabelFunction = StringUtil.toStringLabel;
+            _isOpen = false;
+            _maxDropDownHeight = Math.NaN;
 		}
 		
 		public override function initialize():Void
 		{
 			super.initialize();
 			
-			listHolder = new Sprite()
+			listHolder = new Sprite();
 			addChild(listHolder);
 			
-			_maskShape = new Shape()
+			_maskShape = new Shape();
 			addChild(_maskShape);
-			if(!_bttn){
-				_bttn = new Button()
-				_bttn.addEventListener(ButtonEvent.DOWN, onButtonDown)
+			if(_bttn == null){
+				_bttn = new Button();
+				_bttn.addEventListener(ButtonEvent.DOWN, onButtonDown);
 				addChild(_bttn);
-				if(_dataProvider){
+				if(_dataProvider != null){
 					_bttn.label = _bttnLabelFunction(_dataProvider[_selectedIndex]);
 				}
-				if(this._skin){
+				if(this._skin != null){
 					if(Std.is( this._skin, IComboBoxSkin))
 					{
-						_bttn.skin = IComboBoxSkin(this._skin).buttonSkin
+						_bttn.skin = cast(this._skin, IComboBoxSkin).buttonSkin;
 					}
 				}
 			}
 		}
 		
 		public override function setSkin(skinImpl:ISkin):ISkin{
-			super.skin = skinImpl;
-			if(!(Std.is( skinImpl, IComboBoxSkin))) return;
-			var cbSkin:IComboBoxSkin = IComboBoxSkin(this._skin);
-			if(this._bttn)
+			super.setSkin(skinImpl);
+			if(!(Std.is( skinImpl, IComboBoxSkin))) return null;
+			var cbSkin:IComboBoxSkin = cast this._skin;
+			if(this._bttn != null)
 			{
 				_bttn.skin = cbSkin.buttonSkin;
 			}
@@ -81,54 +91,45 @@ package com.cimians.openPyro.controls;
 			return skinImpl;
 		}
 		
-		var _dataProvider:Array<Dynamic>;
-		var _selectedIndex:Int ;
 		public function setDataProvider(data:Array<Dynamic>):Array<Dynamic>{
 			_dataProvider = data;
 			_selectedIndex = 0;
-			if(_bttn)
+			if(_bttn != null)
 			{
 				_bttn.label = _bttnLabelFunction(data[0]);
 			}
 			return data;
 		}
 		
-		public var _bttnLabelFunction:Dynamic ;
-			
 		public function setButton(bttn:Button):Button{
-			if(_bttn){
-				_bttn.removeEventListener(ButtonEvent.DOWN, onButtonDown)	
+			if(_bttn != null){
+				_bttn.removeEventListener(ButtonEvent.DOWN, onButtonDown);
 			}
 			_bttn = bttn;
-			_bttn.addEventListener(ButtonEvent.DOWN, onButtonDown)
+			_bttn.addEventListener(ButtonEvent.DOWN, onButtonDown);
 			return bttn;
 		}
 		
 		public function setList(l:List):List{
-			if(_list){
+			if(_list != null){
 				_list.removeEventListener(ListEvent.ITEM_CLICK,onListItemClick);
 				_list.removeEventListener(ListEvent.CHANGE, onListChange);
 			}
-			_list.addEventListener(ListEvent.ITEM_CLICK, onListItemClick)
+			_list.addEventListener(ListEvent.ITEM_CLICK, onListItemClick);
 			_list.addEventListener(ListEvent.CHANGE, onListChange);
 			return l;
 		}
 		
-		var _isOpen:Bool ;
-		
 		function onButtonDown(event:Event):Void{
 			if(_isOpen)
 			{
-				close()
+				close();
 			}
 			else
 			{
-				open()
+				open();
 			}
-			
 		}
-		
-		var _maxDropDownHeight:Float ;
 		
 		/**
 		 * Sets the height of the dropdown list. If this value
@@ -159,43 +160,38 @@ package com.cimians.openPyro.controls;
 			_isOpen = true;
 			
 			
-			
-			if(!_list)
+			if(_list == null)
 			{
-				_list = new List()
-				_list.skin = new AuroraContainerSkin()
+				_list = new List();
+				_list.skin = new AuroraContainerSkin();
 				_list.layout = new VLayout(-1);
-				var renderers:ClassFactory = new ClassFactory(DefaultListRenderer)
-				renderers.properties = {percentWidth:100, height:25}
+				var renderers:ClassFactory = new ClassFactory(DefaultListRenderer);
+				renderers.properties = {setPercentWidth:100, setHeight:25};
 				_list.itemRenderer = renderers;
 				_list.filters = [new DropShadowFilter(2,90, 0, .5,2,2)];
 				
 				listHolder.addChildAt(_list,0);
-				var overlayManager:OverlayManager = OverlayManager.getInstance()
-				if(!overlayManager.overlayContainer){
-					var sprite:Sprite = new Sprite()
-					this.stage.addChild(sprite)
-					overlayManager.overlayContainer = sprite
+				var overlayManager:OverlayManager = OverlayManager.getInstance();
+				if(overlayManager.overlayContainer == null){
+					var sprite = new Sprite();
+					this.stage.addChild(sprite);
+					overlayManager.overlayContainer = sprite;
 				}
 				
 				overlayManager.showOnOverlay(listHolder, this);
 				
-			
-				
-				
 				//overlayManager.showPopUp(listHolder, false, false);
 				
+				_list.mwidth = this.mwidth;
 				
-				_list.width = this.width;
-				
-				if(!isNaN(_maxDropDownHeight))
+				if(!Math.isNaN(_maxDropDownHeight))
 				{
-					_list.height = _maxDropDownHeight;	
+					_list.mheight = _maxDropDownHeight;	
 				}
 				_list.dataProvider = _dataProvider;	
 				_list.addEventListener(ListEvent.ITEM_CLICK, onListItemClick);
 				_list.addEventListener(ListEvent.CHANGE, onListChange);
-				_list.validateSize()
+				_list.validateSize();
 				
 			}
 			
@@ -203,21 +199,36 @@ package com.cimians.openPyro.controls;
 			
 			// draw the mask //
 			
-			this._maskShape.graphics.clear()
-			this._maskShape.graphics.beginFill(0xff0000,.4)
-			this._maskShape.graphics.drawRect(-4,this.height+2,this.width+8, _list.height+4)
-			this._maskShape.graphics.endFill()
+			this._maskShape.graphics.clear();
+			this._maskShape.graphics.beginFill(0xff0000,.4);
+			this._maskShape.graphics.drawRect(-4,this.mheight+2,this.mwidth+8, _list.mheight+4);
+			this._maskShape.graphics.endFill();
 			listHolder.mask = _maskShape;
-			_list.y = this.height-_list.height
+			_list.y = this.mheight-_list.mheight;
+
+            var t = new Tween(_list.y, this.mheight+2, 500);
+            t.setTweenHandlers(tweenOpenUpdate, tweenOpenComplete);
+            t.start();
+            /*
 			TweenMax.to(_list, .5, {y:this.height+2, onComplete:function():Void{
 				stage.addEventListener(MouseEvent.CLICK, onStageClick)
 			}})
+            */
 			
 		}
+
+        function tweenOpenUpdate(e:Float) {
+            _list.y = e;
+        }
+
+        function tweenOpenComplete(e:Float) {
+            _list.y = e;
+            stage.addEventListener(MouseEvent.CLICK, onStageClick);
+        }
 		
 		function onStageClick(event:MouseEvent):Void{
-			trace("curre "+ (event.currentTarget))
-			trace("tgt "+ (event.target))
+			trace("curre "+ (event.currentTarget));
+			trace("tgt "+ (event.target));
 			if(this._isOpen){
 				close();
 			}
@@ -228,7 +239,7 @@ package com.cimians.openPyro.controls;
 			this._bttn.label = _bttnLabelFunction(_list.selectedItem);
 			_selectedIndex = _list.selectedIndex;
 			dispatchEvent(event);
-			close()
+			close();
 		}
 		
 		public function getSelectedIndex():Int
@@ -245,19 +256,26 @@ package com.cimians.openPyro.controls;
 		public function close():Void
 		{
 			if(!_isOpen) return;
-			stage.removeEventListener(MouseEvent.CLICK, onStageClick)
+			stage.removeEventListener(MouseEvent.CLICK, onStageClick);
 			_isOpen = false;
-			TweenMax.to(_list, .5, {y:this.height-_list.height})
+
+            var t = new Tween(_list.y, this.mheight - _list.mheight, 500);
+            t.setTweenHandlers(tweenCloseUpdate);
+            t.start();
+			//TweenMax.to(_list, .5, {y:this.height-_list.height})
 		}
-		
+	
+        function tweenCloseUpdate(e:Float) {
+            _list.y = e;
+        }
 		
 		
 		public override function updateDisplayList(unscaledWidth:Float, unscaledHeight:Float):Void
 		{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			if(_bttn){
-				_bttn.width = unscaledWidth;
-				_bttn.height = unscaledHeight;
+			if(_bttn != null){
+				_bttn.mwidth = unscaledWidth;
+				_bttn.mheight = unscaledHeight;
 			}
 		}
 

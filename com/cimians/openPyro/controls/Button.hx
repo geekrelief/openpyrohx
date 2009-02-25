@@ -37,10 +37,11 @@ package com.cimians.openPyro.controls;
 		 * @see	com.cimians.openPyro.controls.Slider#thumbButton 
 		 */ 
 		public var mouseOutHandler:Dynamic ;
+		public var currentState:String;
+
 		var _toggle:Bool;
 		var _selected:Bool ;
-
-		public var currentState:String;
+		var _label:String;
 
 		public function new(){
 			
@@ -49,6 +50,7 @@ package com.cimians.openPyro.controls;
 			_styleName = "Button";
             _toggle = false;
             _selected = false;
+            _label = "";
 		}
 		
 		public override function initialize():Void{
@@ -60,7 +62,6 @@ package com.cimians.openPyro.controls;
 			this.addEventListener(MouseEvent.MOUSE_OUT, this.mouseOutHandler);
 		}
 		
-		var _label:String;
 		
 		/**
 		 * Sets the label property of the Button. How this

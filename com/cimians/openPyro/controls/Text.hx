@@ -1,6 +1,6 @@
 package com.cimians.openPyro.controls;
 
-	import flash.events.FullScreenEvent;
+	//import flash.events.FullScreenEvent;
 	
 	class Text extends Label {
 		
@@ -11,7 +11,7 @@ package com.cimians.openPyro.controls;
 		}
 		
 		override function setTextFieldProperties():Void{
-			_textField.autoSize = "left"
+			_textField.autoSize =  flash.text.TextFieldAutoSize.LEFT;
 			_textField.wordWrap = true;
 		}
 	}

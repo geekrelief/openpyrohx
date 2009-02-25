@@ -38,7 +38,7 @@ package com.cimians.openPyro.managers.toolTipClasses;
 		var _data:Dynamic;
 		public function setData(d:Dynamic):Dynamic{
 			_data = d;
-			if(_label != null){
+			if(_label != null){ // && Std.is(d, String)){  // assume string.. error on sprite
 				_label.text = cast(d, String);
 			}
 			return d;
