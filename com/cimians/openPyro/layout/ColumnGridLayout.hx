@@ -1,52 +1,51 @@
 package com.cimians.openPyro.layout;
 
 	import com.cimians.openPyro.core.UIContainer;
-	
+    import com.cimians.openPyro.core.MeasurableControl;
+
 	import flash.display.DisplayObject;
 
 	class ColumnGridLayout implements ILayout, implements IContainerMeasurementHelper {
 		
-		
-		
 		public var container(null, setContainer) : UIContainer;
-		
-		public var initX(null, setInitX) : Float;
-		
-		public var initY(null, setInitY) : Float;
-		
+		public var initX(getInitX, setInitX) : Float;
+		public var initY(getInitY, setInitY) : Float;
 		public var prepare(null, setPrepare) : Dynamic;
 		
-		var _initX:Int ;
-		var _initY:Int ;
+		var _initX:Float ;
+		var _initY:Float ;
 		
 		var _numRows:UInt;
-		var _columnWidth:Float ;
+		var _columnWidth:Float;
 		var _rowGap:Float;
 		var _columnGap:Float;
+
+		var _container:UIContainer;
 		
-		public function new(numRows:UInt, ?columnWidth:Float = NaN, ?rowGap:Int=0, ?columnGap:Int=0)
+		public function new(numRows:UInt, ?columnWidth:Float, ?rowGap:Float=0, ?columnGap:Float=0)
 		{
-			
 			_initX = 0;
 			_initY = 0;
-			_columnWidth = NaN;
 			this._numRows = numRows;
 			_columnWidth = columnWidth;
-			_rowGap = rowGap
-			_columnGap = columnGap
+			_rowGap = rowGap;
+			_columnGap = columnGap;
 		}
 
-		public function setInitX(n:Float):Float{
+		inline public function setInitX(n:Float):Float{
 			_initX = n;
 			return n;
 		}
+
+        inline public function getInitX():Float { return _initX; }
 		
-		public function setInitY(n:Float):Float{
+		inline public function setInitY(n:Float):Float{
 			_initY = n;
 			return n;
 		}
+
+        inline public function getInitY():Float { return _initY; }
 		
-		var _container:UIContainer
 		public function setContainer(c:UIContainer):UIContainer{
 			_container = c;	
 			return c;
@@ -58,20 +57,28 @@ package com.cimians.openPyro.layout;
 			var nowX:Float = _initX;
 			var nowY:Float = _initY;
 			
-			if(isNaN(_columnWidth)){
-				_columnWidth = DisplayObject(children[0]).width;
+			if(Math.isNaN(_columnWidth)){
+                if(Std.is(children[0], MeasurableControl)) {
+				    _columnWidth = cast(children[0], MeasurableControl).mwidth;
+                } else {
+    				_columnWidth = cast(children[0], DisplayObject).width;
+                }
 			}
 			
 			for(i in 0...children.length)
 			{
-				var child:DisplayObject = cast( children[i], DisplayObject);
+				var child:DisplayObject = cast children[i];
 				if(i>0 && (i%_numRows)==0){
 					nowX+=_columnWidth+_columnGap;
 					nowY = _initY;
 				}
 				child.x = nowX;
 				child.y = nowY;
-				nowY+=child.height + _rowGap;
+                if(Std.is(child, MeasurableControl)) {
+				    nowY+= cast(child, MeasurableControl).mheight + _rowGap;
+                } else {
+    				nowY+=child.height + _rowGap;
+                }
 			}
 		}
 		

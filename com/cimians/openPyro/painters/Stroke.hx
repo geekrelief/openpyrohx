@@ -20,6 +20,7 @@ package com.cimians.openPyro.painters;
 			caps = flash.display.CapsStyle.ROUND;
 			joints = flash.display.JointStyle.ROUND;
 			miterLimit = 3;
+
 			this.thickness = thickness;
 			this.color = color;
 			this.alpha = alpha;
@@ -28,7 +29,6 @@ package com.cimians.openPyro.painters;
 		
 		public function apply(gr:Graphics):Void
 		{
-			gr.lineStyle(thickness, color, alpha, pixelHinting,
-					scaleMode, caps, joints, miterLimit);	
+			gr.lineStyle(thickness, color, alpha, pixelHinting, scaleMode, caps, joints, miterLimit);	
 		}
 	}

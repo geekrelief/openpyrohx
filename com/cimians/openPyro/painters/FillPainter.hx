@@ -8,6 +8,7 @@ package com.cimians.openPyro.painters;
 		
 		public var cornerRadius(null, setCornerRadius) : Float;
 		public var padding(getPadding, setPadding) : Padding ;
+
 		var _color:UInt;
 		var _alpha:Float;
 		var _stroke:Stroke;

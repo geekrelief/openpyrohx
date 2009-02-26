@@ -5,20 +5,19 @@ package com.cimians.openPyro.painters;
 
 	class CompositePainter implements IPainter {
 		
-		public var padding(getPadding, setPadding) : Padding
-		;
+		public var padding(getPadding, setPadding) : Padding ;
+
 		var _padding:Padding;
 		var _painters:Array<Dynamic> ;
 		
 		public function new()
 		{
-		
-		_painters = new Array();
+		    _painters = new Array();
 		}
 		
 		public function setPadding(p:Padding):Padding
 		{
-			_padding = p
+			_padding = p;
 			return p;
 		}
 		
@@ -35,11 +34,11 @@ package com.cimians.openPyro.painters;
 		{
 			for(i in 0..._painters.length)
 			{
-				if(_padding)
+				if(_padding != null)
 				{
-					IPainter(_painters[i]).padding = _padding;
+					cast(_painters[i], IPainter).padding = _padding;
 				}
-				IPainter(_painters[i]).draw(gr,w,h);
+				cast(_painters[i], IPainter).draw(gr,w,h);
 			}
 		}
 		

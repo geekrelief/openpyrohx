@@ -7,8 +7,6 @@ package com.cimians.openPyro.core.events;
 	 */ 
 	class StorageEvent extends Event {
 		
-		
-		
 		public function new(type:String){
 			super(type);
 		}

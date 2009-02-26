@@ -13,6 +13,7 @@ package com.cimians.openPyro.painters;
 		public var padding(getPadding, setPadding) : Padding ;
 		public var rotation(null, setRotation) : Float;
 		public var stroke(null, setStroke) : Stroke;
+
 		var _colors:Array<UInt>;
 		var _alphas:Array<Float>;
 		var _ratios:Array<Dynamic>;

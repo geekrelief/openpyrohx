@@ -28,7 +28,7 @@ package com.cimians.openPyro.core.storage;
 		 * For example, users may have sharedObject turned off or may not allow
 		 * filesystem access or may be offline for remote storage.
 		 */ 
-		function storeCreated():Bool;
+		var storeCreated(getStoreCreated, null):Bool;
 		
 		/**
 		 * @return The string stored by the IStorage implementation.

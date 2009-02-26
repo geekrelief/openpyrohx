@@ -8,8 +8,9 @@ package com.cimians.openPyro.painters;
 	class TrianglePainter implements IPainter {
 		
 		public var padding(getPadding, setPadding) : Padding;
-		var _fillColor:UInt ;
-		var _fillAlpha:Float ;
+
+		var _fillColor:UInt;
+		var _fillAlpha:Float;
 		var _stroke:Stroke;
 		var _padding:Padding;
 		var _direction:String;
@@ -65,7 +66,7 @@ package com.cimians.openPyro.painters;
 			gr.endFill();
 		}
 		
-		function drawDownArrow():Void
+		inline function drawDownArrow():Void
 		{
 			this.graphics.moveTo(0, 0);
 			this.graphics.lineTo(Math.floor(_w/2), _h);
@@ -74,7 +75,7 @@ package com.cimians.openPyro.painters;
 		}
 		
 		
-		function drawLeftArrow():Void
+		inline function drawLeftArrow():Void
 		{					
 			_w = Math.round(_w);
 			this.graphics.moveTo(_w,0);
@@ -84,7 +85,7 @@ package com.cimians.openPyro.painters;
 		
 		}
 		
-		function drawRightArrow():Void
+		inline function drawRightArrow():Void
 		{			
 			this.graphics.moveTo(0,0);
 			this.graphics.lineTo(_w, _h/2);
@@ -92,7 +93,7 @@ package com.cimians.openPyro.painters;
 			this.graphics.lineTo(0, 0);
 		}
 		
-		function drawUpArrow():Void
+		inline function drawUpArrow():Void
 		{			
 			this.graphics.moveTo(0,_h);
 			this.graphics.lineTo(_w/2, 0);
@@ -100,20 +101,20 @@ package com.cimians.openPyro.painters;
 			this.graphics.lineTo( 0, _h);
 		}
 		
-		function drawCenteredArrow():Void{
+		inline function drawCenteredArrow():Void{
 			this.graphics.moveTo(-_w/2,-_h/2);
 			this.graphics.lineTo(_w/2, 0);
 			this.graphics.lineTo(-_w/2, _h/2);
 			this.graphics.lineTo(-_w/2, -_h/2);
 		}
 		
-		public function setPadding(p:Padding):Padding
+		inline public function setPadding(p:Padding):Padding
 		{
 			_padding = p;
 			return p;
 		}
 		
-		public function getPadding():Padding
+		inline public function getPadding():Padding
 		{
 			return _padding;
 		}

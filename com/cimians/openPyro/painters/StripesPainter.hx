@@ -9,18 +9,18 @@ package com.cimians.openPyro.painters;
 	
 	class StripesPainter implements IPainter {
 		
-		public var padding(getPadding, setPadding) : Padding
-		;
+		public var padding(getPadding, setPadding) : Padding ;
+
 		var _padding:Padding;
 		var _stripeWidth:Float;
 		
-		public function new(?stripeWidth:Int=10){
+		public function new(?stripeWidth:Float=10){
 			_stripeWidth = stripeWidth;		
 		}
 		
 		public function draw(gr:Graphics, w:Float, h:Float):Void
 		{
-			var bdata:BitmapData = new BitmapData(2*_stripeWidth,2*_stripeWidth, true);
+			var bdata:BitmapData = new BitmapData(Std.int(2*_stripeWidth),Std.int(2*_stripeWidth), true);
 			var rect1:Rectangle = new Rectangle(0,0,_stripeWidth,2*_stripeWidth);
 			var rect2:Rectangle = new Rectangle(_stripeWidth,0,_stripeWidth,2*_stripeWidth);
 			
@@ -33,18 +33,18 @@ package com.cimians.openPyro.painters;
 			m.c=-1;
 			
 			//Fill the MovieClip with the BitmapData.
-			gr.beginBitmapFill(bdata, m)
+			gr.beginBitmapFill(bdata, m);
 			gr.drawRect(0,0,w,h);
 			gr.endFill();
 		}
 		
 		public function toString():String{
-			return ("stripeWidth: "+_stripeWidth)
+			return ("stripeWidth: "+_stripeWidth);
 		}
 		
 		public function setPadding(p:Padding):Padding
 		{
-			_padding = p
+			_padding = p;
 			return p;
 		}
 		
