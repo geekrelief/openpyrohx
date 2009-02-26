@@ -6,44 +6,41 @@ package com.cimians.openPyro.charts;
 	
 	class HBarChart extends List {
 		
-	
+	    public var yField(null, setYField) : String;
+
+		var _yField:String;
+		var maxYValue:Float;
 		
-	public var dataProvider(null, setDataProvider) : Dynamic;
-		
-	public var yField(null, setYField) : String;
-		
-	public function new(){
+    	public function new(){
 			super();
-			
-			//this.layout = new VLayout();
+		    _yField = "value";
+            maxYValue = 0;
 		}
 		
-		var _yField:String ;
 		public function setYField(fieldName:String):String{
 			_yField = fieldName;
 			return fieldName;
 		}
 		
-		var maxYValue:Int ;
 		public override function setDataProvider(dpObject:Dynamic):Dynamic{	
 			
-			var dp:Array<Dynamic> = cast( dpObject, Array);
+			var dp:Array<Dynamic> = cast dpObject;
 			for(i in 0...dp.length)
 			{
 				var object:Dynamic = dp[i];
 				try
 				{
-					var yfValue:Float = Number(object[_yField])
+					var yfValue:Float = Reflect.field(object, _yField);
 					if(yfValue > maxYValue){
 						maxYValue = yfValue;
 					}
 				}
-				catch(e:Error)
+				catch(e:Dynamic)
 				{
 					continue;	
 				}
 			}
-			super.dataProvider = dp;
+			super.setDataProvider(dp);
 			return dpObject;	
 			
 		}
@@ -53,7 +50,7 @@ package com.cimians.openPyro.charts;
 			super.setRendererData(renderer, data, index);
 			if(Std.is( renderer, IVerticalChartItemRenderer))
 			{
-				IVerticalChartItemRenderer(renderer).maxYValue = this.maxYValue;
+				cast(renderer, IVerticalChartItemRenderer).maxYValue = this.maxYValue;
 			}
 		}
 

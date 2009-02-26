@@ -23,7 +23,7 @@ package com.cimians.openPyro.controls;
 		
 		override function setTextFieldProperties():Void{
 			//_textField.border = true;
-			_textField.addEventListener(KeyboardEvent.KEY_UP, onKeyUp)
+			_textField.addEventListener(KeyboardEvent.KEY_UP, onKeyUp);
 			_textField.type = TextFieldType.INPUT;
 			_textField.addEventListener(Event.CHANGE, onTextInputChange);
 			_textField.displayAsPassword = _displayAsPassword;

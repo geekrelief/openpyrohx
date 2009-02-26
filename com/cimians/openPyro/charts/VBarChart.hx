@@ -6,45 +6,42 @@ package com.cimians.openPyro.charts;
 	
 	class VBarChart extends List {
 		
-	
+    	public var xField(null, setXField) : String;
 		
-	public var dataProvider(null, setDataProvider) : Dynamic;
-		
-	public var xField(null, setXField) : String;
-		
-	public function new(){
+		var _xField:String;
+		var maxXValue:Float;
+
+    	public function new(){
 			super();
-			
-			//this.layout = new VLayout();
+            _xField = "value";
+            maxXValue = 0;
 		}
 		
-		var _xField:String ;
 		public function setXField(fieldName:String):String{
 			_xField = fieldName;
 			return fieldName;
 		}
 		
-		var maxXValue:Int ;
 		public override function setDataProvider(dpObject:Dynamic):Dynamic{	
-			
-			var dp:Array<Dynamic> = cast( dpObject, Array);
+
+			var dp:Array<Dynamic> = cast dpObject;
 			for(i in 0...dp.length)
 			{
 				var object:Dynamic = dp[i];
 				try
 				{
-					var xfValue:Float = Number(object[_xField])
+					var xfValue:Float = Reflect.field(object, _xField);
 					if(xfValue > maxXValue){
 						maxXValue = xfValue;
 					}
 				}
-				catch(e:Error)
+				catch(e:Dynamic)
 				{
-					trace("Could not find xValue value")
+					trace("Could not find xValue value");
 					continue;	
 				}
 			}
-			super.dataProvider = dp;
+			super.setDataProvider(dp);
 			return dpObject;	
 			
 		}
@@ -54,7 +51,7 @@ package com.cimians.openPyro.charts;
 			super.setRendererData(renderer, data, index);
 			if(Std.is( renderer, IHorizontalChartItemRenderer))
 			{
-				IHorizontalChartItemRenderer(renderer).maxXValue = this.maxXValue;
+				cast(renderer, IHorizontalChartItemRenderer).maxXValue = this.maxXValue;
 			}
 		}
 
