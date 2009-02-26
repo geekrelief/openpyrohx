@@ -1,16 +1,16 @@
 package com.cimians.openPyro.layout;
 	import com.cimians.openPyro.core.MeasurableControl;
 	import com.cimians.openPyro.core.UIContainer;
-	import com.cimians.openPyro.effects.EffectDescriptor;
-	import com.cimians.openPyro.effects.PyroEffect;
+	//import com.cimians.openPyro.effects.EffectDescriptor;
+	//import com.cimians.openPyro.effects.PyroEffect;
 	
 	import flash.display.DisplayObject;
 	
 	class VLayout implements ILayout, implements IContainerMeasurementHelper {
 		
 		public var container(null, setContainer) : UIContainer; 
-		public var initX(null, setInitX) : Float; 
-		public var initY(null, setInitY) : Float; 
+		public var initX(getInitX, setInitX) : Float; 
+		public var initY(getInitY, setInitY) : Float; 
 		public var prepare(null, setPrepare) : Dynamic;
 		
 		var _vGap:Float ;
@@ -38,11 +38,19 @@ package com.cimians.openPyro.layout;
 			_initX = n;	
 			return n;
 		}
+
+        public function getInitX():Float {
+            return _initX;
+        }
 		
 		public function setInitY(n:Float):Float{
 			_initY = n;
 			return n;
 		}
+
+        public function getInitY():Float {
+            return _initY;
+        }
 		
 		public function getMaxWidth(children:Array<Dynamic>):Float
 		{

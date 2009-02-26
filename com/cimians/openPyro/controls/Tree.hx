@@ -10,49 +10,52 @@ package com.cimians.openPyro.controls;
 	import com.cimians.openPyro.painters.FillPainter;
 	
 	import flash.display.DisplayObject;
-	import flash.profiler.showRedrawRegions;
+	//import flash.profiler.showRedrawRegions;
 
 	class Tree extends List {
 		
 		public var showRoot(getShowRoot, setShowRoot) : Bool;
+		var _showRoot:Bool ;
+
 		public function new()
 		{
 			super();
 			_labelFunction = function(data:XMLNodeDescriptor):String{
-				if(data.node.nodeKind() == "element"){
-					return String(data.node.@label)
+				if(data.node.nodeType == Xml.Element){
+					return data.node.get("label");
 				}
-				return String(data.node);
+				return data.node.toString();
 			}
 			this.backgroundPainter = new FillPainter(0xffffff);
+
+            _showRoot = true;
 		}
 		
 		override function createChildren():Void
 		{
-			if(!this._rendererPool){
+			if(this._rendererPool == null){
 				var cf:ClassFactory = new ClassFactory(DefaultTreeItemRenderer);
-				cf.properties = {percentWidth:100, height:25};
-				_rendererPool = new ObjectPool(cf)
+				cf.properties = {setPercentWidth:100, setHeight:25};
+				_rendererPool = new ObjectPool(cf);
 			}
-			VLayout(this.layout).animationDuration = 0;
+			cast(this.layout, VLayout).animationDuration = 0;
 			
 		}
 		
 		override function convertDataToCollection(dp:Dynamic):Void{
 			super.convertDataToCollection(dp);
 			if(!_showRoot){	
-				XMLCollection(_dataProvider).normalizedArray.shift();
+				cast(_dataProvider, XMLCollection).normalizedArray.shift();
 			}
 		}
 		
-		var _showRoot:Bool ;
 		public function setShowRoot(value:Bool):Bool{
 			_showRoot = value;
 			return value;
 		}
 		
 		public function getShowRoot():Bool{
-			return _showRoot
+			return _showRoot;
 		}
 		
 		override function setRendererData(renderer:DisplayObject, data:Dynamic, index:Int):Void{
@@ -62,7 +65,6 @@ package com.cimians.openPyro.controls;
 		
 		function handleRotatorClick(event:TreeEvent):Void
 		{
-			
 			var node:XMLNodeDescriptor = event.nodeDescriptor;
 			if(node.isLeaf()) {
 				return;
@@ -81,8 +83,8 @@ package com.cimians.openPyro.controls;
 				return;
 			}
 			node.open = false;
-			var childNodesData:Array<Dynamic> = XMLCollection(this.dataProvider).getOpenChildNodes(node)
-			XMLCollection(this.dataProvider).removeItems(childNodesData);
+			var childNodesData:Array<Dynamic> = cast(this.dataProvider, XMLCollection).getOpenChildNodes(node);
+			cast(this.dataProvider, XMLCollection).removeItems(childNodesData);
 		}
 		
 		public function openNode(node:XMLNodeDescriptor):Void{
@@ -90,12 +92,12 @@ package com.cimians.openPyro.controls;
 				return;
 			}
 			node.open = true;
-			var childNodesData:Array<Dynamic> = XMLCollection(this.dataProvider).getOpenChildNodes(node)
-			XMLCollection(this.dataProvider).addItems(childNodesData, node);
+			var childNodesData:Array<Dynamic> = cast(this.dataProvider, XMLCollection).getOpenChildNodes(node);
+			cast(this.dataProvider, XMLCollection).addItems(childNodesData, node);
 		}
 		
 		public function getNodeByLabel(str:String):XMLNodeDescriptor{
-			var normalizedArray:Array<Dynamic> = _dataProvider.normalizedArray
+			var normalizedArray:Array<Dynamic> = _dataProvider.normalizedArray;
 			for(i in 0...normalizedArray.length){
 				var nodeDescriptor:XMLNodeDescriptor = cast( normalizedArray[i], XMLNodeDescriptor);
 				if(_labelFunction(nodeDescriptor) == str){
@@ -107,9 +109,7 @@ package com.cimians.openPyro.controls;
 		
 		public override function updateDisplayList(unscaledWidth:Float, unscaledHeight:Float):Void
 		{
-			super.updateDisplayList(unscaledWidth, unscaledHeight)
+			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			//trace(" >> updateDl")
 		}
-		
-		
 	}

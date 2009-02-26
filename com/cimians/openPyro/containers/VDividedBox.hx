@@ -18,12 +18,9 @@ package com.cimians.openPyro.containers;
 	 * 
 	 */ 
 	class VDividedBox extends DividedBox {
-		/**
-		 * Constructor
-		 */ 
 		
 		public var defaultDividerFactory(getDefaultDividerFactory, null) : ClassFactory;
-		public var layout(null, setLayout) : ILayout;
+
 		/**
 		 * Constructor
 		 */ 
@@ -33,89 +30,94 @@ package com.cimians.openPyro.containers;
 		}
 		
 		public override function initialize():Void{
-			super.layout = new VLayout();
-			super.initialize()
+			super.setLayout(new VLayout());
+			super.initialize();
 		}
 		
 		override function getDefaultDividerFactory():ClassFactory{
 			var df:ClassFactory = new ClassFactory(UIControl);
-			df.properties = {percentWidth:100, height:6, backgroundPainter:new GradientFillPainter([0x999999, 0x666666])}
+			df.properties = {setPercentWidth:100, setHeight:6, backgroundPainter:new GradientFillPainter([0x999999, 0x666666])}
 			return df;	
 		}
 		
 		override function onDividerMouseDown(event:MouseEvent):Void{
-			var dragManager:DragManager = DragManager.getInstance()
+			var dragManager:DragManager = DragManager.getInstance();
 			dragManager.addEventListener(DragEvent.DRAG_COMPLETE, onDividerDragComplete);
-			dragManager.makeDraggable(DisplayObject(event.currentTarget), 
-													new Rectangle(0,0,0,this.height-DisplayObject(event.currentTarget).height));
+            if(Std.is(event.currentTarget, MeasurableControl)) {
+			    dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
+													new Rectangle(0,0,0,this.mheight-cast(event.currentTarget, MeasurableControl).mheight));
+            } else {
+			    dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
+													new Rectangle(0,0,0,this.mheight-cast(event.currentTarget, DisplayObject).height));
+            }
 		}
 		
 		
 		function onDividerDragComplete(event:DragEvent):Void{
-			var dragManager:DragManager = DragManager.getInstance()
+			var dragManager:DragManager = DragManager.getInstance();
 			dragManager.removeEventListener(DragEvent.DRAG_COMPLETE, onDividerDragComplete);
 		
 			/* 
 			If the divider moves up, delta is -ve, otherwise +ve
 			*/
-			var delta:Float = event.mouseYDelta//point.y - event.dragInitiator.y 
+			var delta:Float = event.mouseYDelta;//point.y - event.dragInitiator.y 
 		
-			var topUIC:MeasurableControl
-			var bottomUIC:MeasurableControl
+			var topUIC:MeasurableControl;
+			var bottomUIC:MeasurableControl;
 			
 			for(i in 0...contentPane.numChildren){
-				var child:DisplayObject = contentPane.getChildAt(i)
+				var child:DisplayObject = contentPane.getChildAt(i);
 				if(child == event.dragInitiator){
-					topUIC = MeasurableControl(contentPane.getChildAt(i-1));
-					bottomUIC = MeasurableControl(contentPane.getChildAt(i+1));
+					topUIC = cast contentPane.getChildAt(i-1);
+					bottomUIC = cast contentPane.getChildAt(i+1);
 					break;
 				}
 				
 			}
 			
-			var unallocatedHeight:Float = (this.height - this.explicitlyAllocatedHeight);
+			var unallocatedHeight:Float = (this.mheight - this.explicitlyAllocatedHeight);
 			var newUnallocatedHeight:Float = unallocatedHeight;
 			
-			if(isNaN(topUIC.explicitHeight) && isNaN(bottomUIC.explicitHeight)){
+			if(Math.isNaN(topUIC.explicitHeight) && Math.isNaN(bottomUIC.explicitHeight)){
 				
 				/*
 				* The change in dimensions can be compensated by recalculating the 
 				* two percents. 
 				*/
-				var newTopH:Float = topUIC.height + delta;
-				var newBottomH:Float = bottomUIC.height - delta;
+				var newTopH:Float = topUIC.mheight + delta;
+				var newBottomH:Float = bottomUIC.mheight - delta;
 				topUIC.percentUnusedHeight = newTopH*100/unallocatedHeight;
 				bottomUIC.percentUnusedHeight = newBottomH*100/unallocatedHeight
 			}
 			
 			
-			else if(!isNaN(topUIC.explicitHeight) && !isNaN(bottomUIC.explicitHeight)){
+			else if(!Math.isNaN(topUIC.explicitHeight) && !Math.isNaN(bottomUIC.explicitHeight)){
 				
 				/*
 				 * The dimension changes can be safely calculated 
 				 */
-				topUIC.height+=delta
-				bottomUIC.height-=delta;
+				topUIC.mheight+=delta
+				bottomUIC.mheight-=delta;
 			}
 			
 			
-			else if(!isNaN(topUIC.explicitHeight)) {
+			else if(!Math.isNaN(topUIC.explicitHeight)) {
 				
 				/*
-				 * Left child is explicitly sized , right is percent sized
+				 * top child is explicitly sized , bottom is percent sized
 				 */ 
 				
-				topUIC.height+=delta;
+				topUIC.mheight+=delta;
 				newUnallocatedHeight = unallocatedHeight-delta;
 				for(j in 0...contentPane.numChildren){
-					var currChildL:MeasurableControl = cast( contentPane.getChildAt(j), MeasurableControl);
+					var currChildL:MeasurableControl = cast contentPane.getChildAt(j);
 					if(dividers.indexOf(currChildL) != -1) continue;
 					if(currChildL == topUIC) continue;
 					if(currChildL == bottomUIC){
-						var newH:Float = currChildL.height-delta;
-						bottomUIC.percentUnusedHeight = newH*100/newUnallocatedHeight
+						var newH:Float = currChildL.mheight-delta;
+						bottomUIC.percentUnusedHeight = newH*100/newUnallocatedHeight;
 					}
-					else if(!isNaN(currChildL.percentUnusedHeight)){
+					else if(!Math.isNaN(currChildL.percentUnusedHeight)){
 						currChildL.percentUnusedHeight = currChildL.percentUnusedHeight*unallocatedHeight/newUnallocatedHeight;
 						
 					}
@@ -123,20 +125,20 @@ package com.cimians.openPyro.containers;
 			}
 			else{
 				/*
-				 * Right child is explicitly sized , left is percent sized
+				 * bottom child is explicitly sized , top is percent sized
 				 */ 
-				bottomUIC.height-=delta;
+				bottomUIC.mheight-=delta;
 				newUnallocatedHeight = unallocatedHeight+delta;
 				
 				for(k in 0...contentPane.numChildren){
-					var currChild:MeasurableControl = cast( contentPane.getChildAt(k), MeasurableControl);
+					var currChild:MeasurableControl = cast contentPane.getChildAt(k);
 					if(dividers.indexOf(currChild) != -1) continue;
 					if(currChild == bottomUIC) continue;
 					if(currChild == topUIC){
-						var newLH:Float = currChild.height+delta;
-						topUIC.percentUnusedHeight = newLH*100/newUnallocatedHeight
+						var newLH:Float = currChild.mheight+delta;
+						topUIC.percentUnusedHeight = newLH*100/newUnallocatedHeight;
 					}
-					else if(!isNaN(currChild.percentUnusedHeight)){
+					else if(!Math.isNaN(currChild.percentUnusedHeight)){
 						currChild.percentUnusedHeight = currChild.percentUnusedHeight*unallocatedHeight/newUnallocatedHeight;
 					}
 				}
@@ -144,7 +146,7 @@ package com.cimians.openPyro.containers;
 		}
 		
 		public override function setLayout(l:ILayout):ILayout{
-			throw new Error(getQualifiedClassName(this)+" cannot have layouts applied to it")
+			throw (Type.typeof(this)+" cannot have layouts applied to it");
 			return l;
 		}
 		

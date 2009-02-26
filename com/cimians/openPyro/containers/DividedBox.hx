@@ -35,23 +35,23 @@ package com.cimians.openPyro.containers;
 		
 		public override function addChild(child:DisplayObject):DisplayObject{
 			if(contentPane.numChildren > 0){
-				contentPane.addChild(getNewDivider())
+				contentPane.addChild(getNewDivider());
 			}
 			return super.addChild(child);
 		}
 		
 		public override function addChildAt(child:DisplayObject, index:Int):DisplayObject{
 			if(contentPane.numChildren > 0){
-				contentPane.addChild(getNewDivider())
+				contentPane.addChild(getNewDivider());
 			}
 			return super.addChildAt(child, index);
 		}
 		
 		
 		function getNewDivider():DisplayObject{
-			var divider:DisplayObject 
+			var divider:DisplayObject;
 			if(this._skin){
-				divider = IDividedBoxSkin(_skin).getNewDividerSkin();
+				divider = cast(_skin, IDividedBoxSkin).getNewDividerSkin();
 			}
 			else{
 				if(!_dividerFactory){
@@ -60,7 +60,7 @@ package com.cimians.openPyro.containers;
 				divider = _dividerFactory.newInstance();
 			}
 			dividers.push(divider);
-			InteractiveObject(divider).doubleClickEnabled = true;
+			cast(divider, InteractiveObject).doubleClickEnabled = true;
 			divider.addEventListener(MouseEvent.MOUSE_DOWN, onDividerMouseDown);
 			divider.addEventListener(MouseEvent.CLICK, onDividerClick);	
 			divider.addEventListener(MouseEvent.DOUBLE_CLICK, onDividerDoubleClick);	
@@ -68,24 +68,24 @@ package com.cimians.openPyro.containers;
 		}
 		
 		function getDefaultDividerFactory():ClassFactory{
-			throw new Error("Method needs overriding")
+			throw ("Method needs overriding");
 			return new ClassFactory();
 			/// override
 		}
 		
 		function onDividerMouseDown(event:MouseEvent):Void{
-			throw new Error("DividerMouseDown needs overriding")
+			throw ("DividerMouseDown needs overriding");
 		}
 		
 		function onDividerDoubleClick(event:MouseEvent):Void{
-			var evt:DividerEvent = new DividerEvent(DividerEvent.DIVIDER_DOUBLE_CLICK)
+			var evt:DividerEvent = new DividerEvent(DividerEvent.DIVIDER_DOUBLE_CLICK);
 			evt.divider = cast( event.currentTarget, DisplayObject);
 			evt.dividerIndex = dividers.indexOf(event.currentTarget);
 			dispatchEvent(evt);
 		}
 		
 		function onDividerClick(event:MouseEvent):Void{
-			var evt:DividerEvent = new DividerEvent(DividerEvent.DIVIDER_CLICK)
+			var evt:DividerEvent = new DividerEvent(DividerEvent.DIVIDER_CLICK);
 			evt.divider = cast( event.currentTarget, DisplayObject);
 			evt.dividerIndex = dividers.indexOf(event.currentTarget);
 			dispatchEvent(evt);
@@ -101,11 +101,11 @@ package com.cimians.openPyro.containers;
 			for(i in 0...contentPane.numChildren){
 				var uiObject:DisplayObject = contentPane.getChildAt(i)
 				if(dividers.indexOf(uiObject)!=-1){
-					prevDivider = uiObject
-					continue
+					prevDivider = uiObject;
+					continue;
 				}
 				if(uiObject == child){
-					if(!prevDivider){
+					if(prevDivider == null){
 						if(i < this.contentPane.numChildren-1){
 							prevDivider = contentPane.getChildAt(i+1);
 						}
@@ -114,7 +114,7 @@ package com.cimians.openPyro.containers;
 				}
 			}
 			
-			if(prevDivider){
+			if(prevDivider != null){
 				contentPane.removeChild(prevDivider);
 			}
 			return super.removeChild(child);

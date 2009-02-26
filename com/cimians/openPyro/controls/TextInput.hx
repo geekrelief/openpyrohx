@@ -13,9 +13,12 @@ package com.cimians.openPyro.controls;
 	class TextInput extends Text {
 		
 		public var password(null, setPassword) : Bool;
+		var _displayAsPassword:Bool ;
+
 		public function new()
 		{
 			super();
+            _displayAsPassword = false;
 		}
 		
 		override function setTextFieldProperties():Void{
@@ -28,7 +31,6 @@ package com.cimians.openPyro.controls;
 			_textField.multiline = false;
 		}
 		
-		var _displayAsPassword:Bool ;
 		public function setPassword(b:Bool):Bool{
 			_displayAsPassword = b;
 			return b;
@@ -48,8 +50,8 @@ package com.cimians.openPyro.controls;
 		
 		public override function updateDisplayList(unscaledWidth:Float, unscaledHeight:Float):Void{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			_textField.width = width;
-			_textField.height = height;
+			_textField.width = mwidth;
+			_textField.height = mheight;
 		}
 		
 	}

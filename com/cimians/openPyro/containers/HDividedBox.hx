@@ -23,7 +23,6 @@ package com.cimians.openPyro.containers;
 		 */ 
 		
 		public var defaultDividerFactory(getDefaultDividerFactory, null) : ClassFactory;
-		public var layout(null, setLayout) : ILayout;
 		/**
 		 * Constructor
 		 */ 
@@ -33,128 +32,125 @@ package com.cimians.openPyro.containers;
 		}
 		
 		public override function initialize():Void{
-			super.layout = new HLayout();
-			super.initialize()
+			super.setLayout(new HLayout());
+			super.initialize();
 		}
 		
 		override function getDefaultDividerFactory():ClassFactory{
 			var df:ClassFactory = new ClassFactory(UIControl);
-			df.properties = {percentHeight:100, width:6, backgroundPainter:new GradientFillPainter([0x999999, 0x666666])}			
+			df.properties = {setPercentHeight:100, setWidth:6, backgroundPainter:new GradientFillPainter([0x999999, 0x666666])};
 			return df;
 		}
 		
 		
-		var leftUIC:MeasurableControl
-		var rightUIC:MeasurableControl
+		var leftUIC:MeasurableControl;
+		var rightUIC:MeasurableControl;
 		
 		override function onDividerMouseDown(event:MouseEvent):Void{
-			var dragManager:DragManager = DragManager.getInstance()
+			var dragManager:DragManager = DragManager.getInstance();
 			dragManager.addEventListener(DragEvent.DRAG_COMPLETE, onDividerDragComplete);
 			
 			for(i in 0...contentPane.numChildren){
-				var child:DisplayObject = contentPane.getChildAt(i)
+				var child:DisplayObject = contentPane.getChildAt(i);
 				if(child == event.currentTarget){
-					leftUIC = MeasurableControl(contentPane.getChildAt(i-1));
-					rightUIC = MeasurableControl(contentPane.getChildAt(i+1));
+					leftUIC = cast contentPane.getChildAt(i-1);
+					rightUIC = cast contentPane.getChildAt(i+1);
 					break;
 				}
 				
 			}
 			
-			leftUIC.cancelMouseEvents()
-			rightUIC.cancelMouseEvents()
-			dragManager.makeDraggable(DisplayObject(event.currentTarget), 
-													new Rectangle(0,0,this.width-DisplayObject(event.currentTarget).width, 0));
+			leftUIC.cancelMouseEvents();
+			rightUIC.cancelMouseEvents();
+            if(Std.is(event.currentTarget, MeasurableControl)) {
+			dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
+													new Rectangle(0,0,this.mwidth-cast(event.currentTarget, MeasurableControl).mwidth, 0));
+            } else {
+			dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
+													new Rectangle(0,0,this.mwidth-cast(event.currentTarget, DisplayObject).width, 0));
+            }
 		}
 		
 		
 		function onDividerDragComplete(event:DragEvent):Void{
-			var dragManager:DragManager = DragManager.getInstance()
+			var dragManager:DragManager = DragManager.getInstance();
 			dragManager.removeEventListener(DragEvent.DRAG_COMPLETE, onDividerDragComplete);
 			
 			/* 
 			If the divider moves left, delta is -ve, otherwise +ve
 			*/
-			var delta:Float = event.mouseXDelta
+			var delta:Float = event.mouseXDelta;
 			
-			
-			
-			var unallocatedWidth:Float = (this.width - this.explicitlyAllocatedWidth);
+			var unallocatedWidth:Float = (this.mwidth - this.explicitlyAllocatedWidth);
 			var newUnallocatedWidth:Float = unallocatedWidth;
 			
-			if(isNaN(leftUIC.explicitWidth) && isNaN(rightUIC.explicitWidth)){
+			if(Math.isNaN(leftUIC.explicitWidth) && Math.isNaN(rightUIC.explicitWidth)){
 				
 				/*
 				* The change in dimensions can be compensated by recalculating the 
 				* two percents. 
 				*/
-				var newLeftW:Float = leftUIC.width + delta;
-				var newRightW:Float = rightUIC.width - delta;
+				var newLeftW:Float = leftUIC.mwidth + delta;
+				var newRightW:Float = rightUIC.mwidth - delta;
 				leftUIC.percentUnusedWidth = newLeftW*100/unallocatedWidth;
-				rightUIC.percentUnusedWidth = newRightW*100/unallocatedWidth
-			}
-			
-			
-			else if(!isNaN(leftUIC.explicitWidth) && !isNaN(rightUIC.explicitWidth)){
+				rightUIC.percentUnusedWidth = newRightW*100/unallocatedWidth;
+
+			} else if(!Math.isNaN(leftUIC.explicitWidth) && !Math.isNaN(rightUIC.explicitWidth)){
 				
 				/*
 				 * The dimension changes can be safely calculated 
 				 */
-				leftUIC.width+=delta
-				rightUIC.width-=delta;
-			}
-			
-			
-			else if(!isNaN(leftUIC.explicitWidth)) {
+				leftUIC.mwidth+=delta;
+				rightUIC.mwidth-=delta;
+
+			} else if(!Math.isNaN(leftUIC.explicitWidth)) {
 				
 				/*
 				 * Left child is explicitly sized , right is percent sized
 				 */ 
 				
-				leftUIC.width+=delta;
+				leftUIC.mwidth+=delta;
 				newUnallocatedWidth = unallocatedWidth-delta;
 				for(j in 0...contentPane.numChildren){
-					var currChildL:MeasurableControl = cast( contentPane.getChildAt(j), MeasurableControl);
+					var currChildL:MeasurableControl =  cast contentPane.getChildAt(j);
 					if(dividers.indexOf(currChildL) != -1) continue;
 					if(currChildL == leftUIC) continue;
 					if(currChildL == rightUIC){
-						var newW:Float = currChildL.width-delta;
-						rightUIC.percentUnusedWidth = newW*100/newUnallocatedWidth
+						var newW:Float = currChildL.mwidth-delta;
+						rightUIC.percentUnusedWidth = newW*100/newUnallocatedWidth;
 					}
 					else if(!isNaN(currChildL.percentUnusedWidth)){
 						currChildL.percentUnusedWidth = currChildL.percentUnusedWidth*unallocatedWidth/newUnallocatedWidth;
-						
 					}
 				}				
-			}
-			else{
+			} else{
 				/*
 				 * Right child is explicitly sized , left is percent sized
 				 */ 
-				rightUIC.width-=delta;
+				rightUIC.mwidth-=delta;
 				newUnallocatedWidth = unallocatedWidth+delta;
 				
 				for(k in 0...contentPane.numChildren){
-					var currChild:MeasurableControl = cast( contentPane.getChildAt(k), MeasurableControl);
-					if(dividers.indexOf(currChild) != -1) continue;
+					var currChild:MeasurableControl = cast contentPane.getChildAt(k);
+					if(ArrayUtil.indexOf(dividers, currChild) != -1) continue;
 					if(currChild == rightUIC) continue;
 					if(currChild == leftUIC){
-						var newLW:Float = currChild.width+delta;
-						leftUIC.percentUnusedWidth = newLW*100/newUnallocatedWidth
+						var newLW:Float = currChild.mwidth+delta;
+						leftUIC.percentUnusedWidth = newLW*100/newUnallocatedWidth;
 					}
-					else if(!isNaN(currChild.percentUnusedWidth)){
+					else if(!Math.isNaN(currChild.percentUnusedWidth)){
 						currChild.percentUnusedWidth = currChild.percentUnusedWidth*unallocatedWidth/newUnallocatedWidth;
 					}
 				}
 			}
 			
-			leftUIC.enableMouseEvents()
+			leftUIC.enableMouseEvents();
 			rightUIC.enableMouseEvents();
 			
 		}
 		
 		public override function setLayout(l:ILayout):ILayout{
-			throw new Error(getQualifiedClassName(this)+" cannot have layouts applied to it")
+			throw (Type.typeof(this)+" cannot have layouts applied to it");
 			return l;
 		}
 		

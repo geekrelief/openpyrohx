@@ -9,15 +9,16 @@ package com.cimians.openPyro.containers;
 		
 		
 		
-		public var selectedChild(getSelectedChild, setSelectedChild) : UIContainer
-		;
-		
-		public var selectedIndex(getSelectedIndex, setSelectedIndex) : Int
-		;
+		public var selectedChild(getSelectedChild, setSelectedChild) : UIContainer ;
+		public var selectedIndex(getSelectedIndex, setSelectedIndex) : Int ;
 		
 		/*[ArrayElementType("com.cimians.openPyro.core.UIContainer")]*/
-		var viewChildren:Array<Dynamic>;
+		var viewChildren:Array<UIContainer>;
 		
+		var viewsChanged:Bool;
+		var _selectedIndex:Int;
+
+		var _selectedChild:UIContainer;
 		/**
 		 * The viewstack manages multiple the visibility of
 		 * multiple UIContainers that are added to it.
@@ -27,14 +28,13 @@ package com.cimians.openPyro.containers;
 			this._horizontalScrollPolicy = false;
 			this._verticalScrollPolicy = false;
 			viewChildren = new Array();
+            viewsChanged = true;
+            _selectedIndex = -1;
 		}
 		
-		var viewsChanged:Bool ;
-		
-		var _selectedIndex:Int ;
 		public function setSelectedIndex(idx:Int):Int
 		{
-			if(_selectedIndex == idx) return;
+			if(_selectedIndex == idx) return idx;
 			_selectedIndex = idx;
 			this._selectedChild = viewChildren[_selectedIndex];
 			viewsChanged = true;
@@ -46,46 +46,43 @@ package com.cimians.openPyro.containers;
 		
 		public function getSelectedIndex():Int
 		{
-			return _selectedIndex
+			return _selectedIndex;
 		}
 		
 		public override function addChild(child:DisplayObject):DisplayObject
 		{
-			if(!(Std.is( child, UIContainer)))
-			{
-				throw new Error("ViewStacks can only hold UIContainers");
-				return;
-			}
-			this.viewChildren.push(child);
-			_selectedChild = UIContainer(child);
+            if(!Std.is(child, UIContainer)) {
+                throw "Viewstack can only hold UIContainers";
+                return null;
+            }
+			this.viewChildren.push(cast child);
+			_selectedChild = cast child;
 			_selectedIndex++;
-			viewsChanged = true
+			viewsChanged = true;
 			return super.addChild(child);
 		}
 		
 		public override function addChildAt(child:DisplayObject, index:Int):DisplayObject
 		{
-			if(!(Std.is( child, UIContainer)))
-			{
-				throw new Error("ViewStacks can only hold UIContainers");
-				return;
-			}
+            if(!Std.is(child, UIContainer)) {
+                throw "Viewstack can only hold UIContainers";
+                return null;
+            }
+
 			ArrayUtil.insertAt(viewChildren, index, child);
-			_selectedChild = viewChildren[viewChildren.length-1]
+			_selectedChild = viewChildren[viewChildren.length-1];
 			_selectedIndex++;
-			viewsChanged = true
+			viewsChanged = true;
 			return super.addChildAt(child, index);
 		}
 		
-		var _selectedChild:UIContainer ;
 		public function setSelectedChild(child:UIContainer):UIContainer
 		{
-			if(_selectedChild == child) return;
+			if(_selectedChild == child) return child;
 			
 			for(i in 0...viewChildren.length)
 			{
-				var container:UIContainer = viewChildren[i];
-				if(container == child)
+				if(viewChildren[i] == child)
 				{
 					this.selectedIndex = i;
 				}
@@ -95,7 +92,7 @@ package com.cimians.openPyro.containers;
 		
 		public override function removeChild(child:DisplayObject):DisplayObject
 		{
-			if(viewChildren.indexOf(child) != -1){
+			if(ArrayUtil.indexOf(viewChildren, child) != -1){
 				ArrayUtil.remove(viewChildren, child);
 			}
 			if(_selectedChild == child){
@@ -115,15 +112,14 @@ package com.cimians.openPyro.containers;
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			if(viewsChanged){
 				viewsChanged = false;
-				showSelectedChild()
+				showSelectedChild();
 			}
 		}
 		
 		function showSelectedChild():Void
 		{
 			for(i in 0...viewChildren.length){
-				var child:DisplayObject = DisplayObject(viewChildren[i]);
-				child.visible = (i == _selectedIndex)?true:false;
+				viewChildren[i].mvisible = (i == _selectedIndex);
 			}
 		}
 		

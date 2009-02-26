@@ -4,8 +4,8 @@ package com.cimians.openPyro.layout;
 	
 	interface ILayout
 	{
-        var initX(null, setInitX):Float;
-        var initY(null, setInitY):Float;
+        var initX(getInitX, setInitX):Float;
+        var initY(getInitY, setInitY):Float;
         var container(null, setContainer):UIContainer;
 		function layout(children:Array<Dynamic>):Void;
 		function getMaxWidth(children:Array<Dynamic>):Float;

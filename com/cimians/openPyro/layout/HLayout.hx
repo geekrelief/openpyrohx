@@ -9,8 +9,8 @@ package com.cimians.openPyro.layout;
 		
 		public var container(null, setContainer) : UIContainer;
 		
-		public var initX(null, setInitX) : Float;
-		public var initY(null, setInitY) : Float;
+		public var initX(getInitX, setInitX) : Float;
+		public var initY(getInitY, setInitY) : Float;
 		public var prepare(null, setPrepare) : Dynamic;
 		
 		

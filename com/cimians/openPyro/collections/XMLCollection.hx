@@ -34,7 +34,10 @@ package com.cimians.openPyro.collections;
 		
 		
 		function parseNode(node:Xml, depth:Int, parentNodeDescriptor:XMLNodeDescriptor):Void{
-			
+
+            if(node.nodeType == Xml.Document)
+		        node = node.firstElement();
+
 			var desc:XMLNodeDescriptor = new XMLNodeDescriptor();
 			desc.node = node;
 			desc.depth = depth;

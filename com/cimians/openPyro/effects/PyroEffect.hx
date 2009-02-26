@@ -1,25 +1,25 @@
 package com.cimians.openPyro.effects;
 
-	//import gs.TweenMax;  // replace with FEffects
+	import feffects.Tween;
 	
 	class PyroEffect
 	{
 		
-		public var effectDescriptors(getEffectDescriptors, setEffectDescriptors) : Array<Dynamic> ;
-		/*[ArrayElementType("com.cimians.openPyro.effects.EffectDescriptor")]*/
-		var _effDescriptors:Array<Dynamic>;
+		public var effectDescriptors(getEffectDescriptors, setEffectDescriptors) : Array<EffectDescriptor> ;
+
+		var _effDescriptors:Array<EffectDescriptor>;
 		
 		public function new() {
 			
 		}
 		
-		public function setEffectDescriptors(effDescriptors:Array<Dynamic>):Array<Dynamic>
+		public function setEffectDescriptors(effDescriptors:Array<EffectDescriptor>):Array<EffectDescriptor>
 		{
 			_effDescriptors = effDescriptors;
 			return effDescriptors;
 		}
 		
-		public function getEffectDescriptors():Array<Dynamic>
+		public function getEffectDescriptors():Array<EffectDescriptor>
 		{
 			return _effDescriptors;
 		}
@@ -28,7 +28,15 @@ package com.cimians.openPyro.effects;
 		{
 			for (descriptor in _effDescriptors)
 			{
-				//TweenMax.to(descriptor.target, descriptor.duration, descriptor.properties);
+                var field = Reflect.fields(descriptor.properties)[0];
+                var tween = new Tween(  Reflect.field(descriptor.target, field), 
+                                        Reflect.field(descriptor.properties, field), 
+                                        descriptor.duration, 
+                                        descriptor.target, 
+                                        field, 
+                                        descriptor.ease
+                                     );
+                tween.start();
 			}
 		}
 	}

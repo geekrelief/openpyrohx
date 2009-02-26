@@ -8,8 +8,8 @@ package com.cimians.openPyro.layout;
 	class AbsoluteLayout implements ILayout, implements IContainerMeasurementHelper {
 		
 		public var container(null, setContainer) : UIContainer;
-		public var initX(null, setInitX) : Float;
-		public var initY(null, setInitY) : Float;
+		public var initX(getInitX, setInitX) : Float;
+		public var initY(getInitY, setInitY) : Float;
 		public var prepare(null, setPrepare) : Dynamic; 
 		var _container:UIContainer;
 		
@@ -20,10 +20,18 @@ package com.cimians.openPyro.layout;
 		public function setInitX(n:Float):Float{
 			return n;
     	}
+
+        public function getInitX():Float {
+            return Math.NaN;
+        }
 		
 		public function setInitY(n:Float):Float{
 			return n;
     	}
+
+        public function getInitY():Float {
+            return Math.NaN;
+        }
 		
 		public function setContainer(c:UIContainer):UIContainer{
 			_container = c;
