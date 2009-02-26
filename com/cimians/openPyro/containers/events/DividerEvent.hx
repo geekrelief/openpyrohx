@@ -5,8 +5,6 @@ package com.cimians.openPyro.containers.events;
 
 	class DividerEvent extends Event {
 		
-		
-		
 		public static var DIVIDER_DOUBLE_CLICK:String = "dividerDoubleClick";
 		public static var DIVIDER_CLICK:String = "dividerClick";
 		
@@ -17,5 +15,4 @@ package com.cimians.openPyro.containers.events;
 		{
 			super(type, bubbles, cancelable);
 		}
-		
 	}

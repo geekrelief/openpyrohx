@@ -1,6 +1,7 @@
 package com.cimians.openPyro.managers;
 
 	import com.cimians.openPyro.core.UIControl;
+	import com.cimians.openPyro.core.MeasurableControl;
 	import com.cimians.openPyro.managers.events.DragEvent;
 	
 	import flash.display.Bitmap;
@@ -13,54 +14,50 @@ package com.cimians.openPyro.managers;
 	
 	class DragManager extends EventDispatcher {
 		
-		
-		
 		var dragProxy:Sprite;
-		var dragInitiator:DisplayObject
+		var dragInitiator:DisplayObject;
 		
-		var mouseStartY:Int var mouseStartX:Int public function new() {
-			
-		
-		mouseStartY = 0
-		;
-		mouseStartX = 0
-		
-		;
+		var mouseStartY:Float;
+        var mouseStartX:Float;
+
+        public function new() {
+            super();
+    		mouseStartY = 0;
+    		mouseStartX = 0;
 		}
 		
 		public function makeDraggable(object:DisplayObject, bounds:Rectangle):Void{
-			if(!object.stage){
-				throw new Error("DragTarget is not on stage")
+			if(object.stage == null){
+				throw ("DragTarget is not on stage");
 			}
 			dragInitiator = object;
 			dragProxy = createDragProxy(object);
 			if(Std.is( object.parent, UIControl)){
-				UIControl(object.parent)._S_addChild(dragProxy);
+				cast(object.parent, UIControl)._S_addChild(dragProxy);
 			}
 			else{
-				object.parent.addChild(dragProxy)
+				object.parent.addChild(dragProxy);
 			}
 			dragProxy.x = object.x;
 			dragProxy.y = object.y;
 			
 			dragProxy.startDrag(true, bounds);
 			
-			mouseStartY = object.stage.mouseY
+			mouseStartY = object.stage.mouseY;
 			mouseStartX = object.stage.mouseX;
 			object.stage.addEventListener(MouseEvent.MOUSE_UP, onMouseUp);
 		}
 		
 		static var instance:DragManager;
 		public static function getInstance():DragManager{
-			if(!instance){
-				instance = new DragManager()
+			if(instance == null){
+				instance = new DragManager();
 			}
 			return instance;
 		}
 		
 		function onMouseUp(event:MouseEvent):Void{
-			if(!dragProxy) return;
-			
+			if(dragProxy == null) return;
 			
 			var dragEvent:DragEvent = new DragEvent(DragEvent.DRAG_COMPLETE);
 			
@@ -79,9 +76,14 @@ package com.cimians.openPyro.managers;
 		
 		
 		public function createDragProxy(object:DisplayObject):Sprite{
-			var data:BitmapData = new BitmapData(object.width, object.height)
+			var data:BitmapData;
+            if(Std.is(object, MeasurableControl)) {
+                data = new BitmapData(Std.int(cast(object, MeasurableControl).mwidth), Std.int(cast(object, MeasurableControl).height));
+            } else { 
+                data = new BitmapData(Std.int(object.width), Std.int(object.height));
+            }
 			data.draw(object);
-			var bmp:Bitmap = new Bitmap(data)
+			var bmp:Bitmap = new Bitmap(data);
 			var sp:Sprite = new Sprite();
 			sp.addChild(bmp);
 			sp.alpha = .5;

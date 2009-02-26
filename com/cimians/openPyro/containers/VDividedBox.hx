@@ -8,19 +8,17 @@ package com.cimians.openPyro.containers;
 	import com.cimians.openPyro.managers.DragManager;
 	import com.cimians.openPyro.managers.events.DragEvent;
 	import com.cimians.openPyro.painters.GradientFillPainter;
+    import com.cimians.openPyro.utils.ArrayUtil;
 	
 	import flash.display.DisplayObject;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
-	import flash.utils.getQualifiedClassName;
 	
 	/**
 	 * 
 	 */ 
 	class VDividedBox extends DividedBox {
 		
-		public var defaultDividerFactory(getDefaultDividerFactory, null) : ClassFactory;
-
 		/**
 		 * Constructor
 		 */ 
@@ -62,8 +60,8 @@ package com.cimians.openPyro.containers;
 			*/
 			var delta:Float = event.mouseYDelta;//point.y - event.dragInitiator.y 
 		
-			var topUIC:MeasurableControl;
-			var bottomUIC:MeasurableControl;
+			var topUIC:MeasurableControl = null;
+			var bottomUIC:MeasurableControl = null;
 			
 			for(i in 0...contentPane.numChildren){
 				var child:DisplayObject = contentPane.getChildAt(i);
@@ -87,7 +85,7 @@ package com.cimians.openPyro.containers;
 				var newTopH:Float = topUIC.mheight + delta;
 				var newBottomH:Float = bottomUIC.mheight - delta;
 				topUIC.percentUnusedHeight = newTopH*100/unallocatedHeight;
-				bottomUIC.percentUnusedHeight = newBottomH*100/unallocatedHeight
+				bottomUIC.percentUnusedHeight = newBottomH*100/unallocatedHeight;
 			}
 			
 			
@@ -96,7 +94,7 @@ package com.cimians.openPyro.containers;
 				/*
 				 * The dimension changes can be safely calculated 
 				 */
-				topUIC.mheight+=delta
+				topUIC.mheight+=delta;
 				bottomUIC.mheight-=delta;
 			}
 			
@@ -111,7 +109,7 @@ package com.cimians.openPyro.containers;
 				newUnallocatedHeight = unallocatedHeight-delta;
 				for(j in 0...contentPane.numChildren){
 					var currChildL:MeasurableControl = cast contentPane.getChildAt(j);
-					if(dividers.indexOf(currChildL) != -1) continue;
+					if(ArrayUtil.indexOf(dividers, currChildL) != -1) continue;
 					if(currChildL == topUIC) continue;
 					if(currChildL == bottomUIC){
 						var newH:Float = currChildL.mheight-delta;
@@ -119,7 +117,6 @@ package com.cimians.openPyro.containers;
 					}
 					else if(!Math.isNaN(currChildL.percentUnusedHeight)){
 						currChildL.percentUnusedHeight = currChildL.percentUnusedHeight*unallocatedHeight/newUnallocatedHeight;
-						
 					}
 				}				
 			}
@@ -132,7 +129,7 @@ package com.cimians.openPyro.containers;
 				
 				for(k in 0...contentPane.numChildren){
 					var currChild:MeasurableControl = cast contentPane.getChildAt(k);
-					if(dividers.indexOf(currChild) != -1) continue;
+					if(ArrayUtil.indexOf(dividers, currChild) != -1) continue;
 					if(currChild == bottomUIC) continue;
 					if(currChild == topUIC){
 						var newLH:Float = currChild.mheight+delta;
@@ -146,7 +143,7 @@ package com.cimians.openPyro.containers;
 		}
 		
 		public override function setLayout(l:ILayout):ILayout{
-			throw (Type.typeof(this)+" cannot have layouts applied to it");
+			throw ("VDividedBox cannot have layouts applied to it");
 			return l;
 		}
 		

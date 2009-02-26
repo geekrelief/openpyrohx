@@ -8,21 +8,15 @@ package com.cimians.openPyro.containers;
 	import com.cimians.openPyro.managers.DragManager;
 	import com.cimians.openPyro.managers.events.DragEvent;
 	import com.cimians.openPyro.painters.GradientFillPainter;
+	import com.cimians.openPyro.utils.ArrayUtil;
+    
 	
 	import flash.display.DisplayObject;
 	import flash.events.MouseEvent;
 	import flash.geom.Rectangle;
-	import flash.utils.getQualifiedClassName;
-	
-	/**
-	 * 
-	 */ 
+
 	class HDividedBox extends DividedBox {
-		/**
-		 * Constructor
-		 */ 
 		
-		public var defaultDividerFactory(getDefaultDividerFactory, null) : ClassFactory;
 		/**
 		 * Constructor
 		 */ 
@@ -63,10 +57,10 @@ package com.cimians.openPyro.containers;
 			leftUIC.cancelMouseEvents();
 			rightUIC.cancelMouseEvents();
             if(Std.is(event.currentTarget, MeasurableControl)) {
-			dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
+    			dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
 													new Rectangle(0,0,this.mwidth-cast(event.currentTarget, MeasurableControl).mwidth, 0));
             } else {
-			dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
+    			dragManager.makeDraggable(cast(event.currentTarget, DisplayObject), 
 													new Rectangle(0,0,this.mwidth-cast(event.currentTarget, DisplayObject).width, 0));
             }
 		}
@@ -113,13 +107,13 @@ package com.cimians.openPyro.containers;
 				newUnallocatedWidth = unallocatedWidth-delta;
 				for(j in 0...contentPane.numChildren){
 					var currChildL:MeasurableControl =  cast contentPane.getChildAt(j);
-					if(dividers.indexOf(currChildL) != -1) continue;
+					if(ArrayUtil.indexOf(dividers, currChildL) != -1) continue;
 					if(currChildL == leftUIC) continue;
 					if(currChildL == rightUIC){
 						var newW:Float = currChildL.mwidth-delta;
 						rightUIC.percentUnusedWidth = newW*100/newUnallocatedWidth;
 					}
-					else if(!isNaN(currChildL.percentUnusedWidth)){
+					else if(!Math.isNaN(currChildL.percentUnusedWidth)){
 						currChildL.percentUnusedWidth = currChildL.percentUnusedWidth*unallocatedWidth/newUnallocatedWidth;
 					}
 				}				
@@ -150,7 +144,7 @@ package com.cimians.openPyro.containers;
 		}
 		
 		public override function setLayout(l:ILayout):ILayout{
-			throw (Type.typeof(this)+" cannot have layouts applied to it");
+			throw ("HDividedBox cannot have layouts applied to it");
 			return l;
 		}
 		

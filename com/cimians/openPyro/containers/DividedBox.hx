@@ -4,6 +4,7 @@ package com.cimians.openPyro.containers;
 	import com.cimians.openPyro.controls.skins.IDividedBoxSkin;
 	import com.cimians.openPyro.core.ClassFactory;
 	import com.cimians.openPyro.core.UIContainer;
+	import com.cimians.openPyro.utils.ArrayUtil;
 	
 	import flash.display.DisplayObject;
 	import flash.display.InteractiveObject;
@@ -15,15 +16,16 @@ package com.cimians.openPyro.containers;
 		
 		public var defaultDividerFactory(getDefaultDividerFactory, null) : ClassFactory;
 		public var dividerFactory(getDividerFactory, setDividerFactory) : ClassFactory;
+
+		var dividers:Array<Dynamic> ;
+		var _dividerFactory:ClassFactory;
+
 		public function new()
 		{
 			super();
+            dividers = new Array();
 		}
 		
-		var dividers:Array<Dynamic> ;
-		
-		
-		var _dividerFactory:ClassFactory;
 		public function setDividerFactory(f:ClassFactory):ClassFactory{
 			_dividerFactory = f;
 			return f;
@@ -31,7 +33,6 @@ package com.cimians.openPyro.containers;
 		public function getDividerFactory():ClassFactory{
 			return _dividerFactory;
 		}
-		
 		
 		public override function addChild(child:DisplayObject):DisplayObject{
 			if(contentPane.numChildren > 0){
@@ -50,11 +51,11 @@ package com.cimians.openPyro.containers;
 		
 		function getNewDivider():DisplayObject{
 			var divider:DisplayObject;
-			if(this._skin){
+			if(this._skin != null){
 				divider = cast(_skin, IDividedBoxSkin).getNewDividerSkin();
 			}
 			else{
-				if(!_dividerFactory){
+				if(_dividerFactory == null){
 					_dividerFactory = defaultDividerFactory;
 				}
 				divider = _dividerFactory.newInstance();
@@ -80,14 +81,14 @@ package com.cimians.openPyro.containers;
 		function onDividerDoubleClick(event:MouseEvent):Void{
 			var evt:DividerEvent = new DividerEvent(DividerEvent.DIVIDER_DOUBLE_CLICK);
 			evt.divider = cast( event.currentTarget, DisplayObject);
-			evt.dividerIndex = dividers.indexOf(event.currentTarget);
+			evt.dividerIndex = ArrayUtil.indexOf(dividers, event.currentTarget);
 			dispatchEvent(evt);
 		}
 		
 		function onDividerClick(event:MouseEvent):Void{
 			var evt:DividerEvent = new DividerEvent(DividerEvent.DIVIDER_CLICK);
 			evt.divider = cast( event.currentTarget, DisplayObject);
-			evt.dividerIndex = dividers.indexOf(event.currentTarget);
+			evt.dividerIndex = ArrayUtil.indexOf(dividers, event.currentTarget);
 			dispatchEvent(evt);
 		}
 		
@@ -97,10 +98,10 @@ package com.cimians.openPyro.containers;
 		 */ 
 		public override function removeChild(child:DisplayObject):DisplayObject{
 			
-			var prevDivider:DisplayObject;
+			var prevDivider:DisplayObject = null;
 			for(i in 0...contentPane.numChildren){
-				var uiObject:DisplayObject = contentPane.getChildAt(i)
-				if(dividers.indexOf(uiObject)!=-1){
+				var uiObject:DisplayObject = contentPane.getChildAt(i);
+				if(ArrayUtil.indexOf(dividers, uiObject)!=-1){
 					prevDivider = uiObject;
 					continue;
 				}
