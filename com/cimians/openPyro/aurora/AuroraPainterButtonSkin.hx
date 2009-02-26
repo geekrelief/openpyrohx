@@ -14,26 +14,30 @@ package com.cimians.openPyro.aurora;
 	
 	class AuroraPainterButtonSkin extends UIControl, implements IStateFulClient {
 		
-		
-		
 		public var icon(null, setIcon) : DisplayObject;
 		public var labelAlign(null, setLabelAlign) : String; 
 		public var labelFormat(getLabelFormat, setLabelFormat) : TextFormat ;
 		public var painters(null, setPainters) : IPainter;
-		public var skinnedControl(null, setSkinnedControl) : UIControl;
+		
+		var _labelFormat:TextFormat;
+		var label:Label;
+		var _labelAlign:String ;
 		
 		public function new()
 		{
+            super();
 			this.mouseChildren=false;
+            _labelFormat = new TextFormat("Arial", 11, 0x111111, true);
+            _labelAlign = "center";
 		}
 		
 		public override function setSkinnedControl(uic:UIControl):UIControl{
-			if(_skinnedControl)
+			if(_skinnedControl != null)
 			{
-				_skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
+				_skinnedControl.removeEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
 			}
 			super.setSkinnedControl(uic);
-			_skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange)
+			_skinnedControl.addEventListener(PyroEvent.PROPERTY_CHANGE, onSkinnedControlPropertyChange);
 			if(Std.is( uic, Button))
 			{
 				this.changeState(null, cast(uic, Button).currentState);
@@ -67,8 +71,6 @@ package com.cimians.openPyro.aurora;
 		
 		////////////////// LABEL /////////////////
 		
-		var _labelFormat:TextFormat ;
-		
 		public function setLabelFormat(fmt:TextFormat):TextFormat
 		{
 			_labelFormat = fmt;
@@ -88,25 +90,21 @@ package com.cimians.openPyro.aurora;
 			return _labelFormat;
 		}
 		
-		var label:Label;
-		
 		public function updateLabel():Void
 		{
 			if(Std.is( this._skinnedControl, Button))
 			{
-				var bttn:Button = Button(this._skinnedControl);
+				var bttn:Button = cast(this._skinnedControl, Button);
 				if(bttn.label == null) return;
 				if(label == null){
 					label = new Label();
 					label.textFormat = _labelFormat;
 					addChild(label);
-					
 				}
 				label.text = bttn.label;
 			}
 		}
 		
-		var _labelAlign:String ;
 		public function setLabelAlign(direction:String):String{
 			_labelAlign = direction;
 			if(_skinnedControl != null){
@@ -172,7 +170,7 @@ package com.cimians.openPyro.aurora;
 			
 			if(label != null){
 				
-				label.textField.autoSize = "left";
+				label.textField.autoSize = flash.text.TextFieldAutoSize.LEFT;
 				label.y = (unscaledHeight-label.mheight)/2;
 				
 				if(this._labelAlign == "center"){
@@ -183,7 +181,7 @@ package com.cimians.openPyro.aurora;
 				}
 			}
 			
-			if(_icon){
+			if(_icon != null){
 				if(label == null){
 					_icon.x = (unscaledWidth-_icon.width)/2;
 				}

@@ -15,16 +15,16 @@ package com.cimians.openPyro.aurora.skinClasses;
 		var closeButton:Button;
 		override function createChildren():Void{
 			this.backgroundPainter = new GradientFillPainter([0x999999, 0xffffff, 0x999999]);
-			closeButton = new Button()
-			closeButton.skin = new AuroraButtonSkin()
+			closeButton = new Button();
+			closeButton.skin = new AuroraButtonSkin();
 			closeButton.percentWidth=100;
-			closeButton.height = 70;
+			closeButton.mheight = 70;
 			addChild(closeButton);
 		}
 		
 		public override function updateDisplayList(unscaledWidth:Float, unscaledHeight:Float):Void{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-			closeButton.y = (unscaledHeight-70)/2
+			closeButton.y = (unscaledHeight-70)/2;
 		}
 		
 	}

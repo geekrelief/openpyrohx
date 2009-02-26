@@ -12,30 +12,30 @@ package com.cimians.openPyro.aurora;
 	
 	class AuroraCheckBoxSkin extends AuroraPainterButtonSkin {
 		
-		
-		
 		public var checkIcon(null, setCheckIcon) : DisplayObject; 
-		public var skinnedControl(null, setSkinnedControl) : UIControl; 
 		public var uncheckIcon(null, setUncheckIcon) : DisplayObject;
 		
 		/*[Embed(source="/assets/graphic_assets.swf", symbol="checkIcon")]*/
-		var TickGraphic:Class<Dynamic>;
+		//var TickGraphic:Class<Dynamic>; // FIXME
 		
 		var _checkIcon:DisplayObject;
+		var _uncheckIcon:DisplayObject;
+
+		public var cornerRadius:Float;
+        public var boxLabelGap:Float;
 
 		public function new()
-		{
+        {
+            super();
+            cornerRadius = 0;
+            boxLabelGap = 10;
 		}
-		
-		
-		public var cornerRadius:Int public var boxLabelGap:Int ;
 		
 		public function setCheckIcon(icon:DisplayObject):DisplayObject{
 			_checkIcon = icon;
 			return icon;
 		}
 		
-		var _uncheckIcon:DisplayObject
 		public function setUncheckIcon(icon:DisplayObject):DisplayObject{
 			_uncheckIcon = icon;
 			return icon;
@@ -69,7 +69,7 @@ package com.cimians.openPyro.aurora;
 				this.backgroundPainter = downPainter;
 				if(Std.is( _skinnedControl, Button)){
 					var b:Button = cast( _skinnedControl, Button);
-					checkSelectedStatus()
+					checkSelectedStatus();
 				}
 			}
 			else
@@ -79,25 +79,24 @@ package com.cimians.openPyro.aurora;
 		}
 		
 		function checkSelectedStatus():Void{
-			if(Button(_skinnedControl).toggle){
-				if(Button(_skinnedControl).selected){
-					if(!_checkIcon){
-						_checkIcon = createDefaultCheckIcon()
-						
+			if(cast(_skinnedControl, Button).toggle){
+				if(cast(_skinnedControl, Button).selected){
+					if(_checkIcon == null){
+						_checkIcon = createDefaultCheckIcon();
 					}
-					_checkIcon.visible = true
-					if(_uncheckIcon){
+					_checkIcon.visible = true;
+					if(_uncheckIcon != null){
 						_uncheckIcon.visible = false;
 					}	
 				}
 				else {
-					if(!_uncheckIcon){
-						_uncheckIcon = createDefaultUnCheckIcon()
+					if(_uncheckIcon == null){
+						_uncheckIcon = createDefaultUnCheckIcon();
 						
 					}
-					_uncheckIcon.visible = true
-					if(_checkIcon){
-						_checkIcon.visible=false
+					_uncheckIcon.visible = true;
+					if(_checkIcon != null){
+						_checkIcon.visible=false;
 					}
 				}
 			}
@@ -105,54 +104,56 @@ package com.cimians.openPyro.aurora;
 		
 		public override function updateDisplayList(unscaledWidth:Float, unscaledHeight:Float):Void{
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-				if(!label){
-					if(_checkIcon)
+				if(label == null){
+					if(_checkIcon != null)
 						_checkIcon.x = (unscaledWidth-_checkIcon.width)/2;
-					if(_uncheckIcon)
-						_uncheckIcon.x = 	(unscaledWidth-_uncheckIcon.width)/2
+					if(_uncheckIcon != null)
+						_uncheckIcon.x = (unscaledWidth-_uncheckIcon.width)/2;
 				}
 				else{
-						if(_checkIcon){
+						if(_checkIcon != null){
 							_checkIcon.x = _skinnedControl.padding.left;
 							_checkIcon.y = (unscaledHeight-_checkIcon.height)/2;
 			
 						}
-						if(_uncheckIcon){
-							_uncheckIcon.x =  _skinnedControl.padding.left;;
+						if(_uncheckIcon != null){
+							_uncheckIcon.x =  _skinnedControl.padding.left;
 							_uncheckIcon.y = (unscaledHeight-_uncheckIcon.height)/2;
 						}
-						var checkIconW:Int = _checkIcon ? _checkIcon.width:0
-						var uncheckIconW:Int = _uncheckIcon?_uncheckIcon.width:0
+						var checkIconW:Float = (_checkIcon != null) ? _checkIcon.width : 0;
+						var uncheckIconW:Float = (_uncheckIcon != null) ? _uncheckIcon.width : 0;
 						label.x = Math.max(checkIconW, uncheckIconW)+boxLabelGap;
 					}
 			
 		}
 		
 		function createDefaultUnCheckIcon():Sprite{
-			var sp:Sprite = new Sprite()
-			var gr:GradientFillPainter = new GradientFillPainter([0xffffff, 0xdddddd])
-			gr.stroke = new Stroke(1,0x666666,1,true)
-			gr.rotation = Math.PI/2
-			gr.cornerRadius = cornerRadius
-			gr.draw(sp.graphics, 15,15)
-			addChild(sp)
-			return sp
+			var sp:Sprite = new Sprite();
+			var gr:GradientFillPainter = new GradientFillPainter([0xffffff, 0xdddddd]);
+			gr.stroke = new Stroke(1,0x666666,1,true);
+			gr.rotation = Math.PI/2;
+			gr.cornerRadius = cornerRadius;
+			gr.draw(sp.graphics, 15,15);
+			addChild(sp);
+			return sp;
 		}
 		
 		function createDefaultCheckIcon():Sprite{
-			var sp:Sprite = new Sprite()
-			var gr:GradientFillPainter = new GradientFillPainter([0xffffff, 0xdddddd])
-			gr.stroke = new Stroke(1,0x666666,1,true)
-			gr.rotation = Math.PI/2
-			gr.cornerRadius = cornerRadius
-			gr.draw(sp.graphics, 15,15)
-			addChild(sp)
+			var sp:Sprite = new Sprite();
+			var gr:GradientFillPainter = new GradientFillPainter([0xffffff, 0xdddddd]);
+			gr.stroke = new Stroke(1,0x666666,1,true);
+			gr.rotation = Math.PI/2;
+			gr.cornerRadius = cornerRadius;
+			gr.draw(sp.graphics, 15,15);
+			addChild(sp);
 			
-			var tick:DisplayObject = new TickGraphic()
-			sp.addChild(tick)
-			sp.mouseChildren=false;
-			return sp
-		}
-		
+			var tick:Sprite = new Sprite();
+            tick.graphics.beginFill(0);
+            tick.graphics.drawCircle(0, 0, 5);
+            tick.graphics.endFill();
 
+			sp.addChild(tick);
+			sp.mouseChildren = false;
+			return sp;
+		}
 	}
