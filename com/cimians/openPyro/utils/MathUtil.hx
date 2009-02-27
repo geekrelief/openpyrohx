@@ -7,23 +7,19 @@ package com.cimians.openPyro.utils;
 		 * 
 		 * useage: getCommaSeparatedString(12345) returns 12,345
 		 */  
-		public function new() { }
-		
-		/**
-		 * Inserts a comma after every 3rd character when counted from reverse
-		 * 
-		 * useage: getCommaSeparatedString(12345) returns 12,345
-		 */  
 		public static function getCommaSeparatedString(n:Float):String{
-			var numString:String = String(n);
+			var numString:String = Std.string(n);
 			var returnString:Array<Dynamic> = new Array();
-			var i:Int=numString.length-1, count:Int=1;
+			var i:Int = numString.length-1;
+            var count:Int=1;
+
 			while (i>=0){
 				returnString.push(numString.charAt(i));
 				if(count%3==0 && i != 0){
 					returnString.push(",");
 				}
-				i--, count++;
+				i--; 
+                count++;
 			}
 			returnString.reverse();
 			return returnString.join('');

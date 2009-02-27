@@ -2,8 +2,6 @@ package com.cimians.openPyro.storage;
 
 	import com.cimians.openPyro.core.ISerializable;
 	
-	import flash.utils.Dictionary;
-	
 	/**
 	 * @example The following code shows how to use StorageDictionary
 	 * 
@@ -17,50 +15,43 @@ package com.cimians.openPyro.storage;
 	 */ 
 	class StorageDictionary implements ISerializable {
 		
-		
-		
 		public var separator(getSeparator, setSeparator) : String;
 		
 		var keyValueString:String ;
 		
-		var data:Dictionary var _separator:String public function new() {
-			
-		
-		keyValueString = "";
-		data = new Dictionary()
-		
-		;
-		_separator = "|"
-		
-		;
+		var data:Hash<String>;
+        var _separator:String;
+
+        public function new() {
+		    keyValueString = "";
+    		data = new Hash();
+    		_separator = "|";
 		}
 		
-		public function setSeparator(separatorCharacter:String):String{
-			_separator = separatorCharacter
+		inline public function setSeparator(separatorCharacter:String):String{
+			_separator = separatorCharacter;
 			return separatorCharacter;
 		}
 		
-		public function getSeparator():String{
+		inline public function getSeparator():String{
 			return _separator;
 		}
 		
 		
-		public function setKeyValuePair(key:String, value:String):Void
+		inline public function setKeyValuePair(key:String, value:String):Void
 		{
-			data[key] = value;
+			data.set(key, value);
 		}
 		
-		public function getValueForKey(key:String):String
+		inline public function getValueForKey(key:String):String
 		{
-			return data[key];
+			return data.get(key);
 		}
 		
 		public function serialize():String
 		{
-			for(var key:String in data){
-				
-				keyValueString+=key+":"+data[key]+_separator;
-				
+			for(key in data.keys()){
+				keyValueString+=key+":"+data.get(key)+_separator;
 			}
 			return keyValueString;
 		}
@@ -71,16 +62,17 @@ package com.cimians.openPyro.storage;
 		 */ 
 		public function deserialize(str:String):Void
 		{
-			var keyValArray:Array<Dynamic> = str.split(this._separator);
-			for(i in 0...keyValArray.length)
+			var keyValArray:Array<String> = str.split(this._separator);
+			for(kv in keyValArray)
 			{
-				var key:String = String(String(keyValArray[i]).split(":")[0])
-				var value:String = String(String(keyValArray[i]).split(":")[1])
-				if(data.hasOwnProperty(key))
+                var kva = kv.split(":");
+				var key = kva[0];
+				var value = kva[1];
+				if(data.exists(key))
 				{
 					//TODO: Storage handle conflict
 				}
-				data[key] = value;
+				data.set(key, value);
 			}
 		}
 

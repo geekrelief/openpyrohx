@@ -6,15 +6,14 @@ package com.cimians.openPyro.utils;
 	
 	class GlobalTimer extends EventDispatcher {
 		
+		var _stage:Stage;
 		
-		
-		var _stage:Stage
-		
-		static var frameNumber:Int=0;
+		static var frameNumber:Int = 0;
 		
 		public function new(stage:Stage)
 		{
-			_stage = stage
+            super();
+			_stage = stage;
 		}
 		
 		

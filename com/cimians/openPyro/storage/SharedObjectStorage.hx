@@ -33,8 +33,6 @@ package com.cimians.openPyro.storage;
 	 */ 
 	class SharedObjectStorage extends EventDispatcher, implements IStorage {
 		
-		
-		
 		public var storeActionState(getStoreActionState, null) : String;
 		
 		public var storeCreated(getStoreCreated, null) : Bool;
@@ -50,15 +48,16 @@ package com.cimians.openPyro.storage;
 		/**
 		 * Constructor
 		 */ 
-		public function new(soName:String,?localPath:String = null, ?secure:Bool = false){
-			
+		public function new(soName:String, ?localPath:String = null, ?secure:Bool = false){
+            super();
 			_storeCreated = false;
 			minDiskSpace = 1000;
+
 			try{
 				so = SharedObject.getLocal(soName, localPath, secure);
 				_storeCreated = true;	
 				
-			}catch(e:Error){
+			}catch(e:Dynamic){
 				_storeCreated = false;
 			}
 		}
@@ -66,7 +65,7 @@ package com.cimians.openPyro.storage;
 		/**
 		 * @inheritDoc
 		 */ 
-		public function getStoreCreated():Bool{
+		inline public function getStoreCreated():Bool{
 			return _storeCreated;
 		}
 		
@@ -79,7 +78,7 @@ package com.cimians.openPyro.storage;
 		 * 
 		 * @see com.cimians.openPyro.core.storage.StoreActionState;
 		 */ 
-		public function getStoreActionState():String{
+		inline public function getStoreActionState():String{
 			return _storeActionState;
 		}
 		
@@ -98,15 +97,15 @@ package com.cimians.openPyro.storage;
 			}
 			else{
 				if(so.data && so.data != ""){
-					throw new Error("Cannot overwrite on Shared Object. Key already exists");
+					throw ("Cannot overwrite on Shared Object. Key already exists");
 				}
 			}
-			var flushStatus:String = null;
+			var flushStatus:flash.net.SharedObjectFlushStatus = null;
 			try{
 				flushStatus = so.flush(minDiskSpace);
 			}
 			// flush may immediately fail if user has disallowed storage
-			catch(e:Error){
+			catch(e:Dynamic){
 				_storeActionState = StoreActionState.SAVE_FAILED;
 				dispatchEvent(new StorageEvent(StoreActionState.SAVE_FAILED));
 				return ;
@@ -117,11 +116,9 @@ package com.cimians.openPyro.storage;
                     	_storeActionState = StoreActionState.SAVE_PENDING;
                         //Logger.info(this, "Waiting for user to allow save to disk");
                         so.addEventListener(NetStatusEvent.NET_STATUS, onFlushStatus);
-                        break;
                     case SharedObjectFlushStatus.FLUSHED:
                     	_storeActionState = StoreActionState.SAVE_SUCCEEDED;
                         dispatchEvent(new StorageEvent(StoreActionState.SAVE_SUCCEEDED));
-                        break;
                 }
             }
 		}
@@ -136,11 +133,9 @@ package com.cimians.openPyro.storage;
                 case "SharedObject.Flush.Success":
                	 	_storeActionState = StoreActionState.SAVE_SUCCEEDED;
                    	dispatchEvent(new StorageEvent(StoreActionState.SAVE_SUCCEEDED));
-                    break;
                 case "SharedObject.Flush.Failed":
                 	_storeActionState = StoreActionState.SAVE_FAILED;
                     dispatchEvent(new StorageEvent(StoreActionState.SAVE_FAILED));
-                    break;
             }
             so.removeEventListener(NetStatusEvent.NET_STATUS, onFlushStatus);
         }

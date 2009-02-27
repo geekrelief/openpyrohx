@@ -91,7 +91,7 @@ package com.cimians.openPyro.shapes;
 			this.graphics.endFill();
 		}
 		
-		function drawDownArrow():Void
+		inline function drawDownArrow():Void
 		{
 			this.graphics.moveTo(0, 0);
 			this.graphics.lineTo(_w/2, _h);
@@ -100,7 +100,7 @@ package com.cimians.openPyro.shapes;
 		}
 		
 		
-		function drawLeftArrow():Void
+		inline function drawLeftArrow():Void
 		{					
 			this.graphics.moveTo(_w,0);
 			this.graphics.lineTo(_w, _h);
@@ -108,7 +108,7 @@ package com.cimians.openPyro.shapes;
 			this.graphics.lineTo(_w, 0);
 		}
 		
-		function drawRightArrow():Void
+		inline function drawRightArrow():Void
 		{			
 			this.graphics.moveTo(0,0);
 			this.graphics.lineTo(_w, _h/2);
@@ -116,7 +116,7 @@ package com.cimians.openPyro.shapes;
 			this.graphics.lineTo(0, 0);
 		}
 		
-		function drawUpArrow():Void
+		inline function drawUpArrow():Void
 		{			
 			this.graphics.moveTo(0,_h);
 			this.graphics.lineTo(_w/2, 0);
@@ -125,20 +125,20 @@ package com.cimians.openPyro.shapes;
 		}
 
 
-        function getHeight():Float{
+        inline function getHeight():Float{
             return _h;
         }
 
-        function setHeight(v:Float){
+        inline function setHeight(v:Float){
             _h = v;
             return v;
         }
 
-        function getWidth():Float{
+        inline function getWidth():Float{
             return _w;
         }
 
-        function setWidth(v:Float){
+        inline function setWidth(v:Float){
             _w = v;
             return v;
         }

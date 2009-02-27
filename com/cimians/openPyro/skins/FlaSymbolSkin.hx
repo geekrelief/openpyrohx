@@ -1,6 +1,7 @@
 package com.cimians.openPyro.skins;
 
 	import com.cimians.openPyro.core.UIControl;
+	import com.cimians.openPyro.core.MeasurableControl;
 	
 	import flash.display.MovieClip;
 	import flash.events.Event;
@@ -45,8 +46,13 @@ package com.cimians.openPyro.skins;
 		}
 
 		function onControlResize(event:Event):Void{
-			_skin.width = event.target.mwidth;
-			_skin.height = event.target.mheight;	
+            if(Std.is(event.target, MeasurableControl)){
+			    _skin.width = cast(event.target, MeasurableControl).mwidth;
+    			_skin.height = cast(event.target, MeasurableControl).mheight;	
+            } else {
+			    _skin.width = event.target.width;
+    			_skin.height = event.target.height;	
+            }
 		}
 		
 		public function onState(fromState:String, toState:String):Void

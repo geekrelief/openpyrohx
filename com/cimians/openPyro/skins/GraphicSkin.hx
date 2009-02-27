@@ -12,12 +12,14 @@ package com.cimians.openPyro.skins;
 	 */ 
 	class GraphicSkin extends Sprite, implements ISkin {
 		
-		public var graphic(getGraphic, setGraphic) : DisplayObject
-		;
+		public var graphic(getGraphic, setGraphic) : DisplayObject ;
 		public var skinnedControl(null, setSkinnedControl) : UIControl;
-		var _graphic:DisplayObject
+
+		var _graphic:DisplayObject;
+
 		public function new(?graphicObject:DisplayObject=null, ?useButtonMode:Bool=true)
 		{
+            super();
 			graphic = graphicObject;
 			if(useButtonMode)
 			{
@@ -33,9 +35,9 @@ package com.cimians.openPyro.skins;
 		 */ 
 		public function setGraphic(gr:DisplayObject):DisplayObject
 		{
-			if(_graphic)
+			if(_graphic != null)
 			{
-				removeChild(_graphic)
+				removeChild(_graphic);
 				_graphic = null;
 			}
 			_graphic = gr;
@@ -48,14 +50,14 @@ package com.cimians.openPyro.skins;
 		 */ 
 		public function getGraphic():DisplayObject
 		{
-			return _graphic
+			return _graphic;
 		}
 		
 		/**
 		 * @inheritDoc
 		 */ 
 		public function setSkinnedControl(uic:UIControl):UIControl{				
-			uic.addChildAt(this,0);
+			uic.addChildAt(this, 0);
 			return uic;				
 		}
 		
@@ -64,9 +66,9 @@ package com.cimians.openPyro.skins;
 		 */ 
 		public function dispose():Void
 		{
-			if (this.parent)
+			if (this.parent != null)
 			{
-				this.parent.removeChild(this)
+				this.parent.removeChild(this);
 			}	
 		}
 
