@@ -47,8 +47,6 @@ package com.cimians.openPyro.controls;
 		public function new(direction:String)
 		{
 			_isThumbPressed = false;
-			_thumbButtonHeight =50;
-			_thumbButtonWidth = 50;
 			super();
 			this._direction = direction;
 			this._styleName = "Slider";
@@ -161,6 +159,8 @@ package com.cimians.openPyro.controls;
 			{
 				_thumbButton.skin = skin;
 			}
+            _thumbButton.mwidth = _thumbButtonWidth;
+
 			return skin;
 		}
 		

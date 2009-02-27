@@ -10,6 +10,7 @@ package com.cimians.openPyro.core;
 	/*[Event(name="resize", type="flash.events.Event")]*/
 	/*[Event(name="updateComplete", type="com.cimians.openPyro.events.PyroEvent")]*/
 	/*[Event(name="sizeValidated", type="com.cimians.openPyro.events.PyroEvent")]*/
+	/*[Event(name="sizeInvalidated", type="com.cimians.openPyro.events.PyroEvent")]*/
 	/*[Event(name="propertyChange", type="com.cimians.openPyro.events.PyroEvent")]*/
 	
 	
@@ -337,14 +338,12 @@ package com.cimians.openPyro.core;
 		 * This method is overridden by UIControl. The code here 
 		 * will only be useful for a Spacer type of component. 
 		 */ 
-		public function invalidateSize():Void{
+		public function invalidateSize(event:PyroEvent=null):Void{
 			//Logger.debug(this, "invalidateSize")
 			if(sizeInvalidated) return;
 			sizeInvalidated=true;
-			if(this._parentContainer != null){
-				_parentContainer.invalidateSize();
-			}
-			else{
+            dispatchEvent(new PyroEvent(PyroEvent.SIZE_INVALIDATED));
+			if(this._parentContainer == null){
 				this.addEventListener(Event.ENTER_FRAME, doQueuedValidateSize);
 				//doQueuedValidateSize(new Event(Event.ENTER_FRAME))
 			}

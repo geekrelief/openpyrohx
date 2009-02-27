@@ -114,9 +114,18 @@ package com.cimians.openPyro.core;
 			contentPane.percentUnusedWidth = 100;
 			contentPane.percentUnusedHeight = 100;
 			contentPane.doOnAdded();
-		//	this.mask = this.maskShape;
 
+            this.addEventListener(MouseEvent.MOUSE_OVER, handleMouseOver, true);
 		}
+
+        public static var mouseOverDisabled:Bool = true;
+
+        function handleMouseOver(event:MouseEvent):Void {
+            if(UIContainer.mouseOverDisabled) {
+                event.stopImmediatePropagation();
+                event.preventDefault();
+            }
+        }
 		
 		public function setHorizontalScrollPolicy(b:Bool):Bool{
 			_horizontalScrollPolicy = b;
@@ -566,6 +575,12 @@ package com.cimians.openPyro.core;
 			_verticalScrollBar.incrementalScrollDelta = _verticalScrollIncrement;
 			_verticalScrollBar.name = "vscrollbar_"+this.name;
 			_verticalScrollBar.mwidth = 15;
+            _verticalScrollBar.addEventListener(MouseEvent.MOUSE_DOWN, function(event:MouseEvent):Void {
+                UIContainer.mouseOverDisabled = true;
+            });
+            _verticalScrollBar.addEventListener(MouseEvent.MOUSE_UP, function(event:MouseEvent):Void {
+                UIContainer.mouseOverDisabled = false;
+            });
 			_verticalScrollBar.addEventListener(PyroEvent.SIZE_VALIDATED, onVerticalScrollBarSizeValidated);
 			_verticalScrollBar.addEventListener(PyroEvent.UPDATE_COMPLETE, onVScrollBarUpdateComplete);
 			_verticalScrollBar.skin = cast(_skin, IScrollableContainerSkin).verticalScrollBarSkin;
@@ -573,6 +588,9 @@ package com.cimians.openPyro.core;
 			_verticalScrollBar.doOnAdded();
 			_verticalScrollBar.mvisible = false;
 			_S_addChild(_verticalScrollBar);
+            _verticalScrollBar.stage.addEventListener(MouseEvent.MOUSE_UP, function(event:MouseEvent):Void {
+                UIContainer.mouseOverDisabled = false;
+            });
 		}
 		
 		function hideVScrollBar():Void
@@ -591,6 +609,12 @@ package com.cimians.openPyro.core;
 			_horizontalScrollBar.incrementalScrollDelta = _horizontalScrollIncrement;
 			_horizontalScrollBar.name = "hscrollbar_"+this.name;
 			_horizontalScrollBar.mheight = 15;
+            _horizontalScrollBar.addEventListener(MouseEvent.MOUSE_DOWN, function(event:MouseEvent):Void {
+                UIContainer.mouseOverDisabled = true;
+            });
+            _horizontalScrollBar.addEventListener(MouseEvent.MOUSE_UP, function(event:MouseEvent):Void {
+                UIContainer.mouseOverDisabled = false;
+            });
 			_horizontalScrollBar.addEventListener(PyroEvent.SIZE_VALIDATED, onHorizontalScrollBarSizeValidated);
 			_horizontalScrollBar.addEventListener(ScrollEvent.SCROLL, onHorizontalScroll);
 			_horizontalScrollBar.parentContainer = this;
@@ -598,6 +622,9 @@ package com.cimians.openPyro.core;
 			_horizontalScrollBar.skin = cast(_skin, IScrollableContainerSkin).horizontalScrollBarSkin;	
 			_horizontalScrollBar.mvisible = false;
 			_S_addChild(_horizontalScrollBar);	
+            _horizontalScrollBar.stage.addEventListener(MouseEvent.MOUSE_UP, function(event:MouseEvent):Void {
+                UIContainer.mouseOverDisabled = false;
+            });
 		}
 		
 		function onHorizontalScrollBarSizeValidated(event:PyroEvent):Void

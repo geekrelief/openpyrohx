@@ -18,6 +18,8 @@ package com.cimians.openPyro.controls;
 		public var maintainAspectRatio(getMaintainAspectRatio, setMaintainAspectRatio) : Bool ;
 		public var scaleToFit(getScaleToFit, setScaleToFit) : Bool;
 		public var source(null, setSource) : String;
+        public var originalContentWidth(getOriginalContentWidth, null):Float;
+        public var originalContentHeight(getOriginalContentHeight, null):Float;
 
 		var _sourceURL:String ;
 		var _loader:Loader;
@@ -27,6 +29,9 @@ package com.cimians.openPyro.controls;
 		var _scaleToFit:Bool ;
 
 		var _maintainAspectRatio:Bool ;
+
+        var _originalContentWidth:Float;
+        var _originalContentHeight:Float;
 
 		public function new() {
 			_sourceURL = "";
@@ -104,6 +109,8 @@ package com.cimians.openPyro.controls;
 		
 		function onLoadComplete(event:Event):Void
 		{
+            _originalContentWidth = _loader.content.width;
+            _originalContentHeight = _loader.content.height;
 			dispatchEvent(new Event(Event.COMPLETE));
 			forceInvalidateDisplayList = true;
 			invalidateSize();
@@ -113,21 +120,29 @@ package com.cimians.openPyro.controls;
 		override function doChildBasedValidation():Void{
 			if(_loader == null ||  _loader.content == null) return;
 			if(Math.isNaN(this._explicitWidth) && Math.isNaN(this._percentWidth) && Math.isNaN(_percentUnusedWidth)){
-				measuredWidth = _loader.content.width;
+				measuredWidth = _originalContentWidth;
 			}
 			if(Math.isNaN(this._explicitHeight) && Math.isNaN(this._percentHeight) && Math.isNaN(_percentUnusedHeight))
 			{
-				measuredHeight = _loader.content.height;
+				measuredHeight = _originalContentHeight;
 			}
 		}
 		
-		public function getContentWidth():Float{
+		inline public function getContentWidth():Float{
 			return _loader.content.width;
 		}
 		
-		public function getContentHeight():Float{
+		inline public function getContentHeight():Float{
 			return _loader.content.height;
 		}
+
+        inline public function getOriginalContentWidth():Float {
+            return _originalContentWidth;
+        }
+
+        inline public function getOriginalContentHeight():Float {
+            return _originalContentHeight;
+        }
 		
 		function onIOError(event:IOErrorEvent):Void
 		{
@@ -163,19 +178,19 @@ package com.cimians.openPyro.controls;
 		
 			var scaleX:Float;
 			var scaleY:Float;	
-			scaleX = mwidth / _loader.content.width;
-			scaleY = mheight / _loader.content.height;
+			scaleX = mwidth / _originalContentWidth;
+			scaleY = mheight / _originalContentHeight;
 			
 			if(_maintainAspectRatio)
 			{
 				var scale:Float = Math.min(scaleX, scaleY);
-				_loader.content.width = _loader.content.width*scale;
-				_loader.content.height = _loader.content.height*scale;	
+				_loader.content.width = _originalContentWidth*scale;
+				_loader.content.height = _originalContentHeight*scale;	
 			}
 			else
 			{
-				_loader.content.width = _loader.content.width*scaleX;
-				_loader.content.height = _loader.content.height*scaleY;
+				_loader.content.width = _originalContentWidth*scaleX;
+				_loader.content.height = _originalContentHeight*scaleY;
 			}
 		}
 		

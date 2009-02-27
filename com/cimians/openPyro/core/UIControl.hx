@@ -1,4 +1,5 @@
 package com.cimians.openPyro.core;
+	import com.cimians.openPyro.events.PyroEvent;
 	import com.cimians.openPyro.managers.SkinManager;
 	import com.cimians.openPyro.managers.TooltipManager;
 	import com.cimians.openPyro.painters.IPainter;
@@ -62,8 +63,10 @@ package com.cimians.openPyro.core;
 			var ch:DisplayObject =  super._S_addChild(child);
 			if(Std.is( child, UIControl))
 			{
-				cast(child, UIControl).parentContainer = this;
-				cast(child, UIControl).doOnAdded();
+                var uiControl:UIControl = cast child;
+                uiControl.parentContainer = this;
+                uiControl.addEventListener(PyroEvent.SIZE_INVALIDATED, invalidateSize);
+                uiControl.doOnAdded();
 			}
 			this.invalidateSize();
 			return ch;
@@ -169,7 +172,7 @@ package com.cimians.openPyro.core;
                     cast(c, UIControl).needsMeasurement = true;
                 }
 			}
-				
+	        dispatchEvent(new PyroEvent(PyroEvent.SIZE_INVALIDATED));			
 			invalidateDisplayList();
 			return w;
 		}
@@ -190,6 +193,7 @@ package com.cimians.openPyro.core;
                     cast(c, UIControl).needsMeasurement = true;
                 }
 			}
+            dispatchEvent(new PyroEvent(PyroEvent.SIZE_INVALIDATED));
 			invalidateDisplayList();
 			return h;
 		}

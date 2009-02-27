@@ -259,7 +259,7 @@ package com.cimians.openPyro.controls;
 		{
             // dont react if the click is coming from a currently 
             // selected child.
-            if(cast(event.currentTarget, IListDataRenderer).selected) return;  // we could fire a reclick event
+            if(!Std.is(event.currentTarget, IListDataRenderer) || cast(event.currentTarget, IListDataRenderer).selected) return;
             
             
             if(selectedRenderer != null && Std.is( selectedRenderer, IListDataRenderer)){
